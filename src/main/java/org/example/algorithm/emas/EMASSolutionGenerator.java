@@ -3,6 +3,7 @@ package org.example.algorithm.emas;
 
 import org.example.model.Point;
 import org.example.model.Solution;
+import org.example.util.Coordinates;
 import org.example.util.SimulationData;
 
 import java.util.ArrayList;
@@ -21,16 +22,26 @@ import java.util.Random;
  * wouldn't be too practical.
  */
 public class EMASSolutionGenerator {
-    private SimulationData simulationData = SimulationData.getInstance();
+    private static SimulationData simulationData = SimulationData.getInstance();
 
     public static Solution generateSolution(List<Point> points) {
         if (points != null) {
             return new Solution(points);
         }
         // if points are null, create a random path
+        Point startPos = new Point(simulationData.startPos, 0, null, null);
+        Point endPos = new Point(simulationData.endPos, 0, null, null);
+
         points = new ArrayList<>();
+        points.add(startPos);
 
+        for (int i = 1; i < simulationData.mapWidth - 1; i++) {
+            Coordinates nextCoordinates = new Coordinates((new Random()).nextInt(0, simulationData.mapHeight), i);
+            Point nextPoint = new Point(nextCoordinates, 0, null, null);
+            points.add(nextPoint);
+        }
 
+        points.add(endPos);
         return new Solution(points);
     }
 

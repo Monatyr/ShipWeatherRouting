@@ -3,6 +3,7 @@ package org.example.algorithm.emas;
 import org.example.algorithm.Algorithm;
 import org.example.model.Agent;
 import org.example.model.Island;
+import org.example.model.Solution;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -63,8 +64,8 @@ public class EMAS extends Algorithm {
         Set<Agent> agents = new HashSet<>();
 
         for (int i = 0; i < populationSize; i++) {
-
-            agents.add(new Agent(null, 50, 0));
+            Solution solution = EMASSolutionGenerator.generateSolution(null);
+            agents.add(new Agent(solution, 50, 0));
         }
 
         return agents;
@@ -72,9 +73,14 @@ public class EMAS extends Algorithm {
 
     @Override
     protected Set<Agent> generateIterationPopulation() {
+        for (int i = 0; i < populationSize-1; i++) {
 
+        }
 
-        return population;
+        /** TODO: is this a necessary function?
+         * Shouldn't the agents be responsible for creating new solutions? They themselves know when and with whom they might
+         * want to reproduce.
+         */
     }
 
     @Override
