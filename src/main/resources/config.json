@@ -1,0 +1,19 @@
+{
+  "map": {
+    "width": 10,
+    "height": 5,
+    "startPos": {
+      "x": 0,
+      "y": 0
+    },
+    "endPos": {
+      "x": 10,
+      "y": 5
+    }
+  },
+  "simulation": {
+    "mutationRate": 0.05,
+    "numberOfIslands": 5,
+    "populationSize": 20
+  }
+}
