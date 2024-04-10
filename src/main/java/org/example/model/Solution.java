@@ -21,7 +21,7 @@ public class Solution {
         float routeAvgSafety = 0;
 
         for (Point point : routePoints) {
-            Map<OptimizedFunction, Float> pointFunctions = point.getFunctions();
+            Map<OptimizedFunction, Double> pointFunctions = point.getFunctions();
             fuelUsed += pointFunctions.get(FuelUsed);
             travelTime += pointFunctions.get(TravelTime);
             routeAvgSafety += pointFunctions.get(Safety);

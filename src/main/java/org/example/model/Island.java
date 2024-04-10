@@ -1,5 +1,6 @@
 package org.example.model;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -8,12 +9,11 @@ import java.util.Set;
  */
 
 public class Island {
-    private Set<Agent> agents;
+    private final Set<Agent> agents = new HashSet<>();
     private boolean elite;
 
 
-    public Island(Set<Agent> agents, boolean elite) {
-        this.agents = agents;
+    public Island(boolean elite) {
         this.elite = elite;
     }
 

@@ -13,7 +13,8 @@
   },
   "simulation": {
     "mutationRate": 0.05,
-    "numberOfIslands": 5,
+    "reproductionProbability": 0.9,
+    "numberOfIslands": 4,
     "populationSize": 20
   }
 }
