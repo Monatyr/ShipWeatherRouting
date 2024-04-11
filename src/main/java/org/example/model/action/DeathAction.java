@@ -12,9 +12,4 @@ public class DeathAction extends Action{
     public void perform() {
 
     }
-
-    @Override
-    public boolean isPossible() {
-        return agent.getEnergy() <= 0;
-    }
 }

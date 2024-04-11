@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static java.lang.Math.round;
-
 public final class SimulationData {
     private static SimulationData instance;
     private final String configPath = "src/main/resources/config.json";
@@ -18,6 +16,9 @@ public final class SimulationData {
     public int populationSize;
     public Coordinates startPos;
     public Coordinates endPos;
+    public double initialEnergy;
+    public double reproductionEnergy;
+    public double migrationEnergy;
     public double mutationRate;
     public double reproductionProbability;
     public double migrationProbability;
@@ -42,9 +43,11 @@ public final class SimulationData {
             populationSize = simulationObject.getInt("populationSize");
             mutationRate = simulationObject.getDouble("mutationRate");
             reproductionProbability = simulationObject.getDouble("reproductionProbability");
-
             migrationProbability = 1.0 - reproductionProbability;
             migrationProbability = Math.round(migrationProbability * 100) / 100.0;
+            initialEnergy = simulationObject.getDouble("initialEnergy");
+            reproductionEnergy = simulationObject.getDouble("reproductionEnergy");
+            migrationEnergy = simulationObject.getDouble("migrationEnergy");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

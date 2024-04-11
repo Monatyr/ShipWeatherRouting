@@ -60,7 +60,7 @@ public class EMAS extends Algorithm {
     protected void generateInitialPopulation() {
         for (int i = 0; i < populationSize; i++) {
             Solution solution = EMASSolutionGenerator.generateSolution(null);
-            population.add(new Agent(solution, 0, 0, null));
+            population.add(new Agent(solution, simulationData.initialEnergy, 0, null));
         }
     }
 

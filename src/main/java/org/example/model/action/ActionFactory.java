@@ -20,6 +20,7 @@ public class ActionFactory {
 
     public static Action getAction(Agent agent) {
         ActionType actionType;
+        Action action;
 
         if (agent.getEnergy() <= 0) {
             actionType = ActionType.Death;
@@ -28,20 +29,23 @@ public class ActionFactory {
 
         }
 
-        // TODO: rethink how to select actions. Should the condition be checked while creating an action?
         switch (actionType) {
             case Reproduction:
-                System.out.println("REPRO");
-                return new ReproductionAction(agent);
+                if (agent.getEnergy() >= simulationData.reproductionEnergy) {
+                     Agent partner = agent.getPartner();
+                     if (partner != null) {
+                         return new ReproductionAction(agent, partner);
+                     }
+                }
             case Migration:
-                System.out.println("MIGRA");
-
-                return new MigrationAction(agent);
+                // TODO: should migration require energy - it should, but the question is should it decrease it?
+                if (agent.getEnergy() >= simulationData.migrationEnergy) {
+                    return new MigrationAction(agent);
+                }
             case Death:
-                System.out.printf("DEATH");
                 return new DeathAction(agent);
             default:
-                System.out.println("NOTHING");
+                return null;
         }
     }
 }

@@ -2,17 +2,18 @@ package org.example.model;
 
 
 import org.example.algorithm.emas.EMASSolutionGenerator;
+import org.example.model.action.Action;
 import org.example.model.action.ActionFactory;
 import org.example.model.action.ActionType;
 
 public class Agent {
     private Solution solution;
-    private float energy;
-    private float prestige;
+    private double energy;
+    private double prestige;
     private Island island;
 
 
-    public Agent(Solution solution, float energy, float prestige, Island island) {
+    public Agent(Solution solution, double energy, double prestige, Island island) {
         this.solution = solution;
         this.energy = energy;
         this.prestige = prestige;
@@ -26,15 +27,22 @@ public class Agent {
     }
 
     public void performAction() {
-
-        ActionFactory.getAction(this);
+        Action action = ActionFactory.getAction(this);
+        action.perform();
     }
 
-    public float getEnergy() {
+    /**
+     * Check if Agent has a potential partner to create a new Agent with.
+     */
+    public Agent getPartner() {
+        return (Agent) island.getAgents().toArray()[0];
+    }
+
+    public double getEnergy() {
         return energy;
     }
 
-    public float getPrestige() {
+    public double getPrestige() {
         return prestige;
     }
 

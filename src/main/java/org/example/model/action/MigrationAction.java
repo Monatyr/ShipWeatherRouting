@@ -11,9 +11,4 @@ public class MigrationAction extends Action {
     public void perform() {
 
     }
-
-    @Override
-    public boolean isPossible() {
-        return false;
-    }
 }

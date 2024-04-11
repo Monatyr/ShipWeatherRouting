@@ -7,9 +7,8 @@ public abstract class Action {
 
     public Action(Agent agent) {
         this.agent = agent;
+        System.out.println(this.getClass().getSimpleName());
     }
 
     public abstract void perform();
-
-    public abstract boolean isPossible();
 }
