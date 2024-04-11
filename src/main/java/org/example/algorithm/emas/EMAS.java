@@ -6,10 +6,7 @@ import org.example.model.Island;
 import org.example.model.Solution;
 import org.example.util.SimulationData;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class EMAS extends Algorithm {
     private int populationSize = simulationData.populationSize;
@@ -66,8 +63,17 @@ public class EMAS extends Algorithm {
 
     @Override
     protected void runIteration() {
-        for (Agent agent : population) {
-            agent.performAction();
+        for (Island island : islands) {
+            Set<Agent> agentsToAdd = new HashSet<>();
+            Set<Agent> agentsToRemove = new HashSet<>();
+
+            for (Agent agent : island.getAgents()) {
+                agent.performAction(agentsToAdd, agentsToRemove);
+                System.out.printf("ACTION");
+            }
+
+            island.getAgents().removeAll(agentsToRemove);
+            island.getAgents().addAll(agentsToAdd);
         }
     }
 

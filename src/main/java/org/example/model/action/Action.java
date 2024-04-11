@@ -2,6 +2,8 @@ package org.example.model.action;
 
 import org.example.model.Agent;
 
+import java.util.Set;
+
 public abstract class Action {
     protected Agent agent;
 
@@ -10,5 +12,7 @@ public abstract class Action {
         System.out.println(this.getClass().getSimpleName());
     }
 
-    public abstract void perform();
+    public void perform(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) {
+        agent.setMadeAction(true);
+    };
 }

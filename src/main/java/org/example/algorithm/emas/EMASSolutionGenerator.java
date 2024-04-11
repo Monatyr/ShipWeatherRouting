@@ -67,6 +67,7 @@ public class EMASSolutionGenerator {
             points2 = temp;
         } else {
             System.out.println("SECOND FIRST");
+
         }
 
         int solutionLength = points1.size();
