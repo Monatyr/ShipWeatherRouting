@@ -22,6 +22,7 @@ public final class SimulationData {
     public double mutationRate;
     public double reproductionProbability;
     public double migrationProbability;
+    private int id;
 
 
     private SimulationData() {
@@ -59,5 +60,9 @@ public final class SimulationData {
             instance = new SimulationData();
         }
         return instance;
+    }
+
+    public int generateId() {
+        return id++;
     }
 }

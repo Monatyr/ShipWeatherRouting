@@ -27,6 +27,8 @@ public class ActionFactory {
 
         }
 
+        System.out.println(agent.id);
+
         switch (actionType) {
             case Reproduction:
                 if (agent.getEnergy() >= simulationData.reproductionEnergy) {

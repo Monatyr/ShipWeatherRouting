@@ -12,7 +12,7 @@ public class DeathAction extends Action{
 
     @Override
     public void perform(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) {
-        agent.die();
-        super.perform( agentsToAdd, agentsToRemove);
+        agentsToRemove.add(agent);
+        super.perform(agentsToAdd, agentsToRemove);
     }
 }

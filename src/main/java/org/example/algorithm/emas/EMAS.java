@@ -63,23 +63,34 @@ public class EMAS extends Algorithm {
     protected void generateInitialPopulation() {
         for (int i = 0; i < populationSize; i++) {
             Solution solution = EMASSolutionGenerator.generateSolution(null);
-            population.add(new Agent(solution, simulationData.initialEnergy, 0, null));
+            population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));
         }
     }
 
     @Override
     protected void runIteration() {
+        System.out.println("ITERATION: " + (iterations+1));
         for (Island island : islands) {
             Set<Agent> agentsToAdd = new HashSet<>();
             Set<Agent> agentsToRemove = new HashSet<>();
 
             for (Agent agent : island.getAgents()) {
-                agent.performAction(agentsToAdd, agentsToRemove);
+                /* If agent did not make an action this iteration (e.g. took part in
+                reproduction or migrated to a subsequent island */
+                if (!agent.getMadeAction()) {
+                    agent.performAction(agentsToAdd, agentsToRemove);
+                }
             }
 
-            System.out.println("TO REMOVEEEEEEEEEEEEEEEEEEEEE: " + agentsToRemove);
             island.getAgents().removeAll(agentsToRemove);
             island.getAgents().addAll(agentsToAdd);
+        }
+
+        // Make agent available to perform actions again
+        for (Island island: islands) {
+            for (Agent agent: island.getAgents()) {
+                agent.setMadeAction(false);
+            }
         }
     }
 

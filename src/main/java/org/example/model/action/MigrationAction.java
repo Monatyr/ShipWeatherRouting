@@ -17,6 +17,7 @@ public class MigrationAction extends Action {
     public void perform(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) {
         // TODO: add agent to another island (agentsToAdd is related to the current island not the destined one).
         agentsToRemove.add(agent);
+        agent.setIsland(targetIsland);
         targetIsland.addAgent(agent);
         super.perform(agentsToAdd, agentsToRemove);
     }
