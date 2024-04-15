@@ -12,12 +12,13 @@
     }
   },
   "simulation": {
+    "maxIterations": 5,
     "initialEnergy": 100,
     "reproductionEnergy": 50,
     "migrationEnergy": 50,
     "mutationRate": 0.05,
     "reproductionProbability": 0.9,
     "numberOfIslands": 4,
-    "populationSize": 20
+    "populationSize": 8
   }
 }

@@ -92,6 +92,10 @@ public class EMAS extends Algorithm {
                 agent.setMadeAction(false);
             }
         }
+
+        population = islands.stream()
+                .flatMap(island -> island.getAgents().stream())
+                .collect(Collectors.toSet());
     }
 
     @Override

@@ -23,6 +23,7 @@ public abstract class Algorithm {
             iterations++;
         }
 
+
         Set<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toSet());
         return solutions;
     }
@@ -32,10 +33,8 @@ public abstract class Algorithm {
     }
 
     protected boolean checkStopCondition() {
-        return iterations > 5;
+        return iterations > simulationData.maxIterations;
     }
-
-//    protected abstract Set<Agent> generateIterationPopulation();
 
     protected abstract void generateInitialPopulation();
 

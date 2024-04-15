@@ -23,7 +23,7 @@ public class Agent {
 
     public Agent(Solution solution, double energy, double prestige, Island island, boolean madeAction) {
         this.solution = solution;
-        this.energy = 0;
+        this.energy = energy;
         this.prestige = prestige;
         this.madeAction = madeAction;
         this.island = island;
