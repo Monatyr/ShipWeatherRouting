@@ -23,6 +23,7 @@ import java.util.Random;
  */
 public class EMASSolutionGenerator {
     private static SimulationData simulationData = SimulationData.getInstance();
+    private static Random random = new Random();
 
     public static Solution generateSolution(List<Point> points) {
         if (points != null) {
@@ -36,7 +37,7 @@ public class EMASSolutionGenerator {
         points.add(startPos);
 
         for (int i = 1; i < simulationData.mapWidth - 1; i++) {
-            Coordinates nextCoordinates = new Coordinates((new Random()).nextInt(0, simulationData.mapHeight), i);
+            Coordinates nextCoordinates = new Coordinates(random.nextInt(0, simulationData.mapHeight), i);
             Point nextPoint = new Point(nextCoordinates, 0, null, null);
             points.add(nextPoint);
         }
@@ -57,17 +58,12 @@ public class EMASSolutionGenerator {
         List<Point> points2 = sol2.getRoutePoints();
         List<Point> newPoints = new ArrayList<>();
 
-        // TODO: Mix the two routes.
-        boolean routeOneFirst = (new Random()).nextBoolean();
+        boolean routeOneFirst = random.nextBoolean();
 
         if (!routeOneFirst) {
-            System.out.println("FIRST FIRST");
             List<Point> temp = points1;
             points1 = points2;
             points2 = temp;
-        } else {
-            System.out.println("SECOND FIRST");
-
         }
 
         int solutionLength = points1.size();
@@ -75,6 +71,8 @@ public class EMASSolutionGenerator {
 
         newPoints.addAll(points1.subList(0, halfIndex));
         newPoints.addAll(points2.subList(halfIndex, solutionLength));
+
+        //TODO: route smoothing at the connection point(s)
 
         return new Solution(newPoints);
     }

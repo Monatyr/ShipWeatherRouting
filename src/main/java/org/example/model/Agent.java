@@ -5,6 +5,7 @@ import org.example.algorithm.emas.EMASSolutionGenerator;
 import org.example.model.action.Action;
 import org.example.model.action.ActionFactory;
 
+import java.util.Random;
 import java.util.Set;
 
 public class Agent {
@@ -13,6 +14,7 @@ public class Agent {
     private double prestige;
     private Island island;
     private boolean madeAction = false;
+    private Random random = new Random();
 
 
     public Agent(Solution solution, double energy, double prestige, Island island) {
@@ -23,7 +25,6 @@ public class Agent {
 
     public Agent createNewAgent(Agent other) {
         Solution otherSolution = other.getSolution();
-
         Solution newSolution = EMASSolutionGenerator.generateSolution(solution, otherSolution);
         Agent newAgent = new Agent(newSolution, energy, 0, island);
 //        island.addAgent(newAgent);
@@ -33,6 +34,12 @@ public class Agent {
     public void performAction(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) {
         Action action = ActionFactory.getAction(this);
         action.perform(agentsToAdd, agentsToRemove);
+    }
+
+    public Island generateTargetIsland() {
+        Set<Island> potentialTargetIslands = island.getNeighbouringIslands();
+        int islandIndex = random.nextInt(potentialTargetIslands.size());
+        return potentialTargetIslands.stream().toList().get(islandIndex);
     }
 
     /** Check if Agent has a potential partner to create a new Agent with. */

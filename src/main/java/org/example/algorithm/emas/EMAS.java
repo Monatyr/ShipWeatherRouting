@@ -7,6 +7,7 @@ import org.example.model.Solution;
 import org.example.util.SimulationData;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class EMAS extends Algorithm {
     private int populationSize = simulationData.populationSize;
@@ -22,12 +23,21 @@ public class EMAS extends Algorithm {
 
     /**
      * Creates evolutionary islands with their own population and add them to the list.
-     * The first island (index 0) is treated as an elite island.
+     * The first island (index 0) is treated as an elite island. Each island has its set
+     * of neighbours that agents can migrate to.
      */
     private void createIslands() {
-        islands.add(new Island(true));
+        islands.add(new Island(true, null));
         for (int i = 1; i < islandsNumber; i++) {
-            islands.add(new Island(false));
+            islands.add(new Island(false, null));
+        }
+
+        for (Island   island : islands) {
+            Set<Island> neighbouringIslands = islands.stream()
+                    .filter(i -> !i.equals(island))
+                    .collect(Collectors.toSet());
+
+            island.setNeighbouringIslands(neighbouringIslands);
         }
     }
 
@@ -49,10 +59,6 @@ public class EMAS extends Algorithm {
         }
     }
 
-    public List<Island> getIslands() {
-        return islands;
-    }
-
     @Override
     protected void generateInitialPopulation() {
         for (int i = 0; i < populationSize; i++) {
@@ -69,9 +75,9 @@ public class EMAS extends Algorithm {
 
             for (Agent agent : island.getAgents()) {
                 agent.performAction(agentsToAdd, agentsToRemove);
-                System.out.printf("ACTION");
             }
 
+            System.out.println("TO REMOVEEEEEEEEEEEEEEEEEEEEE: " + agentsToRemove);
             island.getAgents().removeAll(agentsToRemove);
             island.getAgents().addAll(agentsToAdd);
         }
@@ -80,5 +86,9 @@ public class EMAS extends Algorithm {
     @Override
     protected boolean checkStopCondition() {
         return iterations >= 10;
+    }
+
+    public List<Island> getIslands() {
+        return islands;
     }
 }

@@ -4,11 +4,10 @@ package org.example.model.action;
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
 import org.example.model.Agent;
+import org.example.model.Island;
 import org.example.util.SimulationData;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ActionFactory {
     public static SimulationData simulationData = SimulationData.getInstance();
@@ -20,7 +19,6 @@ public class ActionFactory {
 
     public static Action getAction(Agent agent) {
         ActionType actionType;
-        Action action;
 
         if (agent.getEnergy() <= 0) {
             actionType = ActionType.Death;
@@ -40,7 +38,8 @@ public class ActionFactory {
             case Migration:
                 // TODO: should migration require energy - it should, but the question is should it decrease it?
                 if (agent.getEnergy() >= simulationData.migrationEnergy) {
-                    return new MigrationAction(agent);
+                    Island targetIsland = agent.generateTargetIsland();
+                    return new MigrationAction(agent, targetIsland);
                 }
             case Death:
                 return new DeathAction(agent);

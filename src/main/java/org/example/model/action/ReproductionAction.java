@@ -17,6 +17,6 @@ public class ReproductionAction extends Action {
     public void perform(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) {
         Agent newAgent = agent.createNewAgent(partner);
         agentsToAdd.add(newAgent);
-        super.perform( agentsToAdd, agentsToRemove);
+        super.perform(agentsToAdd, agentsToRemove);
     }
 }
