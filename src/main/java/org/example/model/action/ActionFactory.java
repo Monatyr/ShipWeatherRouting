@@ -20,7 +20,7 @@ public class ActionFactory {
     public static Action getAction(Agent agent) {
         ActionType actionType;
 
-        if (agent.getEnergy() <= 0) {
+        if (agent.getEnergy() < simulationData.deathEnergyBound) {
             actionType = ActionType.Death;
         } else {
             actionType = (ActionType) enumeratedDistribution.sample();

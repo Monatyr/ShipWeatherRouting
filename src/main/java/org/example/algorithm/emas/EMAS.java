@@ -100,10 +100,10 @@ public class EMAS extends Algorithm {
                 .collect(Collectors.toSet());
     }
 
-    @Override
-    protected boolean checkStopCondition() {
-        return iterations >= 10;
-    }
+//    @Override
+//    protected boolean checkStopCondition() {
+//        return iterations >= 10;
+//    }
 
     private void evaluateAgents() {
         for (Island island: islands) {

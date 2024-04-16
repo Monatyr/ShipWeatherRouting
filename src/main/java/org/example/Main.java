@@ -19,5 +19,6 @@ public class Main {
         for (Solution solution : topSol) {
             System.out.println(solution.getFunctionValues());
         }
+        System.out.println("--- TOTAL SOLUTIONS: " + solutions.size() + " ---");
     }
 }

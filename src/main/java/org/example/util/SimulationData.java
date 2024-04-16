@@ -21,6 +21,7 @@ public final class SimulationData {
     public double reproductionEnergyBound;
     public double reproductionEnergy;
     public double migrationEnergy;
+    public double deathEnergyBound;
     public double mutationRate;
     public double reproductionProbability;
     public double migrationProbability;
@@ -55,6 +56,7 @@ public final class SimulationData {
             reproductionEnergy = simulationObject.getDouble("reproductionEnergy");
             migrationEnergy = simulationObject.getDouble("migrationEnergy");
             energyTaken = simulationObject.getDouble("energyTaken");
+            deathEnergyBound = simulationObject.getDouble("deathEnergyBound");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
