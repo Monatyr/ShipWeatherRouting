@@ -5,7 +5,9 @@ import org.example.algorithm.emas.EMAS;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A representation of an island in the elEMAS approach.
@@ -15,6 +17,7 @@ public class Island {
     private final Set<Agent> agents = new HashSet<>();
     private boolean elite;
     private Set<Island> neighbouringIslands;
+    private Random random = new Random();
 
     public Island(boolean elite, Set<Island> neighbouringIslands) {
         this.elite = elite;
@@ -27,6 +30,18 @@ public class Island {
 
     public void removeAgent(Agent agent) {
         agents.remove(agent);
+    }
+
+    public void evaluateAgents() {
+        for (Agent agent: agents) {
+            List<Agent> neighbours = getAgents().stream()
+                    .filter(a -> !a.equals(this))
+                    .filter(a -> a.getEnergy() > 0)
+                    .collect(Collectors.toList());
+
+            int index = random.nextInt(neighbours.size());
+            agent.compareTo(neighbours.get(index));
+        }
     }
 
     public boolean isElite() {

@@ -14,11 +14,13 @@
   "simulation": {
     "maxIterations": 5,
     "initialEnergy": 100,
-    "reproductionEnergy": 50,
+    "reproductionEnergyBound": 50,
+    "reproductionEnergy": 20,
     "migrationEnergy": 50,
     "mutationRate": 0.05,
     "reproductionProbability": 0.9,
     "numberOfIslands": 4,
-    "populationSize": 8
+    "populationSize": 1,
+    "energyTaken": 10
   }
 }

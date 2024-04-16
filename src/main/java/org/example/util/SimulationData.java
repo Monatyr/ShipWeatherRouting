@@ -18,11 +18,13 @@ public final class SimulationData {
     public Coordinates endPos;
     public int maxIterations;
     public double initialEnergy;
+    public double reproductionEnergyBound;
     public double reproductionEnergy;
     public double migrationEnergy;
     public double mutationRate;
     public double reproductionProbability;
     public double migrationProbability;
+    public double energyTaken;
     private int id;
 
 
@@ -49,8 +51,10 @@ public final class SimulationData {
             migrationProbability = 1.0 - reproductionProbability;
             migrationProbability = Math.round(migrationProbability * 100) / 100.0;
             initialEnergy = simulationObject.getDouble("initialEnergy");
+            reproductionEnergyBound = simulationObject.getDouble("reproductionEnergyBound");
             reproductionEnergy = simulationObject.getDouble("reproductionEnergy");
             migrationEnergy = simulationObject.getDouble("migrationEnergy");
+            energyTaken = simulationObject.getDouble("energyTaken");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

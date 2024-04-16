@@ -33,12 +33,17 @@ public class Agent {
     public Agent createNewAgent(Agent other) {
         Solution otherSolution = other.getSolution();
         Solution newSolution = EMASSolutionGenerator.generateSolution(solution, otherSolution);
+        energy -= simulationData.reproductionEnergy;
+        other.energy -= simulationData.reproductionEnergy;
         Agent newAgent = new Agent(newSolution, energy, 0, island, true);
         return newAgent;
     }
 
     public void performAction(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) {
         Action action = ActionFactory.getAction(this);
+        if (action == null) {
+            return;
+        }
         action.perform(agentsToAdd, agentsToRemove);
     }
 
@@ -53,7 +58,7 @@ public class Agent {
         Set<Agent> availablePartners = island.getAgents().stream()
                 .filter(p -> !p.equals(this))
                 .filter(p -> !p.madeAction)
-                .filter(p -> p.getEnergy() >= simulationData.reproductionEnergy)
+                .filter(p -> p.getEnergy() >= simulationData.reproductionEnergyBound)
                 .collect(Collectors.toSet());
 
         if (availablePartners.isEmpty()) {
@@ -62,6 +67,21 @@ public class Agent {
 
         int partnerIndex = random.nextInt(availablePartners.size());
         return availablePartners.stream().toList().get(partnerIndex);
+    }
+
+    public void compareTo(Agent other) {
+        Solution otherSolution = other.getSolution();
+        int dominationResult = solution.checkIfDominates(otherSolution);
+
+        if (dominationResult == 1) {
+            prestige++;
+            energy += Math.min(other.getEnergy(), simulationData.energyTaken);
+            other.energy -= Math.min(other.getEnergy(), simulationData.energyTaken);
+        } else if (dominationResult == -1) {
+            other.prestige++;
+            other.energy += Math.min(energy, simulationData.energyTaken);
+            energy -= Math.min(energy, simulationData.energyTaken);
+        }
     }
 
     public double getEnergy() {
@@ -82,6 +102,10 @@ public class Agent {
 
     public boolean getMadeAction() {
         return madeAction;
+    }
+
+    public void setEnergy(double energy) {
+        this.energy = energy;
     }
 
     public void setIsland(Island island) {

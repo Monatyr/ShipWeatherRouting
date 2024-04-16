@@ -27,26 +27,25 @@ public class ActionFactory {
 
         }
 
-        System.out.println(agent.id);
-
         switch (actionType) {
             case Reproduction:
-                if (agent.getEnergy() >= simulationData.reproductionEnergy) {
+                if (agent.getEnergy() >= simulationData.reproductionEnergyBound) {
                      Agent partner = agent.getPartner();
                      if (partner != null) {
                          return new ReproductionAction(agent, partner);
                      }
                 }
+                break;
             case Migration:
                 // TODO: should migration require energy - it should, but the question is should it decrease it?
-                if (agent.getEnergy() >= simulationData.migrationEnergy) {
+                if (agent.getEnergy() >= simulationData.migrationEnergy && !agent.getIsland().isElite()) {
                     Island targetIsland = agent.generateTargetIsland();
                     return new MigrationAction(agent, targetIsland);
                 }
+                break;
             case Death:
                 return new DeathAction(agent);
-            default:
-                return null;
         }
+        return null;
     }
 }

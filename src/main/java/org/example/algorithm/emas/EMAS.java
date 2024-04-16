@@ -69,7 +69,6 @@ public class EMAS extends Algorithm {
 
     @Override
     protected void runIteration() {
-        System.out.println("ITERATION: " + (iterations+1));
         for (Island island : islands) {
             Set<Agent> agentsToAdd = new HashSet<>();
             Set<Agent> agentsToRemove = new HashSet<>();
@@ -93,6 +92,9 @@ public class EMAS extends Algorithm {
             }
         }
 
+        // Compare agents - energy distribution, prestige gains
+        evaluateAgents();
+
         population = islands.stream()
                 .flatMap(island -> island.getAgents().stream())
                 .collect(Collectors.toSet());
@@ -101,6 +103,12 @@ public class EMAS extends Algorithm {
     @Override
     protected boolean checkStopCondition() {
         return iterations >= 10;
+    }
+
+    private void evaluateAgents() {
+        for (Island island: islands) {
+            island.evaluateAgents();
+        }
     }
 
     public List<Island> getIslands() {
