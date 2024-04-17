@@ -1,6 +1,6 @@
 {
   "map": {
-    "width": 10,
+    "width": 30,
     "height": 5,
     "startPos": {
       "x": 0,
@@ -14,13 +14,14 @@
   "simulation": {
     "maxIterations": 200,
     "maxPopulation": 100,
+    "maxVerticalDistance": 2,
     "initialEnergy": 100,
     "reproductionEnergyBound": 50,
     "reproductionEnergy": 20,
     "migrationEnergy": 50,
     "deathEnergyBound": 15,
     "energyTaken": 10,
-    "mutationRate": 0.05,
+    "mutationRate": 0.15,
     "reproductionProbability": 0.9,
     "numberOfIslands": 4,
     "populationSize": 20

@@ -27,7 +27,7 @@ public class Solution implements Comparable<Solution> {
             routeAvgDanger += pointFunctions.get(Danger);
         }
 
-        routeAvgDanger /= routePoints.size();
+//        routeAvgDanger /= routePoints.size();
 
         this.functionValues = Map.of(
                 FuelUsed, fuelUsed,
