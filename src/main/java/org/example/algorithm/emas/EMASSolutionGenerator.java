@@ -77,7 +77,6 @@ public class EMASSolutionGenerator {
         return new Solution(newPoints);
     }
 
-
     public static Solution mutateSolution(Solution sol) {
         return sol;
     }

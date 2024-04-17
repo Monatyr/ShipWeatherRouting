@@ -17,6 +17,7 @@ public final class SimulationData {
     public Coordinates startPos;
     public Coordinates endPos;
     public int maxIterations;
+    public int maxPopulation;
     public double initialEnergy;
     public double reproductionEnergyBound;
     public double reproductionEnergy;
@@ -45,6 +46,7 @@ public final class SimulationData {
 
             JSONObject simulationObject = dataObject.getJSONObject("simulation");
             maxIterations = simulationObject.getInt("maxIterations");
+            maxPopulation = simulationObject.getInt("maxPopulation");
             numberOfIslands = simulationObject.getInt("numberOfIslands");
             populationSize = simulationObject.getInt("populationSize");
             mutationRate = simulationObject.getDouble("mutationRate");

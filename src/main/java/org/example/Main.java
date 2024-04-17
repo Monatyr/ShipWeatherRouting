@@ -14,11 +14,19 @@ public class Main {
         EMAS emas = new EMAS();
         Set<Solution> solutions = emas.run();
 
-        List<Solution> topSol = solutions.stream().sorted().toList().subList(0, min(solutions.size(), 10));
-        System.out.println("\n\n--- SHOWING ONLY " + topSol.size() + " SOLUTIONS (sorted by the sum of function values) ---");
+        List<Solution> sortedSolutions = solutions.stream().sorted().toList();
+        int showSize = min(solutions.size(), 5);
+        List<Solution> topSol = sortedSolutions.subList(0, showSize);
+        List<Solution> bottomSol = sortedSolutions.subList(solutions.size() - showSize, solutions.size());
+
+        System.out.println("\n\n--- TOP " + topSol.size() + " SOLUTIONS (sum of function values) ---");
         for (Solution solution : topSol) {
-            System.out.println(solution.getFunctionValues());
+            System.out.println(solution.getFunctionValues() + " " + solution.getFunctionValues().values().stream().reduce(Float::sum));
         }
-        System.out.println("--- TOTAL SOLUTIONS: " + solutions.size() + " ---");
+        System.out.println("\n--- BOTTOM " + bottomSol.size() + " SOLUTIONS (sum of function values) ---");
+        for (Solution solution : bottomSol) {
+            System.out.println(solution.getFunctionValues() + " " + solution.getFunctionValues().values().stream().reduce(Float::sum));
+        }
+        System.out.println("\n--- TOTAL SOLUTIONS: " + solutions.size() + " ---");
     }
 }

@@ -100,10 +100,12 @@ public class EMAS extends Algorithm {
                 .collect(Collectors.toSet());
     }
 
-//    @Override
-//    protected boolean checkStopCondition() {
-//        return iterations >= 10;
-//    }
+    @Override
+    protected boolean checkStopCondition() {
+        System.out.println(population.size());
+        System.out.println("avg energy: " + (population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum))/population.size());
+        return iterations >= simulationData.maxIterations;
+    }
 
     private void evaluateAgents() {
         for (Island island: islands) {

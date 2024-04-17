@@ -18,21 +18,21 @@ public class Solution implements Comparable<Solution> {
     private void calculateFunctionValues() {
         float fuelUsed = 0;
         float travelTime = 0;
-        float routeAvgSafety = 0;
+        float routeAvgDanger = 0;
 
         for (Point point : routePoints) {
             Map<OptimizedFunction, Double> pointFunctions = point.getFunctions();
             fuelUsed += pointFunctions.get(FuelUsed);
             travelTime += pointFunctions.get(TravelTime);
-            routeAvgSafety += pointFunctions.get(Safety);
+            routeAvgDanger += pointFunctions.get(Danger);
         }
 
-        routeAvgSafety /= routePoints.size();
+        routeAvgDanger /= routePoints.size();
 
         this.functionValues = Map.of(
                 FuelUsed, fuelUsed,
                 TravelTime, travelTime,
-                Safety, routeAvgSafety
+                Danger, routeAvgDanger
         );
     }
 

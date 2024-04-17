@@ -14,7 +14,7 @@ import static org.example.model.OptimizedFunction.*;
  * - geographical coordinates
  * - the arrival of the ship at the point
  * - a set of weather conditions at the specific time at the point's location (wind, waves, unusual conditions)
- * - a set of optimized metrics and their values in the previous leg of the journey (fuel consumption, ship speed, safety)
+ * - a set of optimized metrics and their values in the previous leg of the journey (fuel consumption, ship speed, danger)
  */
 public class Point {
     private Coordinates coordinates;
@@ -30,7 +30,7 @@ public class Point {
 
         // TODO: read the function values from actual data / calculate them
         Random random = new Random();
-        this.functions = Map.of(Safety, random.nextDouble(), FuelUsed, random.nextDouble(), TravelTime, random.nextDouble());
+        this.functions = Map.of(Danger, random.nextDouble(), FuelUsed, random.nextDouble(), TravelTime, random.nextDouble());
     }
 
     public Coordinates getCoordinates() {

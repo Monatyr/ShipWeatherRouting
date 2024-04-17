@@ -12,7 +12,8 @@
     }
   },
   "simulation": {
-    "maxIterations": 50,
+    "maxIterations": 200,
+    "maxPopulation": 100,
     "initialEnergy": 100,
     "reproductionEnergyBound": 50,
     "reproductionEnergy": 20,

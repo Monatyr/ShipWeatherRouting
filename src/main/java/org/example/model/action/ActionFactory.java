@@ -24,12 +24,11 @@ public class ActionFactory {
             actionType = ActionType.Death;
         } else {
             actionType = (ActionType) enumeratedDistribution.sample();
-
         }
 
         switch (actionType) {
             case Reproduction:
-                if (agent.getEnergy() >= simulationData.reproductionEnergyBound) {
+                if (agent.getEnergy() >= simulationData.reproductionEnergyBound && simulationData.populationSize < simulationData.maxPopulation) {
                      Agent partner = agent.getPartner();
                      if (partner != null) {
                          return new ReproductionAction(agent, partner);
