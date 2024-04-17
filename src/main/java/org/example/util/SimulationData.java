@@ -2,6 +2,7 @@ package org.example.util;
 
 import org.json.*;
 
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -14,8 +15,8 @@ public final class SimulationData {
     public int mapWidth;
     public int numberOfIslands;
     public int populationSize;
-    public Coordinates startPos;
-    public Coordinates endPos;
+    public Point2D startPos;
+    public Point2D endPos;
     public int maxIterations;
     public int maxPopulation;
     public int maxVerticalDistance;
@@ -41,9 +42,9 @@ public final class SimulationData {
             mapWidth = mapObject.getInt("width");
 
             JSONObject startPosObject = mapObject.getJSONObject("startPos");
-            startPos = new Coordinates(startPosObject.getFloat("y"), startPosObject.getFloat("x"));
+            startPos = new Point2D.Double(startPosObject.getFloat("x"), startPosObject.getFloat("y"));
             JSONObject endPosObject = mapObject.getJSONObject("endPos");
-            endPos = new Coordinates(endPosObject.getFloat("y"), endPosObject.getFloat("x"));
+            endPos = new Point2D.Double(endPosObject.getFloat("x"), endPosObject.getFloat("y"));
 
             JSONObject simulationObject = dataObject.getJSONObject("simulation");
             maxIterations = simulationObject.getInt("maxIterations");

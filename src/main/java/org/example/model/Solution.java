@@ -6,12 +6,12 @@ import java.util.Map;
 import static org.example.model.OptimizedFunction.*;
 
 public class Solution implements Comparable<Solution> {
-    private List<Point> routePoints;
+    private List<RoutePoint> routePoints;
     private Map<OptimizedFunction, Float> functionValues;
 
 
-    public Solution(List<Point> points) {
-        this.routePoints = points;
+    public Solution(List<RoutePoint> routePoints) {
+        this.routePoints = routePoints;
         this.calculateFunctionValues();
     };
 
@@ -20,8 +20,8 @@ public class Solution implements Comparable<Solution> {
         float travelTime = 0;
         float routeAvgDanger = 0;
 
-        for (Point point : routePoints) {
-            Map<OptimizedFunction, Double> pointFunctions = point.getFunctions();
+        for (RoutePoint routePoint : routePoints) {
+            Map<OptimizedFunction, Double> pointFunctions = routePoint.getFunctions();
             fuelUsed += pointFunctions.get(FuelUsed);
             travelTime += pointFunctions.get(TravelTime);
             routeAvgDanger += pointFunctions.get(Danger);
@@ -66,7 +66,7 @@ public class Solution implements Comparable<Solution> {
         return functionValues;
     }
 
-    public List<Point> getRoutePoints() {
+    public List<RoutePoint> getRoutePoints() {
         return routePoints;
     }
 

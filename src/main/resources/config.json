@@ -1,14 +1,14 @@
 {
   "map": {
     "width": 30,
-    "height": 5,
+    "height": 10,
     "startPos": {
       "x": 0,
-      "y": 0
+      "y": 3
     },
     "endPos": {
-      "x": 10,
-      "y": 5
+      "x": 30,
+      "y": 8
     }
   },
   "simulation": {
