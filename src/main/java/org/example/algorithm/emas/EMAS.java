@@ -102,8 +102,14 @@ public class EMAS extends Algorithm {
 
     @Override
     protected boolean checkStopCondition() {
-        System.out.println(population.size());
-        System.out.println("avg energy: " + (population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum))/population.size());
+        System.out.println(
+                "population: " + population.size() +
+                " avg energy: " + (population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum))/population.size() +
+                " max energy: " + population.stream().map(Agent::getEnergy).reduce(Double::max).get() +
+                " min energy: " + population.stream().map(Agent::getEnergy).reduce(Double::min).get() +
+                " iteration: " + iterations
+                );
+        System.out.println();
         return iterations >= simulationData.maxIterations;
     }
 

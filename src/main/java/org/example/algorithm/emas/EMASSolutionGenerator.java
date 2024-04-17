@@ -6,9 +6,12 @@ import org.example.model.Solution;
 import org.example.util.Coordinates;
 import org.example.util.SimulationData;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
 
 /**
  * The solution generator takes two solutions and creates a new route based on the routes of the parents.
@@ -77,7 +80,62 @@ public class EMASSolutionGenerator {
         return new Solution(newPoints);
     }
 
+    // TODO: the function IS NOT COMPLETE! Mutation should be based on the distance between the points in the grid
     public static Solution mutateSolution(Solution sol) {
+        List<PointWithIndex> pointsWithIndex = new ArrayList<>();
+        for (int i = 1; i < sol.getRoutePoints().size() - 1; i++) {
+            pointsWithIndex.add(new PointWithIndex(sol.getRoutePoints().get(i), i));
+        }
+
+        Collections.shuffle(pointsWithIndex);
+
+        int cellsToMutate = min(
+                (int) ((simulationData.mapWidth - 2) * simulationData.mutationRate),
+                pointsWithIndex.size());
+
+        for (int i = 0; i < cellsToMutate; i++) {
+            Point currPoint = pointsWithIndex.get(i).point();
+            int pointIndex = pointsWithIndex.get(i).index();
+
+            Point previousNeighbour = sol.getRoutePoints().get(pointIndex - 1);
+            Point nextNeighbour = sol.getRoutePoints().get(pointIndex + 1);
+
+            /**
+             * Points must be located on a grid with rows and columns or the latitude difference should be
+             * calculated using minutes and seconds.
+             */
+            double previousHeightDiff = previousNeighbour.getCoordinates().latitude() - currPoint.getCoordinates().latitude();
+            double nextHeightDiff = nextNeighbour.getCoordinates().latitude() - currPoint.getCoordinates().latitude();
+
+            List<Integer> availableLatitudes = new ArrayList<>();
+
+            for (int j = -simulationData.maxVerticalDistance; j <= simulationData.maxVerticalDistance; j++) {
+                // TODO: check if doesn't leave the grid
+                if (previousHeightDiff < j && nextHeightDiff < j) {
+                    availableLatitudes.add(j);
+                }
+            }
+
+            // if both neighbours are as far as they can be on opposite sides, don't mutate this point
+            if (availableLatitudes.isEmpty()) {
+                continue;
+            }
+
+            Collections.shuffle(availableLatitudes);
+            int latitudeDiff = availableLatitudes.get(0);
+
+            // TODO: insert real data and not randomly generated
+            Coordinates newCoordinates = new Coordinates(
+                    currPoint.getCoordinates().latitude() + latitudeDiff,
+                    currPoint.getCoordinates().longitude());
+            Point newPoint = new Point(newCoordinates, 0, null, null);
+            sol.getRoutePoints().set(pointIndex, newPoint);
+            System.out.println("NEW POINT");
+        }
+
         return sol;
     }
 }
+
+
+record PointWithIndex(Point point, int index){}
