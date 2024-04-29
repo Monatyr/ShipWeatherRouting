@@ -1,11 +1,15 @@
 package org.example.model;
 
 
+import org.apache.commons.math3.util.Pair;
 import org.example.algorithm.emas.EMASSolutionGenerator;
 import org.example.model.action.Action;
 import org.example.model.action.ActionFactory;
 import org.example.util.SimulationData;
 
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,9 +34,9 @@ public class Agent {
         this.id = SimulationData.getInstance().generateId();
     }
 
-    public Agent createNewAgent(Agent other) {
+    public Agent createNewAgent(Agent other, List<Point2D> commonGridPoints) {
         Solution otherSolution = other.getSolution();
-        Solution newSolution = EMASSolutionGenerator.generateSolution(solution, otherSolution);
+        Solution newSolution = EMASSolutionGenerator.generateSolution(solution, otherSolution, commonGridPoints);
         energy -= simulationData.reproductionEnergy;
         other.energy -= simulationData.reproductionEnergy;
         Agent newAgent = new Agent(newSolution, energy, 0, island, true);
@@ -54,7 +58,7 @@ public class Agent {
     }
 
     /** Check if Agent has a potential partner to create a new Agent with. */
-    public Agent getPartner() {
+    public Pair<Agent, List<Point2D>> getPartner() {
         Set<Agent> availablePartners = island.getAgents().stream()
                 .filter(p -> !p.equals(this))
                 .filter(p -> !p.madeAction)
@@ -65,8 +69,29 @@ public class Agent {
             return null;
         }
 
-        int partnerIndex = random.nextInt(availablePartners.size());
-        return availablePartners.stream().toList().get(partnerIndex);
+        List<RoutePoint> routePoints = solution.getRoutePoints();
+        List<Point2D> commonGridPoints = new ArrayList<>();
+
+        while (!availablePartners.isEmpty()) {
+            int partnerIndex = random.nextInt(availablePartners.size());
+            Agent partner = availablePartners.stream().toList().get(partnerIndex);
+            List<RoutePoint> partnerRoutePoints = partner.solution.getRoutePoints();
+            availablePartners.remove(partner);
+
+            for (int i = 0; i < routePoints.size(); i++) {
+                Point2D currRoutePoint = routePoints.get(i).getGridCoordinates();
+                Point2D currPartnerRoutePoint = partnerRoutePoints.get(i).getGridCoordinates();
+
+                if (currRoutePoint.equals(currPartnerRoutePoint)) {
+                    commonGridPoints.add(currRoutePoint);
+                }
+            }
+
+            if (!commonGridPoints.isEmpty()) {
+                return new Pair<>(partner, commonGridPoints);
+            }
+        }
+        return null;
     }
 
     public void compareTo(Agent other) {
