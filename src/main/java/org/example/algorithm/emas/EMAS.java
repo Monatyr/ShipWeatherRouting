@@ -9,6 +9,14 @@ import org.example.util.SimulationData;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+/**
+ * Exemplary ships:
+ *         - [1] http://www.simman2008.dk/kvlcc/kvlcc2/kvlcc2_geometry.html a theoretical VLCC tanker model for testing purposes developed by the Maritime and Ocean Engineering Research Institute
+ *         - [2] https://en.wikipedia.org/wiki/Batillus-class_supertanker
+ *         - [3] tanker-data.pdf int the physical-model directory.
+ */
+
 public class EMAS extends Algorithm {
     private int populationSize = simulationData.populationSize;
     private final int islandsNumber = simulationData.numberOfIslands;
@@ -102,13 +110,13 @@ public class EMAS extends Algorithm {
 
     @Override
     protected boolean checkStopCondition() {
-        System.out.println(
-                "population: " + population.size() +
-                " avg energy: " + (population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum))/population.size() +
-                " max energy: " + population.stream().map(Agent::getEnergy).reduce(Double::max).get() +
-                " min energy: " + population.stream().map(Agent::getEnergy).reduce(Double::min).get() +
-                " iteration: " + iterations
-                );
+//        System.out.println(
+//                "population: " + population.size() +
+//                " avg energy: " + (population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum))/population.size() +
+//                " max energy: " + population.stream().map(Agent::getEnergy).reduce(Double::max).get() +
+//                " min energy: " + population.stream().map(Agent::getEnergy).reduce(Double::min).get() +
+//                " iteration: " + iterations
+//                );
         System.out.println();
         return iterations >= simulationData.maxIterations;
     }

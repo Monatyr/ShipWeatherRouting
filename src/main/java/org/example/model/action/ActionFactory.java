@@ -7,6 +7,7 @@ import org.example.model.Agent;
 import org.example.model.Island;
 import org.example.util.SimulationData;
 
+import java.awt.geom.Point2D;
 import java.util.List;
 
 public class ActionFactory {
@@ -29,10 +30,11 @@ public class ActionFactory {
         switch (actionType) {
             case Reproduction:
                 if (agent.getEnergy() >= simulationData.reproductionEnergyBound && simulationData.populationSize < simulationData.maxPopulation) {
-                     Agent partner = agent.getPartner();
-                     if (partner != null) {
-                         return new ReproductionAction(agent, partner);
+                     Pair<Agent, List<Point2D>> partnerWithCommonPoints = agent.getPartner();
+                     if (partnerWithCommonPoints != null) {
+                         return new ReproductionAction(agent, partnerWithCommonPoints.getFirst(), partnerWithCommonPoints.getSecond());
                      }
+//                    System.out.println("NO PARTNERS!");
                 }
                 break;
             case Migration:
