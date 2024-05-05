@@ -89,7 +89,7 @@ public class EMASSolutionGenerator {
             Point2D currCommonPoint = commonGridPoints.get(currCommonIndex);
 
             if (currCommonPoint.getX() == currPoint.getGridCoordinates().getX()
-            && currCommonPoint.getY() == currPoint.getGridCoordinates().getY()) {
+                    && currCommonPoint.getY() == currPoint.getGridCoordinates().getY()) {
                 temp = sourcePoints;
                 sourcePoints = otherPoints;
                 otherPoints = temp;
@@ -141,7 +141,7 @@ public class EMASSolutionGenerator {
             for (int j = -simulationData.maxVerticalDistance; j <= simulationData.maxVerticalDistance; j++) {
                 int potentialHeight = currY + j;
                 System.out.println(minY + " " + maxY + " " + potentialHeight);
-                if (abs(minY - potentialHeight ) <= simulationData.maxVerticalDistance &&
+                if (abs(minY - potentialHeight) <= simulationData.maxVerticalDistance &&
                         abs(maxY - potentialHeight) <= simulationData.maxVerticalDistance &&
                         potentialHeight != currY
                 ) {
