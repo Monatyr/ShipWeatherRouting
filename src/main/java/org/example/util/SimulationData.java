@@ -29,6 +29,8 @@ public final class SimulationData {
     public double reproductionProbability;
     public double migrationProbability;
     public double energyTaken;
+    public int startingTime;
+    public double shipSpeed;
     private int id;
 
 
@@ -62,6 +64,8 @@ public final class SimulationData {
             migrationEnergy = simulationObject.getDouble("migrationEnergy");
             energyTaken = simulationObject.getDouble("energyTaken");
             deathEnergyBound = simulationObject.getDouble("deathEnergyBound");
+            startingTime = simulationObject.getInt("startingTime");
+            shipSpeed = simulationObject.getDouble("shipSpeed");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

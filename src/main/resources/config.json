@@ -24,6 +24,8 @@
     "mutationRate": 0.15,
     "reproductionProbability": 0.9,
     "numberOfIslands": 4,
-    "populationSize": 20
+    "populationSize": 20,
+    "startingTime": 0,
+    "shipSpeed": 30.0
   }
 }

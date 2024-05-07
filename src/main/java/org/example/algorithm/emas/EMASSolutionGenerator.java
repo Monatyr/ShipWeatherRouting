@@ -32,8 +32,8 @@ public class EMASSolutionGenerator {
         // TODO: better random path generation (currently the height between the current and target points is evened out by chance)
 
         // if points are null, create a random path
-        RoutePoint startPos = new RoutePoint(simulationData.startPos, null, 0, null, null);
-        RoutePoint endPos = new RoutePoint(simulationData.endPos, null, 0, null, null);
+        RoutePoint startPos = new RoutePoint(simulationData.startPos, null, simulationData.startingTime);
+        RoutePoint endPos = new RoutePoint(simulationData.endPos, null, 0);
 
         routePoints = new ArrayList<>();
         routePoints.add(startPos);
@@ -50,7 +50,7 @@ public class EMASSolutionGenerator {
                 }
             }
             Point2D nextGridCoordinates = new Point2D.Double(i, currHeight);
-            RoutePoint nextRoutePoint = new RoutePoint(nextGridCoordinates, null, 0, null, null);
+            RoutePoint nextRoutePoint = new RoutePoint(nextGridCoordinates, null, 0);
             routePoints.add(nextRoutePoint);
         }
 
@@ -61,6 +61,7 @@ public class EMASSolutionGenerator {
     public static Solution generateSolution(Solution sol1, Solution sol2, List<Point2D> commonGridPoints) {
         Solution newSolution = crossoverSolutions(sol1, sol2, commonGridPoints);
         newSolution = mutateSolution(newSolution);
+        newSolution.calculateRouteValues();
         return newSolution;
     }
 
@@ -84,7 +85,8 @@ public class EMASSolutionGenerator {
         // the idea is to switch the source of the route at each intersection point
         for (int i = 0; i < solutionLength; i++) {
             RoutePoint currPoint = sourcePoints.get(i);
-            newRoutePoints.add(currPoint);
+            RoutePoint newPoint = new RoutePoint(currPoint);
+            newRoutePoints.add(newPoint);
 
             Point2D currCommonPoint = commonGridPoints.get(currCommonIndex);
 
@@ -97,7 +99,7 @@ public class EMASSolutionGenerator {
             }
         }
 
-        System.out.println(commonGridPoints);
+//        System.out.println(commonGridPoints);
         for (RoutePoint r : newRoutePoints) {
             System.out.print(r.getGridCoordinates() + " ");
         }
@@ -105,7 +107,6 @@ public class EMASSolutionGenerator {
         return new Solution(newRoutePoints);
     }
 
-    // TODO: the function IS NOT COMPLETE! Mutation should be based on the distance between the points in the grid
     public static Solution mutateSolution(Solution sol) {
         List<PointWithIndex> pointsWithIndex = new ArrayList<>();
         for (int i = 1; i < sol.getRoutePoints().size() - 1; i++) {
@@ -136,11 +137,10 @@ public class EMASSolutionGenerator {
             int maxY = (int) max(previousNeighbour.getGridCoordinates().getY(), nextNeighbour.getGridCoordinates().getY());
             int currY = (int) currRoutePoint.getGridCoordinates().getY();
 
-
             // TODO: check if doesn't leave the grid
             for (int j = -simulationData.maxVerticalDistance; j <= simulationData.maxVerticalDistance; j++) {
                 int potentialHeight = currY + j;
-                System.out.println(minY + " " + maxY + " " + potentialHeight);
+//                System.out.println(minY + " " + maxY + " " + potentialHeight);
                 if (abs(minY - potentialHeight) <= simulationData.maxVerticalDistance &&
                         abs(maxY - potentialHeight) <= simulationData.maxVerticalDistance &&
                         potentialHeight != currY
@@ -163,7 +163,7 @@ public class EMASSolutionGenerator {
                     newHeight
             );
 
-            RoutePoint newRoutePoint = new RoutePoint(newGridCoordinates, null, 0, null, null);
+            RoutePoint newRoutePoint = new RoutePoint(newGridCoordinates, null, 0);
             sol.getRoutePoints().set(pointIndex, newRoutePoint);
         }
 
