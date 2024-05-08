@@ -1,14 +1,20 @@
 {
   "map": {
-    "width": 30,
-    "height": 10,
+    "maxLatitude": 60,
+    "minLatitude": 20,
+    "columns": 120,
+    "rows": 40,
     "startPos": {
       "x": 0,
-      "y": 3
+      "y": 4,
+      "latitude": 40.7306,
+      "longitude": -73.9352
     },
     "endPos": {
-      "x": 30,
-      "y": 8
+      "x": 29,
+      "y": 7,
+      "latitude": 38.7223,
+      "longitude": -9.1427
     }
   },
   "simulation": {

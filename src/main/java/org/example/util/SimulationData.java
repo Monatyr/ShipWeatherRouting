@@ -11,12 +11,16 @@ public final class SimulationData {
     private static SimulationData instance;
     private final String configPath = "src/main/resources/config.json";
 
+    public double maxLatitude;
+    public double minLatitude;
     public int mapHeight;
     public int mapWidth;
     public int numberOfIslands;
     public int populationSize;
     public Point2D startPos;
     public Point2D endPos;
+    public Coordinates startCoordinates;
+    public Coordinates endCoordinates;
     public int maxIterations;
     public int maxPopulation;
     public int maxVerticalDistance;
@@ -40,13 +44,17 @@ public final class SimulationData {
             JSONObject dataObject = new JSONObject(jsonString);
 
             JSONObject mapObject = dataObject.getJSONObject("map");
-            mapHeight = mapObject.getInt("height");
-            mapWidth = mapObject.getInt("width");
+            maxLatitude = mapObject.getDouble("maxLatitude");
+            minLatitude = mapObject.getDouble("minLatitude");
+            mapHeight = mapObject.getInt("rows");
+            mapWidth = mapObject.getInt("columns");
 
             JSONObject startPosObject = mapObject.getJSONObject("startPos");
             startPos = new Point2D.Double(startPosObject.getFloat("x"), startPosObject.getFloat("y"));
+            startCoordinates = new Coordinates(startPosObject.getDouble("latitude"), startPosObject.getDouble("longitude"));
             JSONObject endPosObject = mapObject.getJSONObject("endPos");
             endPos = new Point2D.Double(endPosObject.getFloat("x"), endPosObject.getFloat("y"));
+            endCoordinates = new Coordinates(endPosObject.getDouble("latitude"), endPosObject.getDouble("longitude"));
 
             JSONObject simulationObject = dataObject.getJSONObject("simulation");
             maxIterations = simulationObject.getInt("maxIterations");

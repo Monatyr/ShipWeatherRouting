@@ -89,7 +89,7 @@ public class Solution implements Comparable<Solution> {
             currTime += travelTimeSeconds;
             currPoint.setArrivalTime(currTime);
 
-            System.out.println(temp1 + " " + temp2 + " " + distance + " " + currTime);
+//            System.out.println(temp1 + " " + temp2 + " " + distance + " " + currTime);
         }
     }
 

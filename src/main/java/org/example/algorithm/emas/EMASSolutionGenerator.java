@@ -1,10 +1,15 @@
 package org.example.algorithm.emas;
 
+import org.apache.commons.math3.util.Pair;
 import org.example.model.RoutePoint;
 import org.example.model.Solution;
+import org.example.util.Coordinates;
 import org.example.util.SimulationData;
 
 import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static java.lang.Math.*;
@@ -21,13 +26,16 @@ import static java.lang.Math.*;
  * wouldn't be too practical.
  */
 public class EMASSolutionGenerator {
-    private static SimulationData simulationData = SimulationData.getInstance();
-    private static Random random = new Random();
+    private static final SimulationData simulationData = SimulationData.getInstance();
+    private static final Random random = new Random();
+    private static final Coordinates[][] grid = createMapGrid();
 
     public static Solution generateSolution(List<RoutePoint> routePoints) {
         if (routePoints != null) {
             return new Solution(routePoints);
         }
+
+        System.out.println(readRouteFromFile("src/main/resources/initial-routes/route1.txt"));
 
         // TODO: better random path generation (currently the height between the current and target points is evened out by chance)
 
@@ -65,6 +73,71 @@ public class EMASSolutionGenerator {
         return newSolution;
     }
 
+    private static Coordinates[][] createMapGrid() {
+        //TODO: start and end position can be flipped. Make sure that coordinates are appropriately generated.
+        double currLatitude = simulationData.maxLatitude;
+        double currLongitude = simulationData.startCoordinates.longitude();
+        double latitudeChange = (simulationData.maxLatitude - simulationData.minLatitude) / (simulationData.mapHeight - 1);
+        double longitudeChange = (abs(simulationData.startCoordinates.longitude() - simulationData.endCoordinates.longitude())) / (simulationData.mapWidth - 1);
+
+        Coordinates[][] grid = new Coordinates[simulationData.mapHeight][];
+        for (int i = 0; i < simulationData.mapHeight; i++) {
+            currLongitude = simulationData.startCoordinates.longitude();
+            grid[i] = new Coordinates[simulationData.mapWidth];
+            for (int j = 0; j < simulationData.mapWidth; j++) {
+                grid[i][j] = new Coordinates(currLatitude, currLongitude);
+                currLongitude += longitudeChange;
+
+//                System.out.print(grid[i][j]);
+            }
+            currLatitude -= latitudeChange;
+        }
+
+        return grid;
+    }
+
+    /** Read generated route from file. Place the generated points at the nearest grid points to them. */
+    private static List<Pair> readRouteFromFile(String filename) {
+        // Create a grid of points based on the size of the map. Need to define the range of latitudes and longitudes
+        // that the map encompasses (e.g. upper left and lower right corners). Based on the number of rows and columns
+        // create the grid of certain density. If two route points are put in the same spot in the grid, ignore one
+        // of them. If the points are not in subsequent columns, then interpolate the ones between them.
+        // If creating the route exceeds the maximum height difference between the points, then the user should
+        // somehow be notified.
+
+        List<Pair> gridPlacement = new ArrayList<>();
+        List<String> pathPointsList = null;
+
+        try {
+            pathPointsList = Files.readAllLines(Paths.get(filename));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (String point : pathPointsList) {
+            List<Double> coordinates = Arrays.stream(point.split("\s")).map(Double::valueOf).toList();
+            double latitude = coordinates.get(0);
+            double longitude = coordinates.get(1);
+
+            Integer minX = 0;
+            Integer minY = 0;
+
+            double minDistance = Double.POSITIVE_INFINITY;
+            for (int i = 0; i < grid.length; i++) {
+                for (int j = 0; j < grid[0].length; j++) {
+                    double newDistance = Coordinates.realDistance(grid[i][j].latitude(), grid[i][j].longitude(), latitude, longitude);
+                    if (newDistance < minDistance) {
+                        minDistance = newDistance;
+                        minY = i;
+                        minX = j;
+                    }
+                }
+            }
+            gridPlacement.add(new Pair<>(minY, minX));
+        }
+        return gridPlacement;
+    }
+
     private static Solution crossoverSolutions(Solution sol1, Solution sol2, List<Point2D> commonGridPoints) {
         List<RoutePoint> sourcePoints = sol1.getRoutePoints();
         List<RoutePoint> otherPoints = sol2.getRoutePoints();
@@ -100,9 +173,9 @@ public class EMASSolutionGenerator {
         }
 
 //        System.out.println(commonGridPoints);
-        for (RoutePoint r : newRoutePoints) {
-            System.out.print(r.getGridCoordinates() + " ");
-        }
+//        for (RoutePoint r : newRoutePoints) {
+//            System.out.print(r.getGridCoordinates() + " ");
+//        }
 
         return new Solution(newRoutePoints);
     }
@@ -116,8 +189,9 @@ public class EMASSolutionGenerator {
         Collections.shuffle(pointsWithIndex);
 
         int cellsToMutate = min(
-                (int) ((simulationData.mapWidth - 2) * simulationData.mutationRate),
-                pointsWithIndex.size());
+            (int) ((simulationData.mapWidth - 2) * simulationData.mutationRate),
+            pointsWithIndex.size()
+        );
 
         for (int i = 0; i < cellsToMutate; i++) {
             RoutePoint currRoutePoint = pointsWithIndex.get(i).routePoint();
@@ -137,10 +211,11 @@ public class EMASSolutionGenerator {
             int maxY = (int) max(previousNeighbour.getGridCoordinates().getY(), nextNeighbour.getGridCoordinates().getY());
             int currY = (int) currRoutePoint.getGridCoordinates().getY();
 
-            // TODO: check if doesn't leave the grid
             for (int j = -simulationData.maxVerticalDistance; j <= simulationData.maxVerticalDistance; j++) {
                 int potentialHeight = currY + j;
-//                System.out.println(minY + " " + maxY + " " + potentialHeight);
+                if (potentialHeight < 0 || potentialHeight >= simulationData.mapHeight) {
+                    continue;
+                }
                 if (abs(minY - potentialHeight) <= simulationData.maxVerticalDistance &&
                         abs(maxY - potentialHeight) <= simulationData.maxVerticalDistance &&
                         potentialHeight != currY
