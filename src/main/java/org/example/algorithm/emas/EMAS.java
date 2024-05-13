@@ -117,7 +117,6 @@ public class EMAS extends Algorithm {
 //                " min energy: " + population.stream().map(Agent::getEnergy).reduce(Double::min).get() +
 //                " iteration: " + iterations
 //                );
-        System.out.println();
         return iterations >= simulationData.maxIterations;
     }
 

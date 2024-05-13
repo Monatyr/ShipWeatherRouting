@@ -35,7 +35,10 @@ public class EMASSolutionGenerator {
             return new Solution(routePoints);
         }
 
-        System.out.println(readRouteFromFile("src/main/resources/initial-routes/route1.txt"));
+        List<Pair<Integer, Integer>> route1 = readRouteFromFile("src/main/resources/initial-routes/great_circle_route.txt");
+        List<Pair<Integer, Integer>> route2 = readRouteFromFile("src/main/resources/initial-routes/rhumb_line_route.txt");
+        route1 = fillMissingColumns(route1);
+        System.out.println(route1);
 
         // TODO: better random path generation (currently the height between the current and target points is evened out by chance)
 
@@ -74,11 +77,10 @@ public class EMASSolutionGenerator {
     }
 
     private static Coordinates[][] createMapGrid() {
-        //TODO: start and end position can be flipped. Make sure that coordinates are appropriately generated.
+        double currLongitude;
         double currLatitude = simulationData.maxLatitude;
-        double currLongitude = simulationData.startCoordinates.longitude();
         double latitudeChange = (simulationData.maxLatitude - simulationData.minLatitude) / (simulationData.mapHeight - 1);
-        double longitudeChange = (abs(simulationData.startCoordinates.longitude() - simulationData.endCoordinates.longitude())) / (simulationData.mapWidth - 1);
+        double longitudeChange = (simulationData.endCoordinates.longitude() - simulationData.startCoordinates.longitude()) / (simulationData.mapWidth - 1);
 
         Coordinates[][] grid = new Coordinates[simulationData.mapHeight][];
         for (int i = 0; i < simulationData.mapHeight; i++) {
@@ -87,17 +89,14 @@ public class EMASSolutionGenerator {
             for (int j = 0; j < simulationData.mapWidth; j++) {
                 grid[i][j] = new Coordinates(currLatitude, currLongitude);
                 currLongitude += longitudeChange;
-
-//                System.out.print(grid[i][j]);
             }
             currLatitude -= latitudeChange;
         }
-
         return grid;
     }
 
     /** Read generated route from file. Place the generated points at the nearest grid points to them. */
-    private static List<Pair> readRouteFromFile(String filename) {
+    private static List<Pair<Integer, Integer>> readRouteFromFile(String filename) {
         // Create a grid of points based on the size of the map. Need to define the range of latitudes and longitudes
         // that the map encompasses (e.g. upper left and lower right corners). Based on the number of rows and columns
         // create the grid of certain density. If two route points are put in the same spot in the grid, ignore one
@@ -105,7 +104,7 @@ public class EMASSolutionGenerator {
         // If creating the route exceeds the maximum height difference between the points, then the user should
         // somehow be notified.
 
-        List<Pair> gridPlacement = new ArrayList<>();
+        List<Pair<Integer, Integer>> gridPlacement = new ArrayList<>();
         List<String> pathPointsList = null;
 
         try {
@@ -115,7 +114,7 @@ public class EMASSolutionGenerator {
         }
 
         for (String point : pathPointsList) {
-            List<Double> coordinates = Arrays.stream(point.split("\s")).map(Double::valueOf).toList();
+            List<Double> coordinates = Arrays.stream(point.split(",\s")).map(Double::valueOf).toList();
             double latitude = coordinates.get(0);
             double longitude = coordinates.get(1);
 
@@ -138,31 +137,48 @@ public class EMASSolutionGenerator {
         return gridPlacement;
     }
 
+    private static List<Pair<Integer, Integer>> fillMissingColumns(List<Pair<Integer, Integer>> route) {
+        System.out.println(route);
+        int xChange = route.get(0).getSecond() < route.get(1).getSecond() ? 1 : -1;
+        List<Pair<Integer, Integer>> newRoute = new ArrayList<>();
+        newRoute.add(route.get(0));
+        for (int i = 1; i < route.size() - 1; i++) {
+            Pair<Integer, Integer> prev = route.get(i - 1);
+            Pair<Integer, Integer> curr = route.get(i);
+            int distance = abs(curr.getSecond() - prev.getSecond());
+            if (distance == 1) {
+                continue;
+            }
+            double yChange = (double) (curr.getFirst() - prev.getFirst()) / distance;
+            for (int j = 1; j < distance; j++) {
+                Pair<Integer, Integer> newPoint = new Pair<>((int) ((j * yChange) + prev.getFirst()), prev.getSecond() + xChange * j);
+                newRoute.add(newPoint);
+            }
+            newRoute.add(curr);
+        }
+        System.out.println(newRoute.size());
+        return newRoute;
+    }
+
     private static Solution crossoverSolutions(Solution sol1, Solution sol2, List<Point2D> commonGridPoints) {
         List<RoutePoint> sourcePoints = sol1.getRoutePoints();
         List<RoutePoint> otherPoints = sol2.getRoutePoints();
         List<RoutePoint> newRoutePoints = new ArrayList<>();
         int solutionLength = sourcePoints.size();
-
         boolean routeOneFirst = random.nextBoolean();
         List<RoutePoint> temp;
-
         if (!routeOneFirst) {
             temp = sourcePoints;
             sourcePoints = otherPoints;
             otherPoints = temp;
         }
-
         int currCommonIndex = 0;
-
         // the idea is to switch the source of the route at each intersection point
         for (int i = 0; i < solutionLength; i++) {
             RoutePoint currPoint = sourcePoints.get(i);
             RoutePoint newPoint = new RoutePoint(currPoint);
             newRoutePoints.add(newPoint);
-
             Point2D currCommonPoint = commonGridPoints.get(currCommonIndex);
-
             if (currCommonPoint.getX() == currPoint.getGridCoordinates().getX()
                     && currCommonPoint.getY() == currPoint.getGridCoordinates().getY()) {
                 temp = sourcePoints;
@@ -171,12 +187,6 @@ public class EMASSolutionGenerator {
                 currCommonIndex++;
             }
         }
-
-//        System.out.println(commonGridPoints);
-//        for (RoutePoint r : newRoutePoints) {
-//            System.out.print(r.getGridCoordinates() + " ");
-//        }
-
         return new Solution(newRoutePoints);
     }
 
@@ -241,7 +251,6 @@ public class EMASSolutionGenerator {
             RoutePoint newRoutePoint = new RoutePoint(newGridCoordinates, null, 0);
             sol.getRoutePoints().set(pointIndex, newRoutePoint);
         }
-
         return sol;
     }
 }

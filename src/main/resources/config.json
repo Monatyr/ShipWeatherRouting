@@ -3,7 +3,7 @@
     "maxLatitude": 60,
     "minLatitude": 20,
     "columns": 120,
-    "rows": 40,
+    "rows": 200,
     "startPos": {
       "x": 0,
       "y": 4,
