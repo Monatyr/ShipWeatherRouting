@@ -13,6 +13,17 @@ public record Coordinates(double latitude, double longitude) {
         + Math.cos(latitude1) * Math.cos(latitude2) * (1 - Math.cos(longitude2 - longitude1)))/2));
     }
 
+    public static double realDistance(double latitude1, double longitude1, double latitude2, double longitude2) {
+        int radius = 6371; // [km]
+        latitude1 = Math.toRadians(latitude1);
+        longitude1 = Math.toRadians(longitude1);
+        latitude2 = Math.toRadians(latitude2);
+        longitude2 = Math.toRadians(longitude2);
+
+        return 2 * radius * Math.asin(Math.sqrt((1 - Math.cos(latitude2 - latitude1)
+                + Math.cos(latitude1) * Math.cos(latitude2) * (1 - Math.cos(longitude2 - longitude1)))/2));
+    }
+
 
     public static void main(String[] args) {
 //        double d = realDistance(new Coordinates(-74, 40), new Coordinates(-72.89627, 40.31173));

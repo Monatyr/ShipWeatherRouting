@@ -1,3 +1,4 @@
+import json
 import pygmt
 from rhumb_line import RhumbLineCalc
 
@@ -32,16 +33,22 @@ def round_off_rating(number, part=2):
     return round(number * part) / part
 
 
+# Decorator to save result in file
+def write_to_file(filename):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            result = func(*args, **kwargs)
+            result = list(map(lambda x: f"{x[0]}, {x[1]}", result))
+            with open(filename, 'w') as file:
+                for el in result:
+                    file.write(f'{el}\n')
+            return result
+        return wrapper
+    return decorator
 
-if __name__ == "__main__":
 
-    # data
-    # start_coords = (-74, 40)
-    # end_coords = (-9.1, 38.7)
-    start_coords = (-74, 40)
-    end_coords = (-9, 38.5)
-    
-    # rhumb line
+@write_to_file('src/main/resources/initial-routes/rhumb_line_route.txt')
+def create_rhumb_line(start_coords, end_coords, density=2):
     rhumb = RhumbLineCalc()
     mid_points = rhumb.loxodromic_power_interpolation(start_coords, end_coords, 31)
     mid_points = flatten_nested_tuples(mid_points)
@@ -49,21 +56,48 @@ if __name__ == "__main__":
     rhumb_points = [start_coords]
     rhumb_points.extend(mid_points)
     rhumb_points.append(end_coords)
+    rhumb_points = list(map(lambda x: (round_off_rating(x[0], density), round_off_rating(x[1], density)), rhumb_points))
+    return rhumb_points
 
-    # great circle route
+
+@write_to_file('src/main/resources/initial-routes/great_circle_route.txt')
+def create_great_circle(start_coords: tuple, end_coords: tuple, density=2):
+    #pygmt needs lat/long flipped
+    start_coords = (start_coords[1], start_coords[0])
+    end_coords = (end_coords[1], end_coords[0])
     great_circle_points_data = pygmt.project(center=start_coords, endpoint=end_coords, generate=100, unit=True)
-    latitudes = great_circle_points_data["r"].tolist()
-    longitudes = great_circle_points_data["s"].tolist()
+    latitudes = great_circle_points_data["s"].tolist()
+    longitudes = great_circle_points_data["r"].tolist()
     great_circle_points = list(zip(latitudes, longitudes))
+    great_circle_points = list(map(lambda x: (round_off_rating(x[0], density), round_off_rating(x[1], density)), great_circle_points))
+    return great_circle_points
 
 
-    # rounding to nearest half
-    rhumb_points = list(map(lambda x: (round_off_rating(x[0]), round_off_rating(x[1])), rhumb_points))
-    great_circle_points = list(map(lambda x: (round_off_rating(x[0]), round_off_rating(x[1])), great_circle_points))
+def read_coords_from_file(filename):
+    with open(filename, 'r') as file:
+        data = json.load(file)
+        start_data = data['map']['startPos']
+        end_data = data['map']['endPos']
+        start_coords = (start_data['latitude'], start_data['longitude'])
+        end_coords = (end_data['latitude'], end_data['longitude'])
 
-    # results
+        return start_coords, end_coords
+
+
+
+if __name__ == "__main__":
+    start_coords, end_coords = read_coords_from_file('src/main/resources/config.json')
+    density = 10
+    rhumb_points = create_rhumb_line(start_coords, end_coords, density)
+    great_circle_points = create_great_circle(start_coords, end_coords, density)
+
+    # Print results in the [LONGITUDE/LATITUDE] format for visualisation
+    rhumb_points = list(map(lambda x: f'{x.split(",")[1]}, {x.split(",")[0]}', rhumb_points))
+    great_circle_points = list(map(lambda x: f'{x.split(",")[1]}, {x.split(",")[0]}', great_circle_points))
+
+    # print('RHUMB LINE:\n')
     for el in rhumb_points:
-        print(f"{el[0]}, {el[1]}")
-
+        print(el)
+    # print('\n\nGREAT CIRCLE ROUTE:\n')
     for el in great_circle_points:
-        print(f"{el[0]}, {el[1]}")
+        print(el)
