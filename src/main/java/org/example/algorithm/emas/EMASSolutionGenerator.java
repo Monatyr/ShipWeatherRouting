@@ -38,6 +38,7 @@ public class EMASSolutionGenerator {
         List<Pair<Integer, Integer>> route1 = readRouteFromFile("src/main/resources/initial-routes/great_circle_route.txt");
         List<Pair<Integer, Integer>> route2 = readRouteFromFile("src/main/resources/initial-routes/rhumb_line_route.txt");
         route1 = fillMissingColumns(route1);
+        System.out.println("AAA");
         System.out.println(route1);
 
         // TODO: better random path generation (currently the height between the current and target points is evened out by chance)
@@ -137,12 +138,30 @@ public class EMASSolutionGenerator {
         return gridPlacement;
     }
 
+    private static List<Pair<Integer, Integer>> removeDuplicates(List<Pair<Integer, Integer>> route) {
+        List<Pair<Integer, Integer>> uniqueRoute = new ArrayList<>();
+        uniqueRoute.add(route.get(0));
+        for (int i = 1; i < route.size(); i++) {
+            int lastX = uniqueRoute.get(uniqueRoute.size() - 1).getSecond();
+            if (route.get(i).getSecond() != lastX) {
+                uniqueRoute.add(route.get(i));
+            }
+        }
+        // Make sure the last point is not replaced by the previous (if they have the same value on the x-axis).
+        Pair<Integer, Integer> lastEl = uniqueRoute.get(uniqueRoute.size() - 1);
+        if (lastEl.getSecond() == route.get(route.size() - 1).getSecond()) {
+            uniqueRoute.remove(uniqueRoute.size() - 1);
+            uniqueRoute.add(route.get(route.size() - 1));
+        }
+        return uniqueRoute;
+    }
+
     private static List<Pair<Integer, Integer>> fillMissingColumns(List<Pair<Integer, Integer>> route) {
         System.out.println(route);
         int xChange = route.get(0).getSecond() < route.get(1).getSecond() ? 1 : -1;
         List<Pair<Integer, Integer>> newRoute = new ArrayList<>();
         newRoute.add(route.get(0));
-        for (int i = 1; i < route.size() - 1; i++) {
+        for (int i = 1; i < route.size(); i++) {
             Pair<Integer, Integer> prev = route.get(i - 1);
             Pair<Integer, Integer> curr = route.get(i);
             int distance = abs(curr.getSecond() - prev.getSecond());
@@ -156,8 +175,22 @@ public class EMASSolutionGenerator {
             }
             newRoute.add(curr);
         }
-        System.out.println(newRoute.size());
         return newRoute;
+    }
+
+    public static List<RoutePoint> getRouteFromFile(String filename) {
+        List<Pair<Integer, Integer>> gridRoute = readRouteFromFile(filename);
+        gridRoute = removeDuplicates(gridRoute);
+        gridRoute = fillMissingColumns(gridRoute);
+        List<RoutePoint> route = new ArrayList<>();
+        for (Pair<Integer, Integer> gridPoint : gridRoute) {
+            Point2D gridCoords = new Point2D.Double(gridPoint.getFirst(), gridPoint.getSecond());
+            Coordinates coordinates = grid[(int) gridCoords.getY()][(int) gridCoords.getX()];
+            RoutePoint routePoint = new RoutePoint(gridCoords, coordinates, 0);
+            route.add(routePoint);
+        }
+        System.out.println(route.size() + " " + route.stream().map(RoutePoint::getGridCoordinates).toList());
+        return route;
     }
 
     private static Solution crossoverSolutions(Solution sol1, Solution sol2, List<Point2D> commonGridPoints) {

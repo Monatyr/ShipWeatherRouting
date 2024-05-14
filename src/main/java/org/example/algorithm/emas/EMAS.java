@@ -3,6 +3,7 @@ package org.example.algorithm.emas;
 import org.example.algorithm.Algorithm;
 import org.example.model.Agent;
 import org.example.model.Island;
+import org.example.model.RoutePoint;
 import org.example.model.Solution;
 import org.example.util.SimulationData;
 
@@ -69,8 +70,13 @@ public class EMAS extends Algorithm {
 
     @Override
     protected void generateInitialPopulation() {
+        List<List<RoutePoint>> startingRoutes = new ArrayList<>();
+        startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/great_circle_route.txt"));
+        startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/rhumb_line_route.txt"));
         for (int i = 0; i < populationSize; i++) {
-            Solution solution = EMASSolutionGenerator.generateSolution(null);
+            List<RoutePoint> route = startingRoutes.get(i % startingRoutes.size());
+            Solution solution = EMASSolutionGenerator.generateSolution(route);
+            solution = EMASSolutionGenerator.mutateSolution(solution);
             population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));
         }
     }
