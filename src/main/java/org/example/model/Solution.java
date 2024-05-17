@@ -88,8 +88,6 @@ public class Solution implements Comparable<Solution> {
             int travelTimeSeconds = (int) (distance / simulationData.shipSpeed * 3600);
             currTime += travelTimeSeconds;
             currPoint.setArrivalTime(currTime);
-
-//            System.out.println(temp1 + " " + temp2 + " " + distance + " " + currTime);
         }
     }
 

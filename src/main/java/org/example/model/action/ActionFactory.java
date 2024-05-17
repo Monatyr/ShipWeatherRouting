@@ -34,7 +34,6 @@ public class ActionFactory {
                      if (partnerWithCommonPoints != null) {
                          return new ReproductionAction(agent, partnerWithCommonPoints.getFirst(), partnerWithCommonPoints.getSecond());
                      }
-//                    System.out.println("NO PARTNERS!");
                 }
                 break;
             case Migration:

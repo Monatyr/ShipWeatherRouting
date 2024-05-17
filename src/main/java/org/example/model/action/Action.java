@@ -11,7 +11,6 @@ public abstract class Action {
 
     public Action(Agent agent) {
         this.agent = agent;
-//        System.out.println(this.getClass().getSimpleName());
     }
 
     public void perform(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) {
