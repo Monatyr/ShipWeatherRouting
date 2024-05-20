@@ -13,7 +13,7 @@ public abstract class Algorithm {
     protected static int iterations = 0;
     protected static Set<Agent> population = new HashSet<>();
 
-    public Set<Solution> run() {
+    public Set<Solution> run() throws Exception {
         if (population.isEmpty()) {
             generateInitialPopulation();
         }
@@ -38,5 +38,5 @@ public abstract class Algorithm {
 
     protected abstract void generateInitialPopulation();
 
-    protected abstract void runIteration();
+    protected abstract void runIteration() throws Exception;
 }

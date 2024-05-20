@@ -3,6 +3,7 @@ package org.example;
 import org.example.algorithm.emas.EMAS;
 import org.example.model.Solution;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -10,7 +11,9 @@ import static java.lang.Math.min;
 
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        runRouteGenerationScript();
+
         EMAS emas = new EMAS();
         Set<Solution> solutions = emas.run();
 
@@ -28,5 +31,17 @@ public class Main {
             System.out.println(solution.getFunctionValues() + " " + solution.getFunctionValues().values().stream().reduce(Float::sum));
         }
         System.out.println("\n--- TOTAL SOLUTIONS: " + solutions.size() + " ---");
+    }
+
+    public static void runRouteGenerationScript() {
+        String scriptPath = "scripts/generate_initial_routes.py";
+        ProcessBuilder processBuilder = new ProcessBuilder("/run/current-system/sw/bin/python", scriptPath);
+        try {
+            Process process = processBuilder.start();
+            int exitCode = process.waitFor();
+            System.out.println("Initial route generation exit code: " + exitCode);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

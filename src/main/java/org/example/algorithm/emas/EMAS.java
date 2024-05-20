@@ -82,7 +82,7 @@ public class EMAS extends Algorithm {
     }
 
     @Override
-    protected void runIteration() {
+    protected void runIteration() throws Exception {
         for (Island island : islands) {
             Set<Agent> agentsToAdd = new HashSet<>();
             Set<Agent> agentsToRemove = new HashSet<>();
@@ -116,13 +116,6 @@ public class EMAS extends Algorithm {
 
     @Override
     protected boolean checkStopCondition() {
-//        System.out.println(
-//                "population: " + population.size() +
-//                " avg energy: " + (population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum))/population.size() +
-//                " max energy: " + population.stream().map(Agent::getEnergy).reduce(Double::max).get() +
-//                " min energy: " + population.stream().map(Agent::getEnergy).reduce(Double::min).get() +
-//                " iteration: " + iterations
-//                );
         return iterations >= simulationData.maxIterations;
     }
 

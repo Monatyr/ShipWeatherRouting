@@ -15,7 +15,7 @@ public class DeathAction extends Action{
     }
 
     @Override
-    public void perform(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) {
+    public void perform(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) throws Exception {
         agentsToRemove.add(agent);
         redistributeEnergyLeft(); // TODO: make sure it does not mess up the logic (aren't some of the neighbours already dead?)
         simulationData.populationSize--;

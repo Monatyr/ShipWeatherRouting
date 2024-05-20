@@ -1,8 +1,6 @@
 package org.example.util;
 
 import org.json.*;
-
-import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,8 +15,8 @@ public final class SimulationData {
     public int mapWidth;
     public int numberOfIslands;
     public int populationSize;
-    public Point2D startPos;
-    public Point2D endPos;
+    public GridPoint startPos;
+    public GridPoint endPos;
     public Coordinates startCoordinates;
     public Coordinates endCoordinates;
     public int maxIterations;
@@ -50,10 +48,11 @@ public final class SimulationData {
             mapWidth = mapObject.getInt("columns");
 
             JSONObject startPosObject = mapObject.getJSONObject("startPos");
-            startPos = new Point2D.Double(startPosObject.getFloat("x"), startPosObject.getFloat("y"));
+//            startPos = new GridPoint.Double(startPosObject.getFloat("x"), startPosObject.getFloat("y"));
+            startPos = new GridPoint(startPosObject.getInt("y"), startPosObject.getInt("x"));
             startCoordinates = new Coordinates(startPosObject.getDouble("latitude"), startPosObject.getDouble("longitude"));
             JSONObject endPosObject = mapObject.getJSONObject("endPos");
-            endPos = new Point2D.Double(endPosObject.getFloat("x"), endPosObject.getFloat("y"));
+            endPos = new GridPoint(endPosObject.getInt("y"), endPosObject.getInt("x"));
             endCoordinates = new Coordinates(endPosObject.getDouble("latitude"), endPosObject.getDouble("longitude"));
 
             JSONObject simulationObject = dataObject.getJSONObject("simulation");
