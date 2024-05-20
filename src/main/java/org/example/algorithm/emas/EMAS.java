@@ -82,7 +82,7 @@ public class EMAS extends Algorithm {
     }
 
     @Override
-    protected void runIteration() {
+    protected void runIteration() throws Exception {
         for (Island island : islands) {
             Set<Agent> agentsToAdd = new HashSet<>();
             Set<Agent> agentsToRemove = new HashSet<>();

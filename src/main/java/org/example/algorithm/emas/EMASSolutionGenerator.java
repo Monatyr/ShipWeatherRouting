@@ -4,9 +4,9 @@ import org.apache.commons.math3.util.Pair;
 import org.example.model.RoutePoint;
 import org.example.model.Solution;
 import org.example.util.Coordinates;
+import org.example.util.GridPoint;
 import org.example.util.SimulationData;
 
-import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -35,22 +35,15 @@ public class EMASSolutionGenerator {
             return new Solution(routePoints);
         }
 
-        List<Pair<Integer, Integer>> route1 = readRouteFromFile("src/main/resources/initial-routes/great_circle_route.txt");
-        List<Pair<Integer, Integer>> route2 = readRouteFromFile("src/main/resources/initial-routes/rhumb_line_route.txt");
-        route1 = fillMissingColumns(route1);
-//        System.out.println("AAA");
-//        System.out.println(route1);
-
         // TODO: better random path generation (currently the height between the current and target points is evened out by chance)
-
         // if points are null, create a random path
         RoutePoint startPos = new RoutePoint(simulationData.startPos, null, simulationData.startingTime);
         RoutePoint endPos = new RoutePoint(simulationData.endPos, null, 0);
 
         routePoints = new ArrayList<>();
         routePoints.add(startPos);
-        double currHeight = startPos.getGridCoordinates().getY();
-        double targetHeight = endPos.getGridCoordinates().getY();
+        int currHeight = startPos.getGridCoordinates().y();
+        int targetHeight = endPos.getGridCoordinates().y();
 
         for (int i = 1; i < simulationData.mapWidth - 1; i++) {
             boolean getCloser = random.nextDouble(1.0) > 0.65;
@@ -61,7 +54,7 @@ public class EMASSolutionGenerator {
                     currHeight--;
                 }
             }
-            Point2D nextGridCoordinates = new Point2D.Double(i, currHeight);
+            GridPoint nextGridCoordinates = new GridPoint(currHeight, i);
             RoutePoint nextRoutePoint = new RoutePoint(nextGridCoordinates, null, 0);
             routePoints.add(nextRoutePoint);
         }
@@ -70,7 +63,7 @@ public class EMASSolutionGenerator {
         return new Solution(routePoints);
     }
 
-    public static Solution generateSolution(Solution sol1, Solution sol2, List<Point2D> commonGridPoints) {
+    public static Solution generateSolution(Solution sol1, Solution sol2, List<GridPoint> commonGridPoints) {
         System.out.println(sol1.getRoutePoints().stream().map(RoutePoint::getGridCoordinates).toList());
         Solution newSolution = crossoverSolutions(sol1, sol2, commonGridPoints);
         newSolution = mutateSolution(newSolution);
@@ -185,8 +178,8 @@ public class EMASSolutionGenerator {
         gridRoute = fillMissingColumns(gridRoute);
         List<RoutePoint> route = new ArrayList<>();
         for (Pair<Integer, Integer> gridPoint : gridRoute) {
-            Point2D gridCoords = new Point2D.Double(gridPoint.getFirst(), gridPoint.getSecond());
-            Coordinates coordinates = grid[(int) gridCoords.getY()][(int) gridCoords.getX()];
+            GridPoint gridCoords = new GridPoint(gridPoint.getFirst(), gridPoint.getSecond());
+            Coordinates coordinates = grid[gridCoords.y()][gridCoords.x()];
             RoutePoint routePoint = new RoutePoint(gridCoords, coordinates, 0);
             route.add(routePoint);
         }
@@ -194,7 +187,7 @@ public class EMASSolutionGenerator {
         return route;
     }
 
-    private static Solution crossoverSolutions(Solution sol1, Solution sol2, List<Point2D> commonGridPoints) {
+    private static Solution crossoverSolutions(Solution sol1, Solution sol2, List<GridPoint> commonGridPoints) {
         List<RoutePoint> sourcePoints = sol1.getRoutePoints();
         List<RoutePoint> otherPoints = sol2.getRoutePoints();
         List<RoutePoint> newRoutePoints = new ArrayList<>();
@@ -212,13 +205,13 @@ public class EMASSolutionGenerator {
             RoutePoint currPoint = sourcePoints.get(i);
             RoutePoint newPoint = new RoutePoint(currPoint);
             newRoutePoints.add(newPoint);
-            Point2D currCommonPoint = commonGridPoints.get(currCommonIndex);
+            GridPoint currCommonPoint = commonGridPoints.get(currCommonIndex);
 //            System.out.println(sourcePoints.stream().map(RoutePoint::getGridCoordinates).toList());
 //            System.out.println(otherPoints.stream().map(RoutePoint::getGridCoordinates).toList());
 //            System.out.println(currCommonPoint);
 //            System.out.println();
-            if (currCommonPoint.getX() == currPoint.getGridCoordinates().getX()
-                    && currCommonPoint.getY() == currPoint.getGridCoordinates().getY()) {
+            if (currCommonPoint.x() == currPoint.getGridCoordinates().x()
+                    && currCommonPoint.y() == currPoint.getGridCoordinates().y()) {
                 temp = sourcePoints;
                 sourcePoints = otherPoints;
                 otherPoints = temp;
@@ -249,9 +242,9 @@ public class EMASSolutionGenerator {
              * calculated using minutes and seconds.
              */
             List<Integer> availableHeights = new ArrayList<>();
-            int minY = (int) min(previousNeighbour.getGridCoordinates().getY(), nextNeighbour.getGridCoordinates().getY());
-            int maxY = (int) max(previousNeighbour.getGridCoordinates().getY(), nextNeighbour.getGridCoordinates().getY());
-            int currY = (int) currRoutePoint.getGridCoordinates().getY();
+            int minY = (int) min(previousNeighbour.getGridCoordinates().y(), nextNeighbour.getGridCoordinates().y());
+            int maxY = (int) max(previousNeighbour.getGridCoordinates().y(), nextNeighbour.getGridCoordinates().y());
+            int currY = (int) currRoutePoint.getGridCoordinates().y();
             for (int j = -simulationData.maxVerticalDistance; j <= simulationData.maxVerticalDistance; j++) {
                 int potentialHeight = currY + j;
                 if (potentialHeight < 0 || potentialHeight >= simulationData.mapHeight) {
@@ -271,10 +264,7 @@ public class EMASSolutionGenerator {
             Collections.shuffle(availableHeights);
             int newHeight = availableHeights.get(0);
             // TODO: insert real time data from an API and not randomly generated
-            Point2D newGridCoordinates = new Point2D.Double(
-                    currRoutePoint.getGridCoordinates().getX(),
-                    newHeight
-            );
+            GridPoint newGridCoordinates = new GridPoint(newHeight, currRoutePoint.getGridCoordinates().x());
             RoutePoint newRoutePoint = new RoutePoint(newGridCoordinates, null, 0);
             sol.getRoutePoints().set(pointIndex, newRoutePoint);
         }

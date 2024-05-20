@@ -2,8 +2,8 @@ package org.example.model;
 
 
 import org.example.util.Coordinates;
+import org.example.util.GridPoint;
 
-import java.awt.geom.Point2D;
 import java.util.Map;
 import java.util.Random;
 
@@ -18,7 +18,7 @@ import static org.example.model.OptimizedFunction.*;
  * - a set of optimized metrics and their values in the previous leg of the journey (fuel consumption, ship speed, danger)
  */
 public class RoutePoint {
-    private Point2D gridCoordinates;
+    private GridPoint gridCoordinates;
     private Coordinates coordinates;
     private int arrivalTime; // epoch time; not UTC!
     private WeatherConditions conditions;
@@ -26,7 +26,7 @@ public class RoutePoint {
     private static Random random = new Random();
 
 
-    public RoutePoint(Point2D gridCoordinates, Coordinates coordinates, int arrivalTime) {
+    public RoutePoint(GridPoint gridCoordinates, Coordinates coordinates, int arrivalTime) {
         this.gridCoordinates = gridCoordinates;
         this.coordinates = coordinates;
 
@@ -45,11 +45,11 @@ public class RoutePoint {
         this.functions = Map.of(Danger, random.nextDouble(), FuelUsed, random.nextDouble(), TravelTime, random.nextDouble());
     }
 
-    public Point2D getGridCoordinates() {
+    public GridPoint getGridCoordinates() {
         return gridCoordinates;
     }
 
-    public void setGridCoordinates(Point2D gridCoordinates) {
+    public void setGridCoordinates(GridPoint gridCoordinates) {
         this.gridCoordinates = gridCoordinates;
     }
 

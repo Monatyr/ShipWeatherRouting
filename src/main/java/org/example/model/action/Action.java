@@ -13,7 +13,7 @@ public abstract class Action {
         this.agent = agent;
     }
 
-    public void perform(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) {
+    public void perform(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) throws Exception {
         agent.setMadeAction(true);
     };
 }

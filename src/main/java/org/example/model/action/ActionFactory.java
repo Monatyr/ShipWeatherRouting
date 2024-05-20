@@ -5,10 +5,11 @@ import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
 import org.example.model.Agent;
 import org.example.model.Island;
+import org.example.util.GridPoint;
 import org.example.util.SimulationData;
 
-import java.awt.geom.Point2D;
 import java.util.List;
+
 
 public class ActionFactory {
     public static SimulationData simulationData = SimulationData.getInstance();
@@ -30,7 +31,7 @@ public class ActionFactory {
         switch (actionType) {
             case Reproduction:
                 if (agent.getEnergy() >= simulationData.reproductionEnergyBound && simulationData.populationSize < simulationData.maxPopulation) {
-                     Pair<Agent, List<Point2D>> partnerWithCommonPoints = agent.getPartner();
+                     Pair<Agent, List<GridPoint>> partnerWithCommonPoints = agent.getPartner();
                      if (partnerWithCommonPoints != null) {
                          return new ReproductionAction(agent, partnerWithCommonPoints.getFirst(), partnerWithCommonPoints.getSecond());
                      }
