@@ -83,6 +83,12 @@ public class Solution implements Comparable<Solution> {
         }
     }
 
+    public void printCoordinates() {
+        for (RoutePoint r : routePoints) {
+            System.out.println(r.getCoordinates().longitude() + ", " + r.getCoordinates().latitude());
+        }
+    }
+
     public Map<OptimizedFunction, Float> getFunctionValues() {
         return functionValues;
     }

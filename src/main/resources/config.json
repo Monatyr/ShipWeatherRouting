@@ -2,33 +2,29 @@
   "map": {
     "maxLatitude": 60,
     "minLatitude": 20,
-    "columns": 120,
+    "columns": 100,
     "rows": 200,
     "startPos": {
-      "x": 0,
-      "y": 4,
       "latitude": 40.7306,
       "longitude": -73.9352
     },
     "endPos": {
-      "x": 29,
-      "y": 7,
       "latitude": 38.7223,
       "longitude": -9.1427
     }
   },
   "simulation": {
-    "maxIterations": 200,
+    "maxIterations": 500,
     "maxPopulation": 100,
     "maxVerticalDistance": 2,
-    "initialEnergy": 100,
-    "reproductionEnergyBound": 50,
-    "reproductionEnergy": 20,
+    "initialEnergy": 200,
+    "reproductionEnergyBound": 100,
+    "reproductionEnergy": 40,
     "migrationEnergy": 50,
-    "deathEnergyBound": 15,
-    "energyTaken": 10,
+    "deathEnergyBound": 30,
+    "energyTaken": 20,
     "mutationRate": 0.15,
-    "reproductionProbability": 0.9,
+    "reproductionProbability": 0.95,
     "numberOfIslands": 4,
     "populationSize": 20,
     "startingTime": 0,

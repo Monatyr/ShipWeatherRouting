@@ -15,8 +15,6 @@ public final class SimulationData {
     public int mapWidth;
     public int numberOfIslands;
     public int populationSize;
-    public GridPoint startPos;
-    public GridPoint endPos;
     public Coordinates startCoordinates;
     public Coordinates endCoordinates;
     public int maxIterations;
@@ -48,11 +46,8 @@ public final class SimulationData {
             mapWidth = mapObject.getInt("columns");
 
             JSONObject startPosObject = mapObject.getJSONObject("startPos");
-//            startPos = new GridPoint.Double(startPosObject.getFloat("x"), startPosObject.getFloat("y"));
-            startPos = new GridPoint(startPosObject.getInt("y"), startPosObject.getInt("x"));
             startCoordinates = new Coordinates(startPosObject.getDouble("latitude"), startPosObject.getDouble("longitude"));
             JSONObject endPosObject = mapObject.getJSONObject("endPos");
-            endPos = new GridPoint(endPosObject.getInt("y"), endPosObject.getInt("x"));
             endCoordinates = new Coordinates(endPosObject.getDouble("latitude"), endPosObject.getDouble("longitude"));
 
             JSONObject simulationObject = dataObject.getJSONObject("simulation");

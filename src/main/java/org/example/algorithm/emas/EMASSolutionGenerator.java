@@ -72,24 +72,20 @@ public class EMASSolutionGenerator {
         // of them. If the points are not in subsequent columns, then interpolate the ones between them.
         // If creating the route exceeds the maximum height difference between the points, then the user should
         // somehow be notified.
-
         List<Pair<Integer, Integer>> gridPlacement = new ArrayList<>();
         List<String> pathPointsList = null;
-
+        System.out.println("Grid size: " + grid.length + " " + grid[0].length);
         try {
             pathPointsList = Files.readAllLines(Paths.get(filename));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         for (String point : pathPointsList) {
             List<Double> coordinates = Arrays.stream(point.split(",\s")).map(Double::valueOf).toList();
             double latitude = coordinates.get(0);
             double longitude = coordinates.get(1);
-
             Integer minX = 0;
             Integer minY = 0;
-
             double minDistance = Double.POSITIVE_INFINITY;
             for (int i = 0; i < grid.length; i++) {
                 for (int j = 0; j < grid[0].length; j++) {
@@ -125,7 +121,6 @@ public class EMASSolutionGenerator {
     }
 
     private static List<Pair<Integer, Integer>> fillMissingColumns(List<Pair<Integer, Integer>> route) {
-//        System.out.println(route);
         int xChange = route.get(0).getSecond() < route.get(1).getSecond() ? 1 : -1;
         List<Pair<Integer, Integer>> newRoute = new ArrayList<>();
         newRoute.add(route.get(0));
@@ -134,6 +129,7 @@ public class EMASSolutionGenerator {
             Pair<Integer, Integer> curr = route.get(i);
             int distance = abs(curr.getSecond() - prev.getSecond());
             if (distance == 1) {
+                newRoute.add(curr);
                 continue;
             }
             double yChange = (double) (curr.getFirst() - prev.getFirst()) / distance;
