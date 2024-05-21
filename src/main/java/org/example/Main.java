@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.algorithm.emas.EMAS;
+import org.example.model.Agent;
 import org.example.model.Solution;
 
 import java.io.IOException;
@@ -15,6 +16,8 @@ public class Main {
         runRouteGenerationScript();
 
         EMAS emas = new EMAS();
+        Set<Agent> population = emas.getPopulation();
+        System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum));
         Set<Solution> solutions = emas.run();
 
         List<Solution> sortedSolutions = solutions.stream().sorted().toList();
@@ -31,6 +34,9 @@ public class Main {
             System.out.println(solution.getFunctionValues() + " " + solution.getFunctionValues().values().stream().reduce(Float::sum));
         }
         System.out.println("\n--- TOTAL SOLUTIONS: " + solutions.size() + " ---");
+
+        population = emas.getPopulation();
+        System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum));
     }
 
     public static void runRouteGenerationScript() {

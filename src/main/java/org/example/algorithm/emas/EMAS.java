@@ -94,21 +94,18 @@ public class EMAS extends Algorithm {
                     agent.performAction(agentsToAdd, agentsToRemove);
                 }
             }
-
-            island.getAgents().removeAll(agentsToRemove);
-            island.getAgents().addAll(agentsToAdd);
+            // delete agents that died and emigrated and add those that immigrated
+            island.removeAgent(agentsToRemove);
+            island.addAgent(agentsToAdd);
         }
-
         // Make agent available to perform actions again
         for (Island island: islands) {
             for (Agent agent: island.getAgents()) {
                 agent.setMadeAction(false);
             }
         }
-
         // Compare agents - energy distribution, prestige gains
         evaluateAgents();
-
         population = islands.stream()
                 .flatMap(island -> island.getAgents().stream())
                 .collect(Collectors.toSet());
@@ -128,4 +125,6 @@ public class EMAS extends Algorithm {
     public List<Island> getIslands() {
         return islands;
     }
+
+    public Set<Agent> getPopulation() { return population; }
 }
