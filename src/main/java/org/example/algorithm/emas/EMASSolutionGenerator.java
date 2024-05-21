@@ -34,37 +34,11 @@ public class EMASSolutionGenerator {
         if (routePoints != null) {
             return new Solution(routePoints);
         }
-
-        // TODO: better random path generation (currently the height between the current and target points is evened out by chance)
-        // if points are null, create a random path
-        RoutePoint startPos = new RoutePoint(simulationData.startPos, null, simulationData.startingTime);
-        RoutePoint endPos = new RoutePoint(simulationData.endPos, null, 0);
-
-        routePoints = new ArrayList<>();
-        routePoints.add(startPos);
-        int currHeight = startPos.getGridCoordinates().y();
-        int targetHeight = endPos.getGridCoordinates().y();
-
-        for (int i = 1; i < simulationData.mapWidth - 1; i++) {
-            boolean getCloser = random.nextDouble(1.0) > 0.65;
-            if (getCloser) {
-                if (targetHeight > currHeight) {
-                    currHeight++;
-                } else if (targetHeight < currHeight) {
-                    currHeight--;
-                }
-            }
-            GridPoint nextGridCoordinates = new GridPoint(currHeight, i);
-            RoutePoint nextRoutePoint = new RoutePoint(nextGridCoordinates, null, 0);
-            routePoints.add(nextRoutePoint);
-        }
-
-        routePoints.add(endPos);
-        return new Solution(routePoints);
+        return null;
     }
 
     public static Solution generateSolution(Solution sol1, Solution sol2, List<GridPoint> commonGridPoints) {
-        System.out.println(sol1.getRoutePoints().stream().map(RoutePoint::getGridCoordinates).toList());
+//        System.out.println(sol1.getRoutePoints().stream().map(RoutePoint::getGridCoordinates).toList());
         Solution newSolution = crossoverSolutions(sol1, sol2, commonGridPoints);
         newSolution = mutateSolution(newSolution);
         newSolution.calculateRouteValues();
@@ -187,6 +161,10 @@ public class EMASSolutionGenerator {
         return route;
     }
 
+    public static Coordinates calculateCoordinates(GridPoint gridPoint) {
+        return grid[gridPoint.y()][gridPoint.x()];
+    }
+
     private static Solution crossoverSolutions(Solution sol1, Solution sol2, List<GridPoint> commonGridPoints) {
         List<RoutePoint> sourcePoints = sol1.getRoutePoints();
         List<RoutePoint> otherPoints = sol2.getRoutePoints();
@@ -265,7 +243,7 @@ public class EMASSolutionGenerator {
             int newHeight = availableHeights.get(0);
             // TODO: insert real time data from an API and not randomly generated
             GridPoint newGridCoordinates = new GridPoint(newHeight, currRoutePoint.getGridCoordinates().x());
-            RoutePoint newRoutePoint = new RoutePoint(newGridCoordinates, null, 0);
+            RoutePoint newRoutePoint = new RoutePoint(newGridCoordinates, calculateCoordinates(newGridCoordinates), 0);
             sol.getRoutePoints().set(pointIndex, newRoutePoint);
         }
         return sol;

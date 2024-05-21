@@ -70,21 +70,13 @@ public class Solution implements Comparable<Solution> {
     public void calculateRouteValues() {
         int currTime = simulationData.startingTime;
         routePoints.get(0).setArrivalTime(currTime);
-
-        Coordinates temp1;
-        Coordinates temp2 = new Coordinates(40, -9);
-
         for (int i = 1; i < routePoints.size(); i++) {
             RoutePoint prevPoint = routePoints.get(i-1);
             RoutePoint currPoint = routePoints.get(i);
-
+//            System.out.println(prevPoint.getCoordinates() + " " + prevPoint.getGridCoordinates());
+//            System.out.println(currPoint.getCoordinates() + " " + currPoint.getGridCoordinates());
             // TODO: set geocoords for each route point (null at the moment)
-//            double distance = Coordinates.realDistance(currPoint.getCoordinates(), prevPoint.getCoordinates());
-
-            temp1 = temp2;
-            temp2 = new Coordinates(40, temp2.longitude() - 1);
-            double distance = Coordinates.realDistance(temp1, temp2);
-
+            double distance = Coordinates.realDistance(currPoint.getCoordinates(), prevPoint.getCoordinates());
             int travelTimeSeconds = (int) (distance / simulationData.shipSpeed * 3600);
             currTime += travelTimeSeconds;
             currPoint.setArrivalTime(currTime);

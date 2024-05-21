@@ -55,7 +55,7 @@ public class Agent {
         }
         energy -= simulationData.reproductionEnergy;
         other.energy -= simulationData.reproductionEnergy;
-        Agent newAgent = new Agent(newSolution, energy, 0, island, true);
+        Agent newAgent = new Agent(newSolution, simulationData.reproductionEnergy * 2, 0, island, true);
         return newAgent;
     }
 
@@ -99,13 +99,6 @@ public class Agent {
                     commonGridPoints.add(currRoutePoint);
                 }
             }
-
-            System.out.println();
-            System.out.println("Common grid points: " + commonGridPoints.size());
-            System.out.println("Route 1: " + routePoints.stream().map(RoutePoint::getGridCoordinates).toList());
-            System.out.println("Route 2: " + partnerRoutePoints.stream().map(RoutePoint::getGridCoordinates).toList());
-            System.out.println();
-
             if (!commonGridPoints.isEmpty()) {
                 return new Pair<>(partner, commonGridPoints);
             }
