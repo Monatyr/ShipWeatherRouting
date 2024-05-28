@@ -31,6 +31,7 @@ public final class SimulationData {
     public double energyTaken;
     public int startingTime;
     public double shipSpeed;
+    public int latticeSize;
     private int id;
 
 
@@ -68,6 +69,7 @@ public final class SimulationData {
             deathEnergyBound = simulationObject.getDouble("deathEnergyBound");
             startingTime = simulationObject.getInt("startingTime");
             shipSpeed = simulationObject.getDouble("shipSpeed");
+            latticeSize = simulationObject.getInt("latticeSize");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

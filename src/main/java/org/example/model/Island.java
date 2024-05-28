@@ -2,11 +2,9 @@ package org.example.model;
 
 import org.example.algorithm.Algorithm;
 import org.example.algorithm.emas.EMAS;
+import org.example.util.SimulationData;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -18,10 +16,20 @@ public class Island {
     private final boolean elite;
     private Set<Island> neighbouringIslands;
     private final Random random = new Random();
+    private final SimulationData simulationData = SimulationData.getInstance();
+    private final List<List<Agent>> lattice;
 
     public Island(boolean elite, Set<Island> neighbouringIslands) {
         this.elite = elite;
         this.neighbouringIslands = neighbouringIslands;
+        lattice = new ArrayList<>();
+        for (int i = 0; i < simulationData.latticeSize; i++) {
+            List<Agent> row = new ArrayList<>();
+            for (int j = 0; j < simulationData.latticeSize; j++) {
+                row.add(null);
+            }
+            lattice.add(row);
+        }
     }
 
     public void addAgent(Agent agent) {

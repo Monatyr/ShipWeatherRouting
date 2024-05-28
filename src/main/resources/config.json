@@ -28,6 +28,7 @@
     "numberOfIslands": 4,
     "populationSize": 20,
     "startingTime": 0,
-    "shipSpeed": 30.0
+    "shipSpeed": 30.0,
+    "islandSize": 10
   }
 }
