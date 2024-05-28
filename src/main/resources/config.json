@@ -14,7 +14,7 @@
     }
   },
   "simulation": {
-    "maxIterations": 500,
+    "maxIterations": 100,
     "maxPopulation": 100,
     "maxVerticalDistance": 2,
     "initialEnergy": 200,

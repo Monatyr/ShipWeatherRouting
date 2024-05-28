@@ -39,10 +39,12 @@ public class Island {
     public void evaluateAgents() {
         for (Agent agent: agents) {
             List<Agent> neighbours = getAgents().stream()
-                    .filter(a -> !a.equals(this))
+                    .filter(a -> !a.equals(agent))
                     .filter(a -> a.getEnergy() > 0)
                     .toList();
-
+            if (neighbours.size() == 0) {
+                return;
+            }
             int index = random.nextInt(neighbours.size());
             agent.compareTo(neighbours.get(index));
         }

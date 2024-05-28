@@ -2,6 +2,8 @@ package org.example;
 
 import org.example.algorithm.emas.EMAS;
 import org.example.model.Agent;
+import org.example.model.OptimizedFunction;
+import org.example.model.RoutePoint;
 import org.example.model.Solution;
 
 import java.io.IOException;
@@ -37,6 +39,15 @@ public class Main {
 
         population = emas.getPopulation();
         System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum));
+
+        List<Solution> solList = solutions.stream().toList();
+        Solution sol = solList.get(0);
+        for (Solution s : solutions) {
+            if (s.getFunctionValues().get(OptimizedFunction.TravelTime) < sol.getFunctionValues().get(OptimizedFunction.TravelTime)) {
+                sol = s;
+            }
+        }
+        sol.getRoutePoints().stream().map(RoutePoint::getCoordinates).map(a -> a.longitude() + ", " + a.latitude()).forEach(System.out::println);
     }
 
     public static void runRouteGenerationScript() {
