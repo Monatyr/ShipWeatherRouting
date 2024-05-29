@@ -14,19 +14,19 @@
     }
   },
   "simulation": {
-    "maxIterations": 100,
+    "maxIterations": 10000,
     "maxPopulation": 100,
     "maxVerticalDistance": 2,
-    "initialEnergy": 200,
-    "reproductionEnergyBound": 100,
-    "reproductionEnergy": 40,
+    "initialEnergy": 100,
+    "reproductionEnergyBound": 90,
+    "reproductionEnergy": 50,
     "migrationEnergy": 50,
-    "deathEnergyBound": 30,
-    "energyTaken": 20,
-    "mutationRate": 0.15,
-    "reproductionProbability": 0.95,
+    "deathEnergyBound": 0,
+    "energyTaken": 15,
+    "mutationRate": 0.10,
+    "reproductionProbability": 0.90,
     "numberOfIslands": 4,
-    "populationSize": 20,
+    "populationSize": 40,
     "startingTime": 0,
     "shipSpeed": 30.0
   }

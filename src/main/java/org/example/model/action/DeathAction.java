@@ -19,6 +19,7 @@ public class DeathAction extends Action{
         agentsToRemove.add(agent);
         redistributeEnergyLeft(); // TODO: make sure it does not mess up the logic (aren't some of the neighbours already dead?)
         simulationData.populationSize--;
+        Action.actionCount.put(ActionType.Death, Action.actionCount.get(ActionType.Death) + 1);
         super.perform(agentsToAdd, agentsToRemove);
     }
 

@@ -109,6 +109,10 @@ public class EMAS extends Algorithm {
         population = islands.stream()
                 .flatMap(island -> island.getAgents().stream())
                 .collect(Collectors.toSet());
+        if (population.size() < populationSize) {
+            System.out.println(populationSize + " -> " + population.size());
+        }
+        populationSize = population.size();
     }
 
     @Override

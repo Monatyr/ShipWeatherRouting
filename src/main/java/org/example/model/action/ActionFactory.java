@@ -17,35 +17,36 @@ public class ActionFactory {
             new Pair(ActionType.Migration, simulationData.migrationProbability),
             new Pair(ActionType.Reproduction, simulationData.reproductionProbability)
     );
-    private static EnumeratedDistribution enumeratedDistribution = new EnumeratedDistribution<>(itemWeights);
+    private static final EnumeratedDistribution<ActionType> enumeratedDistribution = new EnumeratedDistribution<>(itemWeights);
 
     public static Action getAction(Agent agent) {
         ActionType actionType;
 
-        if (agent.getEnergy() < simulationData.deathEnergyBound) {
+        if (agent.getEnergy() <= simulationData.deathEnergyBound) {
             actionType = ActionType.Death;
         } else {
-            actionType = (ActionType) enumeratedDistribution.sample();
+            actionType = enumeratedDistribution.sample();
         }
 
         switch (actionType) {
-            case Reproduction:
+            case Reproduction -> {
                 if (agent.getEnergy() >= simulationData.reproductionEnergyBound && simulationData.populationSize < simulationData.maxPopulation) {
-                     Pair<Agent, List<GridPoint>> partnerWithCommonPoints = agent.getPartner();
-                     if (partnerWithCommonPoints != null) {
-                         return new ReproductionAction(agent, partnerWithCommonPoints.getFirst(), partnerWithCommonPoints.getSecond());
-                     }
+                    Pair<Agent, List<GridPoint>> partnerWithCommonPoints = agent.getPartner();
+                    if (partnerWithCommonPoints != null) {
+                        return new ReproductionAction(agent, partnerWithCommonPoints.getFirst(), partnerWithCommonPoints.getSecond());
+                    }
                 }
-                break;
-            case Migration:
+            }
+            case Migration -> {
                 // TODO: should migration require energy - it should, but the question is should it decrease it?
                 if (agent.getEnergy() >= simulationData.migrationEnergy && !agent.getIsland().isElite()) {
                     Island targetIsland = agent.generateTargetIsland();
                     return new MigrationAction(agent, targetIsland);
                 }
-                break;
-            case Death:
+            }
+            case Death -> {
                 return new DeathAction(agent);
+            }
         }
         return null;
     }

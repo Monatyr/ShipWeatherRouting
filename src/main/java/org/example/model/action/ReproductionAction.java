@@ -21,6 +21,7 @@ public class ReproductionAction extends Action {
         Agent newAgent = agent.createNewAgent(partner, commonGridPoints);
         agentsToAdd.add(newAgent);
         simulationData.populationSize++;
+        Action.actionCount.put(ActionType.Reproduction, Action.actionCount.get(ActionType.Reproduction) + 1);
         super.perform(agentsToAdd, agentsToRemove);
     }
 }

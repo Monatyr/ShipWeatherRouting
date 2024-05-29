@@ -18,6 +18,7 @@ public class MigrationAction extends Action {
         agentsToRemove.add(agent);
         agent.setIsland(targetIsland);
         targetIsland.addAgent(agent);
+        Action.actionCount.put(ActionType.Migration, Action.actionCount.get(ActionType.Migration) + 1);
         super.perform(agentsToAdd, agentsToRemove);
     }
 }

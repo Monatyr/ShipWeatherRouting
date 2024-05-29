@@ -21,6 +21,9 @@ public abstract class Algorithm {
         while (validState() && !checkStopCondition()) {
             runIteration();
             iterations++;
+            if (iterations % 100 == 0) {
+                System.out.println(iterations);
+            }
         }
 
 
