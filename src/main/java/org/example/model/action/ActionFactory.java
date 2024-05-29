@@ -38,8 +38,8 @@ public class ActionFactory {
                 }
             }
             case Migration -> {
-                // TODO: should migration require energy - it should, but the question is should it decrease it?
-                if (agent.getEnergy() >= simulationData.migrationEnergy && !agent.getIsland().isElite()) {
+                // TODO: implement migrations to the elite island and the behavior of elite agents
+                if (agent.getEnergy() >= simulationData.migrationEnergy) {// && !agent.getIsland().isElite()) {
                     Island targetIsland = agent.generateTargetIsland();
                     return new MigrationAction(agent, targetIsland);
                 }

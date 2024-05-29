@@ -6,6 +6,7 @@ import org.example.model.OptimizedFunction;
 import org.example.model.RoutePoint;
 import org.example.model.Solution;
 import org.example.model.action.Action;
+import org.example.model.action.ActionFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,16 +40,29 @@ public class Main {
         System.out.println("\n--- TOTAL SOLUTIONS: " + solutions.size() + " ---");
 
         population = emas.getPopulation();
-        System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum));
+        System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum) + " ---");
 
-//        List<Solution> solList = solutions.stream().toList();
-//        Solution sol = solList.get(0);
-//        for (Solution s : solutions) {
-//            if (s.getFunctionValues().get(OptimizedFunction.TravelTime) < sol.getFunctionValues().get(OptimizedFunction.TravelTime)) {
-//                sol = s;
-//            }
-//        }
-//        sol.getRoutePoints().stream().map(RoutePoint::getCoordinates).map(a -> a.longitude() + ", " + a.latitude()).forEach(System.out::println);
+        List<Solution> solList = solutions.stream().toList();
+        Solution solTime = solList.get(0);
+        Solution solFuel = solList.get(0);
+        Solution solSafety = solList.get(0);
+        for (Solution s : solutions) {
+            if (s.getFunctionValues().get(OptimizedFunction.TravelTime) < solTime.getFunctionValues().get(OptimizedFunction.TravelTime)) {
+                solTime = s;
+            }
+            if (s.getFunctionValues().get(OptimizedFunction.FuelUsed) < solFuel.getFunctionValues().get(OptimizedFunction.FuelUsed)) {
+                solFuel = s;
+            }
+            if (s.getFunctionValues().get(OptimizedFunction.Danger) < solSafety.getFunctionValues().get(OptimizedFunction.Danger)) {
+                solSafety = s;
+            }
+
+        }
+        System.out.println("\nTime: " + solTime.getFunctionValues());
+        System.out.println("Fuel: " + solFuel.getFunctionValues());
+        System.out.println("Danger: " + solSafety.getFunctionValues());
+
+//        solTime.getRoutePoints().stream().map(RoutePoint::getCoordinates).map(a -> a.longitude() + ", " + a.latitude()).forEach(System.out::println);
         System.out.println(Action.actionCount);
     }
 

@@ -24,7 +24,7 @@
     "deathEnergyBound": 0,
     "energyTaken": 15,
     "mutationRate": 0.10,
-    "reproductionProbability": 0.90,
+    "reproductionProbability": 0.95,
     "numberOfIslands": 4,
     "populationSize": 40,
     "startingTime": 0,
