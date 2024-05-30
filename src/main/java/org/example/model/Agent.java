@@ -68,9 +68,19 @@ public class Agent {
     }
 
     public Island generateTargetIsland() {
-        Set<Island> potentialTargetIslands = island.getNeighbouringIslands();
+        Set<Island> potentialTargetIslands = island.getNeighbouringIslands().stream()
+                .filter(i -> !i.isElite())
+                .collect(Collectors.toSet());
         int islandIndex = random.nextInt(potentialTargetIslands.size());
         return potentialTargetIslands.stream().toList().get(islandIndex);
+    }
+
+    public Island generateEliteIsland() {
+        return island.getNeighbouringIslands()
+                .stream()
+                .filter(Island::isElite)
+                .findFirst()
+                .get();
     }
 
     /** Return a potential partner with common points for an Agent or null */

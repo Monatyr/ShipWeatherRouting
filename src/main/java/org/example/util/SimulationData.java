@@ -28,6 +28,8 @@ public final class SimulationData {
     public double mutationRate;
     public double reproductionProbability;
     public double migrationProbability;
+    public double eliteMigrationProbability;
+    public int neededPrestige;
     public double energyTaken;
     public int startingTime;
     public double shipSpeed;
@@ -58,8 +60,9 @@ public final class SimulationData {
             populationSize = simulationObject.getInt("populationSize");
             mutationRate = simulationObject.getDouble("mutationRate");
             reproductionProbability = simulationObject.getDouble("reproductionProbability");
-            migrationProbability = 1.0 - reproductionProbability;
-            migrationProbability = Math.round(migrationProbability * 100) / 100.0;
+            migrationProbability = Math.round((1.0 - reproductionProbability) * 100) / 100.0;
+            eliteMigrationProbability = simulationObject.getDouble("eliteMigrationProbability");
+            neededPrestige = simulationObject.getInt("neededPrestige");
             initialEnergy = simulationObject.getDouble("initialEnergy");
             reproductionEnergyBound = simulationObject.getDouble("reproductionEnergyBound");
             reproductionEnergy = simulationObject.getDouble("reproductionEnergy");

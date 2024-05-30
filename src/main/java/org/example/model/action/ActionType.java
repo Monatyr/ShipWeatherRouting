@@ -4,5 +4,5 @@ public enum ActionType {
     Migration,
     Reproduction,
     Death,
-    Idle;
+    Idle
 }

@@ -28,4 +28,8 @@ public abstract class Action {
     public void perform(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) throws Exception {
         agent.setMadeAction(true);
     };
+
+    public static boolean canPerform() {
+        return true;
+    }
 }

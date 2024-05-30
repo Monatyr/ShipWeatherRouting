@@ -9,15 +9,17 @@ import org.example.util.GridPoint;
 import org.example.util.SimulationData;
 
 import java.util.List;
+import java.util.Random;
 
 
-public class ActionFactory {
+public abstract class ActionFactory {
     public static SimulationData simulationData = SimulationData.getInstance();
     private static List<Pair<ActionType, Double>> itemWeights = List.of(
             new Pair(ActionType.Migration, simulationData.migrationProbability),
             new Pair(ActionType.Reproduction, simulationData.reproductionProbability)
     );
     private static final EnumeratedDistribution<ActionType> enumeratedDistribution = new EnumeratedDistribution<>(itemWeights);
+    private static Random random = new Random();
 
     public static Action getAction(Agent agent) {
         ActionType actionType;
@@ -39,10 +41,19 @@ public class ActionFactory {
             }
             case Migration -> {
                 // TODO: implement migrations to the elite island and the behavior of elite agents
-                if (agent.getEnergy() >= simulationData.migrationEnergy) {// && !agent.getIsland().isElite()) {
-                    Island targetIsland = agent.generateTargetIsland();
-                    return new MigrationAction(agent, targetIsland);
+                Island targetIsland;
+                if (agent.getEnergy() < simulationData.migrationEnergy || agent.getIsland().isElite()) {
+                    break;
                 }
+                if (agent.getPrestige() > SimulationData.getInstance().neededPrestige
+                        && random.nextDouble() <= simulationData.eliteMigrationProbability
+                ) {
+                    System.out.println("WOW: " + agent.getPrestige());
+                    targetIsland = agent.generateEliteIsland();
+                } else {
+                    targetIsland = agent.generateTargetIsland();
+                }
+                return new MigrationAction(agent, targetIsland);
             }
             case Death -> {
                 return new DeathAction(agent);
