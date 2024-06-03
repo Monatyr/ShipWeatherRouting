@@ -38,7 +38,6 @@ public class EMASSolutionGenerator {
     }
 
     public static Solution generateSolution(Solution sol1, Solution sol2, List<GridPoint> commonGridPoints) {
-//        System.out.println(sol1.getRoutePoints().stream().map(RoutePoint::getGridCoordinates).toList());
         Solution newSolution = crossoverSolutions(sol1, sol2, commonGridPoints);
         newSolution = mutateSolution(newSolution);
         newSolution.calculateRouteValues();

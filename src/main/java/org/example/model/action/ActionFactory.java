@@ -48,7 +48,6 @@ public abstract class ActionFactory {
                 if (agent.getPrestige() > SimulationData.getInstance().neededPrestige
                         && random.nextDouble() <= simulationData.eliteMigrationProbability
                 ) {
-                    System.out.println("WOW: " + agent.getPrestige());
                     targetIsland = agent.generateEliteIsland();
                 } else {
                     targetIsland = agent.generateTargetIsland();

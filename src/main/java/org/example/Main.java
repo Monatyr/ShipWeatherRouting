@@ -23,10 +23,10 @@ public class Main {
         System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum));
 
         Set<Solution> solutions = emas.run();
+
         generalInfo(solutions);
         getBestPerCategory(solutions);
         getIslandsInfo(emas);
-
 //        solTime.getRoutePoints().stream().map(RoutePoint::getCoordinates).map(a -> a.longitude() + ", " + a.latitude()).forEach(System.out::println);
         System.out.println(Action.actionCount);
     }

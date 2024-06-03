@@ -26,9 +26,9 @@
     "mutationRate": 0.10,
     "reproductionProbability": 0.95,
     "eliteMigrationProbability": 0.05,
-    "neededPrestige": 3000,
+    "neededPrestige": 1000,
     "numberOfIslands": 4,
-    "populationSize": 50,
+    "populationSize": 60,
     "startingTime": 0,
     "shipSpeed": 30.0
   }
