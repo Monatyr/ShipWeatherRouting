@@ -21,11 +21,10 @@ public abstract class Algorithm {
         while (validState() && !checkStopCondition()) {
             runIteration();
             iterations++;
-            if (iterations % 100 == 0) {
-                System.out.println(iterations);
+            if (iterations % 500 == 0) {
+                System.out.println("Iteration: " + iterations + (iterations < 10000 ? "\t" : "" ) + "\tPopulation: " + population.size());
             }
         }
-
 
         Set<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toSet());
         return solutions;

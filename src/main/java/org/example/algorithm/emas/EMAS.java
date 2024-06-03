@@ -5,10 +5,15 @@ import org.example.model.Agent;
 import org.example.model.Island;
 import org.example.model.RoutePoint;
 import org.example.model.Solution;
+import org.example.model.action.Action;
+import org.example.model.action.ActionType;
+import org.example.model.action.MigrationAction;
 import org.example.util.SimulationData;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.lang.Math.min;
 
 
 /**
@@ -19,7 +24,6 @@ import java.util.stream.Collectors;
  */
 
 public class EMAS extends Algorithm {
-    private int populationSize = simulationData.populationSize;
     private final int islandsNumber = simulationData.numberOfIslands;
     private final List<Island> islands = new ArrayList<>();
 
@@ -52,13 +56,21 @@ public class EMAS extends Algorithm {
 
     private void dividePopulationBetweenIslands() {
         List<Agent> allAgents = population.stream().toList();
-        int elementsPerEachSet = population.size() / islandsNumber;
-        int extraElements = population.size() % islandsNumber;
+        for (int i = 0; i < allAgents.size(); i++) {
+            Island island = islands.get(i % islandsNumber);
+            Agent agent = allAgents.get(i);
+            island.addAgent(agent);
+            agent.setIsland(island);
+        }
+    }
 
+    private void dividePopulationBetweenIslandsWithoutElite() {
+        List<Agent> allAgents = population.stream().toList();
+        int elementsPerEachSet = population.size() / (islandsNumber - 1);
+        int extraElements = population.size() % (islandsNumber - 1);
         for (int i = 0; i < islandsNumber; i++) {
             int batchStart = i < extraElements ? i * (elementsPerEachSet + 1) : i * elementsPerEachSet;
             int batchEnd = i < extraElements ? (i + 1) * (elementsPerEachSet + 1) : (i + 1) * elementsPerEachSet;
-
             for (int j = batchStart; j < batchEnd; j++) {
                 Island island = islands.get(i);
                 Agent agent = allAgents.get(j);
@@ -73,7 +85,7 @@ public class EMAS extends Algorithm {
         List<List<RoutePoint>> startingRoutes = new ArrayList<>();
         startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/great_circle_route.txt"));
         startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/rhumb_line_route.txt"));
-        for (int i = 0; i < populationSize; i++) {
+        for (int i = 0; i < simulationData.populationSize; i++) {
             List<RoutePoint> route = startingRoutes.get(i % startingRoutes.size());
             Solution solution = EMASSolutionGenerator.generateSolution(route);
             solution = EMASSolutionGenerator.mutateSolution(solution);
@@ -109,10 +121,12 @@ public class EMAS extends Algorithm {
         population = islands.stream()
                 .flatMap(island -> island.getAgents().stream())
                 .collect(Collectors.toSet());
-        if (population.size() < populationSize) {
-            System.out.println(populationSize + " -> " + population.size());
+
+        if (simulationData.populationSize != population.size()) {
+            String err = "\nITER: " + iterations + "\nSIM-DATA-POP: " + simulationData.populationSize + "\nPOP: " + population.size();
+            throw new Exception(err);
         }
-        populationSize = population.size();
+        Map<ActionType, Integer> actions = Action.actionCount;
     }
 
     @Override
