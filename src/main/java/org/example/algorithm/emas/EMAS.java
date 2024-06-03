@@ -7,14 +7,9 @@ import org.example.model.RoutePoint;
 import org.example.model.Solution;
 import org.example.model.action.Action;
 import org.example.model.action.ActionType;
-import org.example.model.action.MigrationAction;
-import org.example.util.SimulationData;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.lang.Math.min;
-
 
 /**
  * Exemplary ships:
@@ -31,7 +26,7 @@ public class EMAS extends Algorithm {
     public EMAS() {
         createIslands(); // create empty islands
         generateInitialPopulation(); // create the initial population of agents without islands assigned
-        dividePopulationBetweenIslands(); // assign agent to islands
+        dividePopulationBetweenIslandsWithoutElite(); // assign agent to islands
     }
 
     /**
@@ -66,17 +61,11 @@ public class EMAS extends Algorithm {
 
     private void dividePopulationBetweenIslandsWithoutElite() {
         List<Agent> allAgents = population.stream().toList();
-        int elementsPerEachSet = population.size() / (islandsNumber - 1);
-        int extraElements = population.size() % (islandsNumber - 1);
-        for (int i = 0; i < islandsNumber; i++) {
-            int batchStart = i < extraElements ? i * (elementsPerEachSet + 1) : i * elementsPerEachSet;
-            int batchEnd = i < extraElements ? (i + 1) * (elementsPerEachSet + 1) : (i + 1) * elementsPerEachSet;
-            for (int j = batchStart; j < batchEnd; j++) {
-                Island island = islands.get(i);
-                Agent agent = allAgents.get(j);
-                island.addAgent(agent);
-                agent.setIsland(island);
-            }
+        for (int i = 0; i < allAgents.size(); i++) {
+            Island island = islands.get(i % (islandsNumber - 1) + 1);
+            Agent agent = allAgents.get(i);
+            island.addAgent(agent);
+            agent.setIsland(island);
         }
     }
 
