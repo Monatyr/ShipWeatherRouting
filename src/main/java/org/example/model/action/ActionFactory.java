@@ -45,8 +45,15 @@ public abstract class ActionFactory {
                 if (agent.getEnergy() < simulationData.migrationEnergy || agent.getIsland().isElite()) {
                     break;
                 }
+//                if (agent.getPrestige() > SimulationData.getInstance().neededPrestige
+//                        && random.nextDouble() <= simulationData.eliteMigrationProbability
+//                ) {
+//                    targetIsland = agent.generateEliteIsland();
+//                } else {
+//                    targetIsland = agent.generateTargetIsland();
+//                }
                 if (agent.getPrestige() > SimulationData.getInstance().neededPrestige
-                        && random.nextDouble() <= simulationData.eliteMigrationProbability
+                        && agent.canMigrateToElite()
                 ) {
                     targetIsland = agent.generateEliteIsland();
                 } else {

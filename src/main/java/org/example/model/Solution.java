@@ -3,6 +3,7 @@ package org.example.model;
 import org.example.util.Coordinates;
 import org.example.util.SimulationData;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,16 +24,12 @@ public class Solution implements Comparable<Solution> {
         float fuelUsed = 0;
         float travelTime = 0;
         float routeAvgDanger = 0;
-
         for (RoutePoint routePoint : routePoints) {
             Map<OptimizedFunction, Double> pointFunctions = routePoint.getFunctions();
             fuelUsed += pointFunctions.get(FuelUsed);
             travelTime += pointFunctions.get(TravelTime);
             routeAvgDanger += pointFunctions.get(Danger);
         }
-
-//        routeAvgDanger /= routePoints.size();
-
         this.functionValues = Map.of(
                 FuelUsed, fuelUsed,
                 TravelTime, travelTime,
@@ -81,6 +78,17 @@ public class Solution implements Comparable<Solution> {
             currTime += travelTimeSeconds;
             currPoint.setArrivalTime(currTime);
         }
+    }
+
+    public double similarityBetweenSolutions(Solution other) {
+        int counter = 0;
+        List<RoutePoint> otherRoutePoints = other.routePoints;
+        for (int i = 0; i < routePoints.size(); i++) {
+            if (routePoints.get(i).getGridCoordinates().equals(otherRoutePoints.get(i).getGridCoordinates())) {
+                counter++;
+            }
+        }
+        return (double) counter / routePoints.size();
     }
 
     public void printCoordinates() {

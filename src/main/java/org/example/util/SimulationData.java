@@ -33,6 +33,7 @@ public final class SimulationData {
     public double energyTaken;
     public int startingTime;
     public double shipSpeed;
+    public double similarityEpsilon;
     private int id;
 
 
@@ -71,10 +72,10 @@ public final class SimulationData {
             deathEnergyBound = simulationObject.getDouble("deathEnergyBound");
             startingTime = simulationObject.getInt("startingTime");
             shipSpeed = simulationObject.getDouble("shipSpeed");
+            similarityEpsilon = simulationObject.getDouble("similarityEpsilon");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public static SimulationData getInstance() {
