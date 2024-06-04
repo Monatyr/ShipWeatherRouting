@@ -22,7 +22,7 @@
     "reproductionEnergy": 50,
     "migrationEnergy": 50,
     "deathEnergyBound": 0,
-    "energyTaken": 15,
+    "energyTaken": 25,
     "mutationRate": 0.10,
     "reproductionProbability": 0.95,
     "eliteMigrationProbability": 0.05,
@@ -30,6 +30,7 @@
     "numberOfIslands": 4,
     "populationSize": 60,
     "startingTime": 0,
-    "shipSpeed": 30.0
+    "shipSpeed": 30.0,
+    "similarityEpsilon": 0.85
   }
 }

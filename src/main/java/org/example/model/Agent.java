@@ -8,10 +8,7 @@ import org.example.model.action.ActionFactory;
 import org.example.util.GridPoint;
 import org.example.util.SimulationData;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.abs;
@@ -24,8 +21,9 @@ public class Agent {
     private boolean madeAction;
     private Random random = new Random();
     private SimulationData simulationData = SimulationData.getInstance();
+    private Set<Agent> similarAgents = new HashSet<>(); // agents which solution is closer than epsilon
+    private Map<Agent, Integer> differentAgents = new HashMap<>(); // agents that are not similar and the number of agents in their surroundings
     public int id;
-
 
     public Agent(Solution solution, double energy, double prestige, Island island, boolean madeAction) {
         this.solution = solution;
@@ -128,6 +126,22 @@ public class Agent {
             other.energy += Math.min(energy, simulationData.energyTaken);
             energy -= Math.min(energy, simulationData.energyTaken);
         }
+        // gathering information about the surroundings of different agents
+        double solutionSimilarity = solution.similarityBetweenSolutions(otherSolution);
+        if (solutionSimilarity >= simulationData.similarityEpsilon) {
+            similarAgents.add(other);
+        } else {
+            int otherSurroundings = 0;
+            if (differentAgents.containsKey(other)) {
+                otherSurroundings = differentAgents.remove(other);
+            }
+            differentAgents.put(other, otherSurroundings + 1);
+        }
+    }
+
+    public boolean canMigrateToElite() {
+        double avgSurroundings = (double) differentAgents.values().stream().reduce(0, Integer::sum) / differentAgents.size();
+        return similarAgents.size() > avgSurroundings;
     }
 
     public double getEnergy() {
