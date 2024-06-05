@@ -42,6 +42,7 @@ public class RoutePoint {
     public RoutePoint(RoutePoint other) {
         this.gridCoordinates = other.getGridCoordinates();
         this.coordinates = other.getCoordinates();
+        // TODO: read from actual data
         this.functions = Map.of(Danger, random.nextDouble(), FuelUsed, random.nextDouble(), TravelTime, random.nextDouble());
     }
 

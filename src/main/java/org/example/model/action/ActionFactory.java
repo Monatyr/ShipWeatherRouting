@@ -30,6 +30,10 @@ public abstract class ActionFactory {
             actionType = enumeratedDistribution.sample();
         }
 
+        if (agent.getIsland().isElite()) {
+            return new EliteMutation(agent);
+        }
+
         switch (actionType) {
             case Reproduction -> {
                 if (agent.getEnergy() >= simulationData.reproductionEnergyBound && simulationData.populationSize < simulationData.maxPopulation) {

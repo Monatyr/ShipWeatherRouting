@@ -26,6 +26,7 @@ public final class SimulationData {
     public double migrationEnergy;
     public double deathEnergyBound;
     public double mutationRate;
+    public double eliteMutationRate;
     public double reproductionProbability;
     public double migrationProbability;
     public double eliteMigrationProbability;
@@ -60,6 +61,7 @@ public final class SimulationData {
             numberOfIslands = simulationObject.getInt("numberOfIslands");
             populationSize = simulationObject.getInt("populationSize");
             mutationRate = simulationObject.getDouble("mutationRate");
+            eliteMutationRate = simulationObject.getDouble("eliteMutationRate");
             reproductionProbability = simulationObject.getDouble("reproductionProbability");
             migrationProbability = Math.round((1.0 - reproductionProbability) * 100) / 100.0;
             eliteMigrationProbability = simulationObject.getDouble("eliteMigrationProbability");

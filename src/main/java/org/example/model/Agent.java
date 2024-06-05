@@ -172,6 +172,10 @@ public class Agent {
         this.island = island;
     }
 
+    public void setSolution(Solution solution) {
+        this.solution = solution;
+    }
+
     public void setMadeAction(boolean value) {
         this.madeAction = value;
     }

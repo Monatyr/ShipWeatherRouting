@@ -1,6 +1,7 @@
 package org.example.algorithm.emas;
 
 import org.apache.commons.math3.util.Pair;
+import org.example.model.OptimizedFunction;
 import org.example.model.RoutePoint;
 import org.example.model.Solution;
 import org.example.util.Coordinates;
@@ -39,8 +40,7 @@ public class EMASSolutionGenerator {
 
     public static Solution generateSolution(Solution sol1, Solution sol2, List<GridPoint> commonGridPoints) {
         Solution newSolution = crossoverSolutions(sol1, sol2, commonGridPoints);
-        newSolution = mutateSolution(newSolution);
-        newSolution.calculateRouteValues();
+        newSolution = mutateSolution(newSolution, simulationData.mutationRate);
         return newSolution;
     }
 
@@ -179,10 +179,6 @@ public class EMASSolutionGenerator {
             RoutePoint newPoint = new RoutePoint(currPoint);
             newRoutePoints.add(newPoint);
             GridPoint currCommonPoint = commonGridPoints.get(currCommonIndex);
-//            System.out.println(sourcePoints.stream().map(RoutePoint::getGridCoordinates).toList());
-//            System.out.println(otherPoints.stream().map(RoutePoint::getGridCoordinates).toList());
-//            System.out.println(currCommonPoint);
-//            System.out.println();
             if (currCommonPoint.x() == currPoint.getGridCoordinates().x()
                     && currCommonPoint.y() == currPoint.getGridCoordinates().y()) {
                 temp = sourcePoints;
@@ -194,22 +190,23 @@ public class EMASSolutionGenerator {
         return new Solution(newRoutePoints);
     }
 
-    public static Solution mutateSolution(Solution sol) {
+    public static Solution mutateSolution(Solution sol, double mutationRate) {
+        Solution mutatedSolution = new Solution(sol);
         List<PointWithIndex> pointsWithIndex = new ArrayList<>();
-        for (int i = 1; i < sol.getRoutePoints().size() - 1; i++) {
-            pointsWithIndex.add(new PointWithIndex(sol.getRoutePoints().get(i), i));
+        for (int i = 1; i < mutatedSolution.getRoutePoints().size() - 1; i++) {
+            pointsWithIndex.add(new PointWithIndex(mutatedSolution.getRoutePoints().get(i), i));
         }
         Collections.shuffle(pointsWithIndex);
         int cellsToMutate = min(
-            (int) ((simulationData.mapWidth - 2) * simulationData.mutationRate),
+            (int) ((simulationData.mapWidth - 2) * mutationRate),
             pointsWithIndex.size()
         );
 
         for (int i = 0; i < cellsToMutate; i++) {
             RoutePoint currRoutePoint = pointsWithIndex.get(i).routePoint();
             int pointIndex = pointsWithIndex.get(i).index();
-            RoutePoint previousNeighbour = sol.getRoutePoints().get(pointIndex - 1);
-            RoutePoint nextNeighbour = sol.getRoutePoints().get(pointIndex + 1);
+            RoutePoint previousNeighbour = mutatedSolution.getRoutePoints().get(pointIndex - 1);
+            RoutePoint nextNeighbour = mutatedSolution.getRoutePoints().get(pointIndex + 1);
             /**
              * Points must be located on a grid with rows and columns or the latitude difference should be
              * calculated using minutes and seconds.
@@ -239,9 +236,11 @@ public class EMASSolutionGenerator {
             // TODO: insert real time data from an API and not randomly generated
             GridPoint newGridCoordinates = new GridPoint(newHeight, currRoutePoint.getGridCoordinates().x());
             RoutePoint newRoutePoint = new RoutePoint(newGridCoordinates, calculateCoordinates(newGridCoordinates), 0);
-            sol.getRoutePoints().set(pointIndex, newRoutePoint);
+            mutatedSolution.getRoutePoints().set(pointIndex, newRoutePoint);
         }
-        return sol;
+        mutatedSolution.calculateRouteValues();
+        mutatedSolution.calculateFunctionValues();
+        return mutatedSolution;
     }
 }
 
