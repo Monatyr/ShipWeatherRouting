@@ -18,6 +18,7 @@ public class Main {
         runRouteGenerationScript();
         emas = new EMAS();
 
+        getIslandsInfo(emas);
         Set<Agent> population = emas.getPopulation();
         System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum));
 

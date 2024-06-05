@@ -24,6 +24,7 @@
     "deathEnergyBound": 0,
     "energyTaken": 25,
     "mutationRate": 0.10,
+    "eliteMutationRate": 0.20,
     "reproductionProbability": 0.95,
     "eliteMigrationProbability": 0.05,
     "neededPrestige": 1000,
@@ -31,6 +32,6 @@
     "populationSize": 60,
     "startingTime": 0,
     "shipSpeed": 30.0,
-    "similarityEpsilon": 0.85
+    "similarityEpsilon": 0.90
   }
 }
