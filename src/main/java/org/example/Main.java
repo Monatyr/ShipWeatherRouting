@@ -27,7 +27,6 @@ public class Main {
         generalInfo(solutions);
         getBestPerCategory(solutions);
         getIslandsInfo(emas);
-//        solTime.getRoutePoints().stream().map(RoutePoint::getCoordinates).map(a -> a.longitude() + ", " + a.latitude()).forEach(System.out::println);
         System.out.println(Action.actionCount);
     }
 
@@ -82,6 +81,8 @@ public class Main {
         System.out.println("\nTime: " + solTime.getFunctionValues());
         System.out.println("Fuel: " + solFuel.getFunctionValues());
         System.out.println("Danger: " + solSafety.getFunctionValues());
+
+//        solTime.getRoutePoints().stream().map(RoutePoint::getCoordinates).map(a -> a.longitude() + ", " + a.latitude()).forEach(System.out::println);
     }
 
     public static void getIslandsInfo(EMAS emas) {

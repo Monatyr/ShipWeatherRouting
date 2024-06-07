@@ -49,16 +49,6 @@ public class EMAS extends Algorithm {
         }
     }
 
-    private void dividePopulationBetweenIslands() {
-        List<Agent> allAgents = population.stream().toList();
-        for (int i = 0; i < allAgents.size(); i++) {
-            Island island = islands.get(i % islandsNumber);
-            Agent agent = allAgents.get(i);
-            island.addAgent(agent);
-            agent.setIsland(island);
-        }
-    }
-
     private void dividePopulationBetweenIslandsWithoutElite() {
         List<Agent> allAgents = population.stream().toList();
         for (int i = 0; i < allAgents.size(); i++) {
@@ -116,7 +106,7 @@ public class EMAS extends Algorithm {
             String err = "\nITER: " + iterations + "\nSIM-DATA-POP: " + simulationData.populationSize + "\nPOP: " + population.size();
             throw new Exception(err);
         }
-        Map<ActionType, Integer> actions = Action.actionCount;
+
     }
 
     @Override
@@ -136,8 +126,6 @@ public class EMAS extends Algorithm {
                 }
                 Agent otherAgent = agentsList.get(j);
                 if (otherAgent.getSolution().checkIfDominates(currAgent.getSolution()) == 1) {
-                    System.out.println(currAgent.getSolution().getFunctionValues());
-                    System.out.println(otherAgent.getSolution().getFunctionValues() + "\n");
                     dominated = true;
                     break;
                 }
@@ -157,9 +145,6 @@ public class EMAS extends Algorithm {
         islands.get(0).setAgents(nonDominatedAgents);
         double energyToDistribute = dominatedAgents.stream().map(Agent::getEnergy).reduce(0.0, Double::sum);
         redistributeEnergyToAgents(energyToDistribute, false);
-        if (energyToDistribute > 0) {
-            System.out.println(energyToDistribute);
-        }
         simulationData.populationSize -= dominatedAgents.size();
     }
 
