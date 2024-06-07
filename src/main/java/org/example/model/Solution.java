@@ -35,9 +35,10 @@ public class Solution implements Comparable<Solution> {
         for (Map.Entry<OptimizedFunction, Float> entry : functionValues.entrySet()) {
             Float value = entry.getValue();
             Float otherValue = other.functionValues.get(entry.getKey());
-            if (value > otherValue) {
+            // Watch out for the direction of operators! We are minimizing the values, not maximizing!!!!!!!!!!!!!
+            if (value < otherValue) {
                 otherCanDominate = false;
-            } else if (value < otherValue) {
+            } else if (value > otherValue) {
                 canDominateOther = false;
             }
         }

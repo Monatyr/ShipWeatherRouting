@@ -107,6 +107,7 @@ public class EMAS extends Algorithm {
         }
         // Compare agents - energy distribution, prestige gains
         evaluateAgents();
+        pruneDominatedEliteAgents();
         population = islands.stream()
                 .flatMap(island -> island.getAgents().stream())
                 .collect(Collectors.toSet());
@@ -123,9 +124,65 @@ public class EMAS extends Algorithm {
         return iterations >= simulationData.maxIterations;
     }
 
+    private Set<Agent> getNonDominatedAgents(Set<Agent> agents) {
+        List<Agent> agentsList = agents.stream().toList();
+        Set<Agent> nonDominatedAgents = new HashSet<>();
+        for (int i = 0; i < agentsList.size(); i++) {
+            boolean dominated = false;
+            Agent currAgent = agentsList.get(i);
+            for (int j = 0; j < agentsList.size(); j++) {
+                if (i == j) {
+                    continue;
+                }
+                Agent otherAgent = agentsList.get(j);
+                if (otherAgent.getSolution().checkIfDominates(currAgent.getSolution()) == 1) {
+                    System.out.println(currAgent.getSolution().getFunctionValues());
+                    System.out.println(otherAgent.getSolution().getFunctionValues() + "\n");
+                    dominated = true;
+                    break;
+                }
+            }
+            if (!dominated) {
+                nonDominatedAgents.add(currAgent);
+            }
+        }
+        return nonDominatedAgents;
+    }
+
+    private void pruneDominatedEliteAgents() {
+        Set<Agent> eliteAgents = islands.get(0).getAgents();
+        Set<Agent> nonDominatedAgents = getNonDominatedAgents(eliteAgents);
+        Set<Agent> dominatedAgents = new HashSet<>(eliteAgents);
+        dominatedAgents.removeAll(nonDominatedAgents);
+        islands.get(0).setAgents(nonDominatedAgents);
+        double energyToDistribute = dominatedAgents.stream().map(Agent::getEnergy).reduce(0.0, Double::sum);
+        redistributeEnergyToAgents(energyToDistribute, false);
+        if (energyToDistribute > 0) {
+            System.out.println(energyToDistribute);
+        }
+        simulationData.populationSize -= dominatedAgents.size();
+    }
+
     private void evaluateAgents() {
         for (Island island: islands) {
             island.evaluateAgents();
+        }
+    }
+
+    private void redistributeEnergyToAgents(double energy, boolean includeElite) {
+        List<Island> targetIslands;
+        if (includeElite) {
+            targetIslands = islands;
+        } else {
+            targetIslands = islands.stream().filter(i -> !i.isElite()).toList();
+        }
+        Set<Agent> nonEliteAgents = targetIslands.stream()
+                .flatMap(i -> i.getAgents().stream())
+                .filter(a -> a.getEnergy() > simulationData.deathEnergyBound)
+                .collect(Collectors.toSet());
+        double energyPerAgent = energy / nonEliteAgents.size();
+        for (Agent agent : nonEliteAgents) {
+            agent.setEnergy(agent.getEnergy() + energyPerAgent);
         }
     }
 

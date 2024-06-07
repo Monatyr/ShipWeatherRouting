@@ -25,7 +25,7 @@
     "energyTaken": 25,
     "mutationRate": 0.10,
     "eliteMutationRate": 0.20,
-    "reproductionProbability": 0.95,
+    "reproductionProbability": 0.99,
     "eliteMigrationProbability": 0.05,
     "neededPrestige": 1000,
     "numberOfIslands": 4,
