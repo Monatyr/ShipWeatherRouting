@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 
 public class Island {
-    private final Set<Agent> agents = new HashSet<>();
+    private Set<Agent> agents = new HashSet<>();
     private final boolean elite;
     private Set<Island> neighbouringIslands;
     private final Random random = new Random();
@@ -62,5 +62,9 @@ public class Island {
 
     public void setNeighbouringIslands(Set<Island> neighbouringIslands) {
         this.neighbouringIslands = neighbouringIslands;
+    }
+
+    public void setAgents(Set<Agent> agents) {
+        this.agents = agents;
     }
 }
