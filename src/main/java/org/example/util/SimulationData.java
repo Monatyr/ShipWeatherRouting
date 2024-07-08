@@ -1,13 +1,22 @@
 package org.example.util;
 
 import org.json.*;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public final class SimulationData {
     private static SimulationData instance;
     private final String configPath = "src/main/resources/config.json";
+
+    // temporary static grid with forces in each of its cells
+    public List<List<Integer>> gridForces;
 
     public double maxLatitude;
     public double minLatitude;
@@ -40,6 +49,8 @@ public final class SimulationData {
 
     private SimulationData() {
         try {
+            readGridFromFile("scripts/heightmap.txt");
+
             String jsonString = new String(Files.readAllBytes(Paths.get(configPath)));
             JSONObject dataObject = new JSONObject(jsonString);
 
@@ -89,5 +100,19 @@ public final class SimulationData {
 
     public int generateId() {
         return id++;
+    }
+
+    public void readGridFromFile(String filename) throws IOException {
+        gridForces = new ArrayList<>();
+
+        FileReader fileReader = new FileReader(filename);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        List<String> lines = new ArrayList<String>();
+        String line = null;
+        while ((line = bufferedReader.readLine()) != null) {
+            List<Integer> forces = Arrays.stream(line.split(" ")).map(s -> Integer.valueOf(s)).toList();
+            gridForces.add(forces);
+        }
+        bufferedReader.close();
     }
 }

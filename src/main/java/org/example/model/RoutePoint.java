@@ -3,6 +3,7 @@ package org.example.model;
 
 import org.example.util.Coordinates;
 import org.example.util.GridPoint;
+import org.example.util.SimulationData;
 
 import java.util.Map;
 import java.util.Random;
@@ -36,14 +37,21 @@ public class RoutePoint {
         this.conditions = null;
 
         // TODO: read the function values from actual data / calculate them
-        this.functions = Map.of(Danger, random.nextDouble(), FuelUsed, random.nextDouble(), TravelTime, random.nextDouble());
+        Double danger = SimulationData.getInstance().gridForces.get(gridCoordinates.y()).get(gridCoordinates.x()).doubleValue();
+        Double fuelUsed = SimulationData.getInstance().gridForces.get(gridCoordinates.y()).get(gridCoordinates.x()).doubleValue();
+        this.functions = Map.of(Danger, danger, FuelUsed, fuelUsed, TravelTime, random.nextDouble());
+        //        this.functions = Map.of(Danger, random.nextDouble(), FuelUsed, random.nextDouble(), TravelTime, random.nextDouble());
     }
 
     public RoutePoint(RoutePoint other) {
         this.gridCoordinates = other.getGridCoordinates();
         this.coordinates = other.getCoordinates();
         // TODO: read from actual data
-        this.functions = Map.of(Danger, random.nextDouble(), FuelUsed, random.nextDouble(), TravelTime, random.nextDouble());
+        this.functions = Map.of(
+                Danger, other.functions.get(Danger),
+                FuelUsed, other.functions.get(FuelUsed),
+                TravelTime, other.functions.get(TravelTime)
+        );
     }
 
     public GridPoint getGridCoordinates() {

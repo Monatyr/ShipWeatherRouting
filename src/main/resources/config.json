@@ -32,6 +32,6 @@
     "populationSize": 60,
     "startingTime": 0,
     "shipSpeed": 30.0,
-    "similarityEpsilon": 0.90
+    "similarityEpsilon": 0.9
   }
 }
