@@ -212,9 +212,9 @@ public class EMASSolutionGenerator {
              * calculated using minutes and seconds.
              */
             List<Integer> availableHeights = new ArrayList<>();
-            int minY = (int) min(previousNeighbour.getGridCoordinates().y(), nextNeighbour.getGridCoordinates().y());
-            int maxY = (int) max(previousNeighbour.getGridCoordinates().y(), nextNeighbour.getGridCoordinates().y());
-            int currY = (int) currRoutePoint.getGridCoordinates().y();
+            int minY = min(previousNeighbour.getGridCoordinates().y(), nextNeighbour.getGridCoordinates().y());
+            int maxY = max(previousNeighbour.getGridCoordinates().y(), nextNeighbour.getGridCoordinates().y());
+            int currY = currRoutePoint.getGridCoordinates().y();
             for (int j = -simulationData.maxVerticalDistance; j <= simulationData.maxVerticalDistance; j++) {
                 int potentialHeight = currY + j;
                 if (potentialHeight < 0 || potentialHeight >= simulationData.mapHeight) {
