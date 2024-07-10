@@ -1,6 +1,5 @@
 package org.example.model;
 
-
 import org.example.util.Coordinates;
 import org.example.util.GridPoint;
 import org.example.util.SimulationData;

@@ -1,5 +1,7 @@
 package org.example.physicalModel;
 
+import org.example.util.Coordinates;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,12 +88,9 @@ public abstract class PhysicalModel {
         S = L * (2 * T_avg + B) * Math.sqrt(C_M)
                 * (0.453 + 0.4425 * C_B - 0.2862 * C_M - 0.003467 * B / T_avg + 0.3696 * C_WP)
                 + 2.38 * A_BT / C_B;
-        System.out.println(S);
         k_1 = c_13 * (0.93 + c_12 * Math.pow(B / L_R, 0.92497) * Math.pow(0.95 - C_P, -0.521448)
                 * Math.pow(1 - C_P + 0.0225 * lcb, 0.6906)) - 1;
-        System.out.println(k_1);
         C_f = getC_f(v, viscosity);
-        System.out.println(C_f);
         return 0.5 * density * Math.pow(v, 2) * S * C_f;
     }
 
@@ -161,14 +160,16 @@ public abstract class PhysicalModel {
      *  ADDED RESISTANCE DUE TO WEATHER CONDITIONS FUNCTIONS
      */
 
-    public static double getDirectionReductionCoefficient(double beta, int BN) {
+    public static double getDirectionReductionCoefficient(double shipHeadingAngle, double windAngle, int BN) {
+        double beta = getRelativeWindAngle(shipHeadingAngle, windAngle);
+        beta = Math.abs(beta); // beta is <-180, 180>; Only the abs value of the angle is important in the calculations
         if (beta < 30) {
             return 1;
         } else if (beta < 60) {
             return (1.7 - 0.03 * Math.pow(BN - 4, 2)) / 2;
         } else if (beta < 150) {
             return (0.9 - 0.06 * Math.pow(BN - 6, 2)) / 2;
-        } else if (beta < 180) {
+        } else if (beta <= 180) {
             return (0.4 - 0.03 * Math.pow(BN - 8, 2)) / 2;
         }
         return 0.0;
@@ -218,24 +219,56 @@ public abstract class PhysicalModel {
     }
 
     public static double getShipFormCoefficient(int BN) {
-        System.out.println();
         return 0.7 * BN + Math.pow(BN, 6.5) / (22 * Math.pow(displacement, 2.0/3));
     }
 
-    public static double getEndSpeed(double calmWaterSpeed, double beta, int BN) {
-        C_beta = getDirectionReductionCoefficient(beta, BN);
+    // in head wind BN >= 10 give speeds close to 0 or even negative; 12 BN can give e.g. -25m/s
+    public static double getEndSpeed(double calmWaterSpeed, double shipHeadingAngle, double windAngle, int BN) {
+        C_beta = getDirectionReductionCoefficient(shipHeadingAngle, windAngle, BN);
         C_U = getSpeedReductionCoefficient(C_B, calmWaterSpeed, "normal");
         C_Form = getShipFormCoefficient(BN);
-        System.out.println("C_beta: " + C_beta + "\nC_U: " + C_U + "\nC_Form: " + C_Form);
-        return calmWaterSpeed - C_B * C_U * C_Form * calmWaterSpeed / 100;
+        return calmWaterSpeed - C_beta * C_U * C_Form * calmWaterSpeed / 100;
+    }
+
+    /** Utils functions */
+
+    // 0 deg -> North   90 deg -> East   180 -> South   270 -> West
+    public static double getShipHeadingAngle(Coordinates startCoords, Coordinates endCoords) {
+        double startLat = Math.toRadians(startCoords.latitude());
+        double startLong = Math.toRadians(startCoords.longitude());
+        double endLat = Math.toRadians(endCoords.latitude());
+        double endLong = Math.toRadians(endCoords.longitude());
+        double longitudeDiff = endLong - startLong;
+        double X = Math.cos(endLat) * Math.sin(longitudeDiff);
+        double Y = Math.cos(startLat) * Math.sin(endLat) - Math.sin(startLat) * Math.cos(endLat) * Math.cos(longitudeDiff);
+        double bearing = Math.atan2(X, Y);
+        return Math.toDegrees(bearing);
+    }
+
+    /**
+     * @param shipHeadingAngle Angle IN which the ship is heading
+     * @param windAngle Angle FROM which the wind is blowing
+     * @return Angle relative to the ship FROM which the wind is blowing
+     */
+    public static double getRelativeWindAngle(double shipHeadingAngle, double windAngle) {
+        double relativeAngle = (windAngle - shipHeadingAngle + 360) % 360;
+        System.out.println("Relative angle: " + relativeAngle);
+        return relativeAngle <= 180 ? relativeAngle : relativeAngle - 360;
     }
 
     public static void main(String[] args) {
         double res = PhysicalModel.getTotalCalmWaterResistance(v, viscosity);
         System.out.println(res);
 
-        double endSpeed = getEndSpeed(v, 20, 10);
-        System.out.println(v);
-        System.out.println(endSpeed);
+        double endSpeed = getEndSpeed(v, 0, 0, 12);
+        System.out.println("Target speed: " + v);
+        System.out.println("End speed: " + endSpeed);
+
+        double bearing = getShipHeadingAngle(
+                new Coordinates(39.099912, -94.581213),
+                new Coordinates(38.627089, -90.200203)
+        );
+        System.out.println(bearing);
+        System.out.println(getRelativeWindAngle(30, -30));
     }
 }
