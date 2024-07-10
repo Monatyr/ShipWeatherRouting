@@ -40,6 +40,8 @@ public class RoutePoint {
         Double fuelUsed = SimulationData.getInstance().gridForces.get(gridCoordinates.y()).get(gridCoordinates.x()).doubleValue();
         this.functions = Map.of(Danger, danger, FuelUsed, fuelUsed, TravelTime, random.nextDouble());
         //        this.functions = Map.of(Danger, random.nextDouble(), FuelUsed, random.nextDouble(), TravelTime, random.nextDouble());
+
+        calculateFunctionValues();
     }
 
     public RoutePoint(RoutePoint other) {
@@ -51,6 +53,12 @@ public class RoutePoint {
                 FuelUsed, other.functions.get(FuelUsed),
                 TravelTime, other.functions.get(TravelTime)
         );
+
+        calculateFunctionValues();
+    }
+
+    private void calculateFunctionValues() {
+
     }
 
     public GridPoint getGridCoordinates() {

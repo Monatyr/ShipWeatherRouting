@@ -62,7 +62,6 @@ public abstract class PhysicalModel {
         return u / Math.sqrt(g * lwl);
     }
 
-
     /**
      *  CALM WATER RESISTANCE FUNCTIONS
      */
@@ -222,12 +221,47 @@ public abstract class PhysicalModel {
         return 0.7 * BN + Math.pow(BN, 6.5) / (22 * Math.pow(displacement, 2.0/3));
     }
 
+    public static double getSpeedAfterVoluntarySlowDownDueToWaveHeight(double v, double waveHeight) {
+        if (waveHeight <= 6) {
+            return v;
+        } else if (waveHeight <= 9) {
+            return v * 0.75;
+        } else if (waveHeight <= 12) {
+            return v * 0.5;
+        } else {
+            return v * 0.25;
+        }
+    }
+
     // in head wind BN >= 10 give speeds close to 0 or even negative; 12 BN can give e.g. -25m/s
     public static double getEndSpeed(double calmWaterSpeed, double shipHeadingAngle, double windAngle, int BN) {
         C_beta = getDirectionReductionCoefficient(shipHeadingAngle, windAngle, BN);
         C_U = getSpeedReductionCoefficient(C_B, calmWaterSpeed, "normal");
         C_Form = getShipFormCoefficient(BN);
         return calmWaterSpeed - C_beta * C_U * C_Form * calmWaterSpeed / 100;
+    }
+
+    /** CALM WATER SPEED AND RESISTANCE BASED ON TARGET END SPEED */
+
+    // get calm water speed based on the target end speed using Newton-Raphson method. Does not work for BN >= 11
+    public static double getCalmWaterSpeed(double endSpeed, double tolerance, int maxIterations, int BN, double shipHeadingAngle, double windAngle) {
+        C_Form = getShipFormCoefficient(BN);
+        C_beta = getDirectionReductionCoefficient(shipHeadingAngle, windAngle, BN);
+        double calmWaterSpeed = endSpeed;
+        for (int i = 0; i < maxIterations; i++) {
+            double Fn = calmWaterSpeed / Math.sqrt(g * L);
+            double CU = 1.7 - 1.4 * Fn - 7.4 * Fn * Fn;
+            double fCalmWaterSpeed = calmWaterSpeed * (1 - (C_beta * C_Form * CU / 100.0)) - endSpeed;
+            double fPrimeCalmWaterSpeed = 1 - (C_beta * C_Form / 100.0) * (1.7 - 2.8 * Fn - 22.2 * Fn * Fn / Math.sqrt(g * L));
+            double calmWaterSpeedNext = calmWaterSpeed - fCalmWaterSpeed / fPrimeCalmWaterSpeed;
+
+            System.out.println(i + ": " + calmWaterSpeedNext);
+            if (Math.abs(calmWaterSpeedNext - calmWaterSpeed) < tolerance) {
+                return calmWaterSpeedNext;
+            }
+            calmWaterSpeed = calmWaterSpeedNext;
+        }
+        return calmWaterSpeed;
     }
 
     /** Utils functions */
@@ -252,7 +286,6 @@ public abstract class PhysicalModel {
      */
     public static double getRelativeWindAngle(double shipHeadingAngle, double windAngle) {
         double relativeAngle = (windAngle - shipHeadingAngle + 360) % 360;
-        System.out.println("Relative angle: " + relativeAngle);
         return relativeAngle <= 180 ? relativeAngle : relativeAngle - 360;
     }
 
@@ -260,9 +293,10 @@ public abstract class PhysicalModel {
         double res = PhysicalModel.getTotalCalmWaterResistance(v, viscosity);
         System.out.println(res);
 
-        double endSpeed = getEndSpeed(v, 0, 0, 12);
-        System.out.println("Target speed: " + v);
-        System.out.println("End speed: " + endSpeed);
+        double calmWaterSpeed = 12;
+        double shipHeadingAngle = 30;
+        double windAngle = -30;
+        int BN = 7;
 
         double bearing = getShipHeadingAngle(
                 new Coordinates(39.099912, -94.581213),
@@ -270,5 +304,11 @@ public abstract class PhysicalModel {
         );
         System.out.println(bearing);
         System.out.println(getRelativeWindAngle(30, -30));
+
+        double endSpeed = getEndSpeed(calmWaterSpeed, shipHeadingAngle, windAngle, BN);
+        calmWaterSpeed = getCalmWaterSpeed(endSpeed, 1e-2, 10, BN, shipHeadingAngle, windAngle);
+
+        System.out.println("End speed: " + endSpeed);;
+        System.out.println("Calm water speed: " + calmWaterSpeed);
     }
 }
