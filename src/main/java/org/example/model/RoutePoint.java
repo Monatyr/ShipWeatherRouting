@@ -23,6 +23,7 @@ public class RoutePoint {
     private int arrivalTime; // epoch time; not UTC!
     private WeatherConditions conditions;
     private Map<OptimizedFunction, Double> functions;
+    private double shipSpeed;
     private static Random random = new Random();
 
 
@@ -31,9 +32,10 @@ public class RoutePoint {
         this.coordinates = coordinates;
 
         this.arrivalTime = arrivalTime;
+        this.shipSpeed = SimulationData.getInstance().shipSpeed;
 
         // TODO: read the weather conditions from file
-        this.conditions = null;
+        this.conditions = new WeatherConditions(0.0, 0.0, 0.0, 0.0);
 
         // TODO: read the function values from actual data / calculate them
         Double danger = SimulationData.getInstance().gridForces.get(gridCoordinates.y()).get(gridCoordinates.x()).doubleValue();
@@ -47,6 +49,10 @@ public class RoutePoint {
     public RoutePoint(RoutePoint other) {
         this.gridCoordinates = other.getGridCoordinates();
         this.coordinates = other.getCoordinates();
+
+        // TODO: read the weather conditions from file and base their value on the time of arrival in this particular solution
+        this.conditions = other.conditions;
+
         // TODO: read from actual data
         this.functions = Map.of(
                 Danger, other.functions.get(Danger),
@@ -55,6 +61,11 @@ public class RoutePoint {
         );
 
         calculateFunctionValues();
+    }
+
+    public void updateData(int arrivalTime) {
+        this.arrivalTime = arrivalTime;
+        // TODO: read all of the values from the weather data and calculate resistances
     }
 
     private void calculateFunctionValues() {
@@ -85,11 +96,11 @@ public class RoutePoint {
         this.arrivalTime = arrivalTime;
     }
 
-    public WeatherConditions getConditions() {
+    public WeatherConditions getWeatherConditions() {
         return conditions;
     }
 
-    public void setConditions(WeatherConditions conditions) {
+    public void setWeatherConditions(WeatherConditions conditions) {
         this.conditions = conditions;
     }
 
@@ -99,5 +110,9 @@ public class RoutePoint {
 
     public void setFunctions(Map<OptimizedFunction, Double> functions) {
         this.functions = functions;
+    }
+
+    public void setShipSpeed(double targetEndSpeed) {
+        this.shipSpeed = targetEndSpeed;
     }
 }

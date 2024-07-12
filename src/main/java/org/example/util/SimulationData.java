@@ -17,7 +17,7 @@ public final class SimulationData {
 
     // temporary static grid with forces in each of its cells
     public List<List<Integer>> gridForces;
-
+    // grid
     public double maxLatitude;
     public double minLatitude;
     public int mapHeight;
@@ -26,6 +26,7 @@ public final class SimulationData {
     public int populationSize;
     public Coordinates startCoordinates;
     public Coordinates endCoordinates;
+    // simulation
     public int maxIterations;
     public int maxPopulation;
     public int maxVerticalDistance;
@@ -44,6 +45,31 @@ public final class SimulationData {
     public int startingTime;
     public double shipSpeed;
     public double similarityEpsilon;
+    // ship
+    public double L;
+    public double L_pp;
+    public double B;
+    public double T_F;
+    public double T_A;
+    public double displacement;
+    public double A_BT;
+    public double h_B;
+    public double C_M;
+    public double C_WP;
+    public double A_T;
+    public double S_APP;
+    public double C_stern;
+    public double D;
+    public int Z;
+    public double clearance;
+    public double totalEfficiency;
+    // engine
+    public double minOutput;
+    public double maxOutput;
+    public double minLoad = 0.3;
+    public double maxLoad = 1.0;
+
+
     private int id;
 
 
@@ -86,6 +112,32 @@ public final class SimulationData {
             startingTime = simulationObject.getInt("startingTime");
             shipSpeed = simulationObject.getDouble("shipSpeed");
             similarityEpsilon = simulationObject.getDouble("similarityEpsilon");
+
+            JSONObject shipObject = dataObject.getJSONObject("ship");
+            L = shipObject.getDouble("L");
+            L_pp = shipObject.getDouble("L_pp");
+            B = shipObject.getDouble("B");
+            T_F = shipObject.getDouble("T_F");
+            T_A = shipObject.getDouble("T_A");
+            displacement = shipObject.getDouble("displacement");
+            A_BT = shipObject.getDouble("A_BT");
+            h_B = shipObject.getDouble("h_B");
+            C_M = shipObject.getDouble("C_M");
+            C_WP = shipObject.getDouble("C_WP");
+            A_T = shipObject.getDouble("A_T");
+            S_APP = shipObject.getDouble("S_APP");
+            C_stern = shipObject.getDouble("C_stern");
+            D = shipObject.getDouble("D");
+            Z = shipObject.getInt("Z");
+            clearance = shipObject.getDouble("clearance");
+            totalEfficiency = shipObject.getDouble("totalEfficiency");
+
+            JSONObject engineObject = dataObject.getJSONObject("engine");
+            minOutput = engineObject.getDouble("minOutput");
+            maxOutput = engineObject.getDouble("maxOutput");
+            minLoad = engineObject.getDouble("minLoad");
+            maxLatitude = engineObject.getDouble("maxLoad");
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

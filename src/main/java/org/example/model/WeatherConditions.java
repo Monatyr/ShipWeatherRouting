@@ -1,4 +1,9 @@
 package org.example.model;
 
-public record WeatherConditions() {
+public record WeatherConditions(
+        double windSpeed,
+        double windAngle,
+        double waveHeight,
+        double waveSpeed
+) {
 }

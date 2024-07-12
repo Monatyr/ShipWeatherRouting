@@ -2,7 +2,7 @@
   "map": {
     "maxLatitude": 60,
     "minLatitude": 20,
-    "columns": 100,
+    "columns": 60,
     "rows": 200,
     "startPos": {
       "latitude": 40.7306,
@@ -31,7 +31,33 @@
     "numberOfIslands": 4,
     "populationSize": 60,
     "startingTime": 0,
-    "shipSpeed": 30.0,
+    "shipSpeed": 12.0,
     "similarityEpsilon": 0.9
+  },
+  "ship": {
+    "L": 205.0,
+    "L_pp": 200.0,
+    "B": 32.0,
+    "T_F": 10.0,
+    "T_A": 10.0,
+    "displacement": 37500,
+    "A_BT": 20.0,
+    "h_B": 4.0,
+    "C_M": 0.980,
+    "C_WP": 0.750,
+    "A_T": 16.0,
+    "S_APP": 50.0,
+    "C_stern": 10.0,
+    "D": 8.0,
+    "Z": 4,
+    "clearance": 0.20,
+    "totalEfficiency": 0.64
+  },
+  "engine": {
+    "minOutput": 20000,
+    "maxOutput": 55000,
+    "minLoad": 30,
+    "maxLoad": 100,
+    "optimalLoad": 80
   }
 }
