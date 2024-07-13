@@ -1,13 +1,16 @@
 package org.example.model;
 
+import org.example.physicalModel.PhysicalModel;
 import org.example.util.Coordinates;
 import org.example.util.SimulationData;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static org.example.model.OptimizedFunction.*;
+import static org.example.physicalModel.PhysicalModel.*;
 
 public class Solution implements Comparable<Solution> {
     private List<RoutePoint> routePoints = new ArrayList<>();
@@ -72,14 +75,41 @@ public class Solution implements Comparable<Solution> {
     //TODO: Go through the RoutePoints and calculate their arrival time, set weather conditions and calculate function values
     public void calculateRouteValues() {
         int currTime = simulationData.startingTime;
-        routePoints.get(0).setArrivalTime(currTime);
+        routePoints.get(0).updateData(currTime);
         for (int i = 1; i < routePoints.size(); i++) {
             RoutePoint prevPoint = routePoints.get(i-1);
             RoutePoint currPoint = routePoints.get(i);
+
+            // From the previous point all the weather data will be collected and used to calculate the speed and resistances.
+            // Based on the travel time data for the current point will be found out.
+            double shipHeadingAngle = getShipHeadingAngle(prevPoint.getCoordinates(), currPoint.getCoordinates());
+            double windAngle = prevPoint.getWeatherConditions().windAngle(); // make sure the wind angle is the angle FROM which the wind is blowing
+            double relativeWindAngle = getRelativeWindAngle(shipHeadingAngle, windAngle);
+
+            Random random = new Random();
+            // speed in each leg of the journey should also be a variable in the optimization process // TODO: don't read it from the config file but actually adapt the value
+            double targetEndSpeed = simulationData.shipSpeed + random.nextDouble(-2, 2);
+            double calmWaterSpeed = getCalmWaterSpeed(targetEndSpeed, 1e-2, 10, 7, shipHeadingAngle, windAngle); // TODO: use actual weather data
+
+
+            double totalResistance = getTotalCalmWaterResistance(calmWaterSpeed, 1.19 * Math.pow(10, -6)); // TODO: change viscosity to actual value dependent on temp?
+            // TODO: if the total resistance is to high for the engine to achieve then, the final ship speed should be reduced (not sure this situation will occur)
+
             double distance = Coordinates.realDistance(currPoint.getCoordinates(), prevPoint.getCoordinates());
-            int travelTimeSeconds = (int) (distance / simulationData.shipSpeed * 3600);
+            double travelTimeSeconds = (int) (distance / simulationData.shipSpeed * 3600); // TODO: is that correct?
+
+            double fuelUsed = getFuelUsed(totalResistance, targetEndSpeed, (double) travelTimeSeconds / 3600);
+
             currTime += travelTimeSeconds;
-            currPoint.setArrivalTime(currTime);
+
+            Map<OptimizedFunction, Double> newOptimizedFunctions = Map.of(
+                    FuelUsed, fuelUsed,
+                    TravelTime, travelTimeSeconds,
+                    Danger, 1.0
+            );
+            currPoint.setFunctions(newOptimizedFunctions);
+            currPoint.setShipSpeed(targetEndSpeed);
+            currPoint.updateData(currTime);
         }
     }
 

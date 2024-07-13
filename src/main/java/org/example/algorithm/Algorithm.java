@@ -23,7 +23,7 @@ public abstract class Algorithm {
             runIteration();
             iterations++;
             if (iterations % 500 == 0) {
-                System.out.println("Iteration: " + iterations + (iterations < 10000 ? "\t" : "" ) + "\tPopulation: " + population.size());
+                System.out.println("Iteration: " + iterations + (iterations < 10000 ? "\t" : "" ) + "\tPopulation: " + population.size() + "\t\tElite: " + population.stream().filter(o -> o.getIsland().isElite()).toList().size());
             }
         }
 

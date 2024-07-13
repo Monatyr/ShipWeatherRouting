@@ -80,12 +80,9 @@ public class Main {
         }
         System.out.println("\nTime: " + solTime.getFunctionValues());
         System.out.println("Fuel: " + solFuel.getFunctionValues());
-        System.out.println("Danger: " + solSafety.getFunctionValues());
+        System.out.println("Danger: " + solSafety.getFunctionValues() + "\n\n");
 
         solTime.getRoutePoints().stream().map(RoutePoint::getCoordinates).map(a -> a.longitude() + ", " + a.latitude()).forEach(System.out::println);
-//        solTime.getRoutePoints().stream().map(RoutePoint::getGridCoordinates).map(p -> p.x() + " " + p.y()).forEach(System.out::println);
-//        System.out.println();
-//        solFuel.getRoutePoints().stream().map(RoutePoint::getGridCoordinates).map(p -> p.x() + " " + p.y()).forEach(System.out::println);
     }
 
     public static void getIslandsInfo(EMAS emas) {
