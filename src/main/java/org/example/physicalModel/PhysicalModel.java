@@ -269,6 +269,17 @@ public abstract class PhysicalModel {
         return calmWaterSpeed;
     }
 
+    public static double adjustSpeedForWaveHeight(double calmWaterSpeed, double waveHeight) {
+        if (waveHeight < 6) {
+            return calmWaterSpeed;
+        } else if (waveHeight < 9) {
+            return 0.75 * calmWaterSpeed;
+        } else if (waveHeight < 12) {
+            return 0.5 * calmWaterSpeed;
+        }
+        return 0.25 * calmWaterSpeed;
+    }
+
     /** Utils functions */
 
     // 0 deg -> North   90 deg -> East   180 -> South   270 -> West
@@ -311,15 +322,15 @@ public abstract class PhysicalModel {
     }
 
 
-    private static double getBrakePower(double totalResistance, double shipSpeed) {
+
+    public static double getBrakePower(double totalResistance, double shipSpeed) { // TODO: affect ship speed if brake power is limited by the engine's capabilities
         double effectivePower = totalResistance * shipSpeed;
         return effectivePower / totalEfficiency;
     }
 
     // TODO: change fuel used to full cost or something like that.
-    public static double getFuelUsed(double totalResistance, double shipSpeed, double journeyTimeInHours) {
-        double brakePower = getBrakePower(totalResistance, shipSpeed);
-        double engineLoad = brakePower / (simulationData.maxOutput * 1000);
+    public static double getFuelUsed(double brakePower, double journeyTimeInHours) {
+        double engineLoad = brakePower / (simulationData.maxOutput);
         if (engineLoad > maxRecordedEngineLoad) {
             System.out.println("New max engine load (should be <=0 1) " + engineLoad);
             maxRecordedEngineLoad = engineLoad;

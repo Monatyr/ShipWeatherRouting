@@ -1,6 +1,5 @@
 package org.example.model;
 
-import org.example.physicalModel.PhysicalModel;
 import org.example.util.Coordinates;
 import org.example.util.SimulationData;
 
@@ -16,6 +15,14 @@ public class Solution implements Comparable<Solution> {
     private List<RoutePoint> routePoints = new ArrayList<>();
     private Map<OptimizedFunction, Float> functionValues;
     private SimulationData simulationData = SimulationData.getInstance();
+
+    //test variables TODO: delete later
+    public static int below = 0;
+    public static int above = 0;
+    public static double fullNodePower = 0;
+    public static double fullNodeSpeed = 0;
+    public static double nodeNumber = 0;
+
 
     public Solution(List<RoutePoint> routePoints) {
         this.routePoints = routePoints;
@@ -84,21 +91,48 @@ public class Solution implements Comparable<Solution> {
             // Based on the travel time data for the current point will be found out.
             double shipHeadingAngle = getShipHeadingAngle(prevPoint.getCoordinates(), currPoint.getCoordinates());
             double windAngle = prevPoint.getWeatherConditions().windAngle(); // make sure the wind angle is the angle FROM which the wind is blowing
-            double relativeWindAngle = getRelativeWindAngle(shipHeadingAngle, windAngle);
+            double waveHeight = prevPoint.getWeatherConditions().waveHeight();
 
             Random random = new Random();
+            int BN = 7; // TODO: use weather data
             // speed in each leg of the journey should also be a variable in the optimization process // TODO: don't read it from the config file but actually adapt the value
-            double targetEndSpeed = simulationData.shipSpeed + random.nextDouble(-2, 2);
-            double calmWaterSpeed = getCalmWaterSpeed(targetEndSpeed, 1e-2, 10, 7, shipHeadingAngle, windAngle); // TODO: use actual weather data
+            double targetEndSpeed = simulationData.shipSpeed + random.nextDouble(-2, 2); // TODO: evolve the value in a more sophisticated manner
 
-
+            // adjust speed if the engine does not operate in such forces
+            double calmWaterSpeed = getCalmWaterSpeed(targetEndSpeed, 1e-2, 10, BN, shipHeadingAngle, windAngle); // TODO: use actual weather data
+            calmWaterSpeed = adjustSpeedForWaveHeight(calmWaterSpeed, waveHeight);
             double totalResistance = getTotalCalmWaterResistance(calmWaterSpeed, 1.19 * Math.pow(10, -6)); // TODO: change viscosity to actual value dependent on temp?
-            // TODO: if the total resistance is to high for the engine to achieve then, the final ship speed should be reduced (not sure this situation will occur)
+            double totalPower = getBrakePower(totalResistance, calmWaterSpeed) / 1000; // in kW
+
+            // TODO: delete later
+            if (totalPower < simulationData.minOutput) {
+                below++;
+            }
+            if (totalPower > simulationData.maxOutput) {
+                above++;
+            }
+            //
+
+            while (totalPower < simulationData.minOutput || totalPower > simulationData.maxOutput) {
+                if (totalPower < simulationData.minOutput) {
+                    calmWaterSpeed += 0.2;
+                } else {
+                    calmWaterSpeed -= 0.2;
+                }
+                totalResistance = getTotalCalmWaterResistance(calmWaterSpeed, 1.19 * Math.pow(10, -6));
+                totalPower = getBrakePower(totalResistance, calmWaterSpeed) / 1000;
+            }
+            // calculate end speed again in case the engine cannot perform under previous conditions
+            targetEndSpeed = getEndSpeed(calmWaterSpeed, shipHeadingAngle, windAngle, BN);
+
+            fullNodePower += totalPower;
+            fullNodeSpeed += targetEndSpeed;
+            nodeNumber++;
+
 
             double distance = Coordinates.realDistance(currPoint.getCoordinates(), prevPoint.getCoordinates());
-            double travelTimeSeconds = (int) (distance / simulationData.shipSpeed * 3600); // TODO: is that correct?
-
-            double fuelUsed = getFuelUsed(totalResistance, targetEndSpeed, (double) travelTimeSeconds / 3600);
+            double travelTimeSeconds = (int) (distance / targetEndSpeed * 3600); // TODO: is that correct?
+            double fuelUsed = getFuelUsed(totalPower, (double) travelTimeSeconds / 3600);
 
             currTime += travelTimeSeconds;
 
