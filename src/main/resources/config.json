@@ -54,8 +54,8 @@
     "totalEfficiency": 0.64
   },
   "engine": {
-    "minOutput": 20000,
-    "maxOutput": 55000,
+    "minOutput": 15000,
+    "maxOutput": 45000,
     "minLoad": 30,
     "maxLoad": 100,
     "optimalLoad": 80
