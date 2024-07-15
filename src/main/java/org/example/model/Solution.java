@@ -130,9 +130,9 @@ public class Solution implements Comparable<Solution> {
             nodeNumber++;
 
 
-            double distance = Coordinates.realDistance(currPoint.getCoordinates(), prevPoint.getCoordinates());
-            double travelTimeSeconds = (int) (distance / targetEndSpeed * 3600); // TODO: is that correct?
-            double fuelUsed = getFuelUsed(totalPower, (double) travelTimeSeconds / 3600);
+            double distance = Coordinates.realDistance(currPoint.getCoordinates(), prevPoint.getCoordinates()); // [km]
+            double travelTimeSeconds = (int) (distance * 1000 / targetEndSpeed);
+            double fuelUsed = getFuelUsed(totalPower, travelTimeSeconds / 3600); // TODO: is fuel calculated correctly?
 
             currTime += travelTimeSeconds;
 
