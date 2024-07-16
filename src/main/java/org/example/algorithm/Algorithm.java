@@ -45,7 +45,7 @@ public abstract class Algorithm {
     }
 
     protected Set<Solution> getNonDominatedSolutions() {
-        List<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toList());
+        List<Solution> solutions = population.stream().map(Agent::getSolution).toList();
         Set<Solution> nonDominatedSolutions = new HashSet<>();
         for (int i = 0; i < solutions.size(); i++) {
             Solution currSolution = solutions.get(i);

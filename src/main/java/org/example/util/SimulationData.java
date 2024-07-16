@@ -45,6 +45,7 @@ public final class SimulationData {
     public int startingTime;
     public double shipSpeed;
     public double similarityEpsilon;
+    public double paretoEpsilon;
     // ship
     public double L;
     public double L_pp;
@@ -112,6 +113,7 @@ public final class SimulationData {
             startingTime = simulationObject.getInt("startingTime");
             shipSpeed = simulationObject.getDouble("shipSpeed");
             similarityEpsilon = simulationObject.getDouble("similarityEpsilon");
+            paretoEpsilon = simulationObject.getDouble("paretoEpsilon");
 
             JSONObject shipObject = dataObject.getJSONObject("ship");
             L = shipObject.getDouble("L");

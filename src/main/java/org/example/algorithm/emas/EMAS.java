@@ -106,7 +106,7 @@ public class EMAS extends Algorithm {
             String err = "\nITER: " + iterations + "\nSIM-DATA-POP: " + simulationData.populationSize + "\nPOP: " + population.size();
             throw new Exception(err);
         }
-
+        simulationData.paretoEpsilon -= 0.000001;
     }
 
     @Override

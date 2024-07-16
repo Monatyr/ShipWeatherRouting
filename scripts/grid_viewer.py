@@ -14,14 +14,14 @@ def read_route(filename: str):
 
 img = mpimg.imread('heightmap.png')
 
-columns, rows = 100, 200
+columns, rows = 60, 200
 height_ratio = img.shape[0] / rows
 width_ratio = img.shape[1] / columns
 
 
 if __name__ == "__main__":
     xs, ys = read_route("grid_points1.txt")
-    xs = list(map(lambda x: width_ratio * x, xs))
+    xs = list(map(lambda x: width_ratio * (x), xs))
     xs.reverse()
     ys = list(map(lambda x: height_ratio * (rows - x), ys))
     imgplot = plt.imshow(img)
