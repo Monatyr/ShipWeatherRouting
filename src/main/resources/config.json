@@ -22,7 +22,7 @@
     "reproductionEnergy": 50,
     "migrationEnergy": 50,
     "deathEnergyBound": 0,
-    "energyTaken": 25,
+    "energyTaken": 30,
     "initialMutationRate": 0.1,
     "mutationRate": 0.10,
     "eliteMutationRate": 0.05,
