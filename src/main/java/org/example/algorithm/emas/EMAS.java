@@ -125,7 +125,7 @@ public class EMAS extends Algorithm {
                     continue;
                 }
                 Agent otherAgent = agentsList.get(j);
-                if (otherAgent.getSolution().checkIfDominates(currAgent.getSolution()) == 1) {
+                if (otherAgent.getSolution().checkIfDominates(currAgent.getSolution(), true) == 1) {
                     dominated = true;
                     break;
                 }

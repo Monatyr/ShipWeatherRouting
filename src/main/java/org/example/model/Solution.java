@@ -63,26 +63,57 @@ public class Solution implements Comparable<Solution> {
 //        }
 //    }
 
-    public int checkIfDominates(Solution other) {
-        boolean aBetterInAtLeastOne = false;
-        boolean bBetterInAtLeastOne = false;
+//    public int checkIfDominates(Solution other) { // TODO: make sure the epsilon-Pareto function is correctly implemented
+//        boolean aBetterInAtLeastOne = false;
+//        boolean bBetterInAtLeastOne = false;
+//
+//        for (Map.Entry<OptimizedFunction, Float> entry : functionValues.entrySet()) {
+//            Float value = entry.getValue();
+//            Float otherValue = other.functionValues.get(entry.getKey());
+//
+//            if (value < otherValue * (1 - simulationData.paretoEpsilon)) {
+//                aBetterInAtLeastOne = true;
+//            } else if (otherValue < value * (1 - simulationData.paretoEpsilon)) {
+//                bBetterInAtLeastOne = true;
+//            }
+//            if (aBetterInAtLeastOne && bBetterInAtLeastOne) {
+//                return 0;
+//            }
+//        }
+//        if (aBetterInAtLeastOne) {
+//            return 1;
+//        } else if (bBetterInAtLeastOne) {
+//            return -1;
+//        }
+//        return 0;
+//    }
+
+    //https://sci-hub.se/10.1145/1389095.1389224
+    public int checkIfDominates(Solution other, boolean epsilonDominance) { // TODO: make sure the epsilon-Pareto function is correctly implemented
+        double epsilon = simulationData.paretoEpsilon;
+        if (!epsilonDominance) {
+            epsilon = 0;
+        }
+        boolean dominatesOther = true;
+        boolean otherDominates = true;
 
         for (Map.Entry<OptimizedFunction, Float> entry : functionValues.entrySet()) {
             Float value = entry.getValue();
             Float otherValue = other.functionValues.get(entry.getKey());
 
-            if (value < otherValue * (1 - simulationData.paretoEpsilon)) {
-                aBetterInAtLeastOne = true;
-            } else if (otherValue < value * (1 - simulationData.paretoEpsilon)) {
-                bBetterInAtLeastOne = true;
+            if (value * (1 - epsilon) < otherValue) {
+                otherDominates = false;
             }
-            if (aBetterInAtLeastOne && bBetterInAtLeastOne) {
+            else if (otherValue * (1 - epsilon) < value) { // TODO: else if is a workaround. Other agent has a disadvantage, but this does not lead to both solutions epsilon-dominating eachother at the same time
+                dominatesOther = false;
+            }
+            if (!otherDominates && !dominatesOther) {
                 return 0;
             }
         }
-        if (aBetterInAtLeastOne) {
+        if (dominatesOther) {
             return 1;
-        } else if (bBetterInAtLeastOne) {
+        } else if (otherDominates) {
             return -1;
         }
         return 0;

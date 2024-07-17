@@ -55,7 +55,7 @@ public abstract class Algorithm {
                     continue;
                 }
                 Solution otherSolution = solutions.get(j);
-                if (otherSolution.checkIfDominates(currSolution) == 1) {
+                if (otherSolution.checkIfDominates(currSolution, true) == 1) {
                     dominated = true;
                     break;
                 }

@@ -27,7 +27,7 @@
     "mutationRate": 0.10,
     "eliteMutationRate": 0.05,
     "reproductionProbability": 0.99,
-    "neededPrestige": 3000,
+    "neededPrestige": 2000,
     "numberOfIslands": 4,
     "populationSize": 60,
     "startingTime": 0,
