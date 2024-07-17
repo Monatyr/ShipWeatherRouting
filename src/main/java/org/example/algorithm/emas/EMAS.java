@@ -67,7 +67,7 @@ public class EMAS extends Algorithm {
         for (int i = 0; i < simulationData.populationSize; i++) {
             List<RoutePoint> route = startingRoutes.get(i % startingRoutes.size());
             Solution solution = EMASSolutionGenerator.generateSolution(route);
-            solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.mutationRate);
+            solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.initialMutationRate);
             population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));
         }
     }

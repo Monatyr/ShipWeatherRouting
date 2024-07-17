@@ -47,9 +47,9 @@ public class Solution implements Comparable<Solution> {
 //            Float value = entry.getValue();
 //            Float otherValue = other.functionValues.get(entry.getKey());
 //            // Watch out for the direction of operators! We are minimizing the values, not maximizing!!!!!!!!!!!!!
-//            if (value < otherValue * simulationData.paretoEpsilon) { // TODO: how to define epsilon-Pareto dominance
+//            if (value < otherValue) {
 //                otherCanDominate = false;
-//            } else if (value * simulationData.paretoEpsilon > otherValue) {
+//            } else if (value > otherValue) {
 //                canDominateOther = false;
 //            }
 //        }
