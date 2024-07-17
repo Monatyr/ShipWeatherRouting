@@ -67,7 +67,7 @@ public class EMAS extends Algorithm {
         for (int i = 0; i < simulationData.populationSize; i++) {
             List<RoutePoint> route = startingRoutes.get(i % startingRoutes.size());
             Solution solution = EMASSolutionGenerator.generateSolution(route);
-            solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.mutationRate);
+            solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.initialMutationRate);
             population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));
         }
     }
@@ -106,7 +106,7 @@ public class EMAS extends Algorithm {
             String err = "\nITER: " + iterations + "\nSIM-DATA-POP: " + simulationData.populationSize + "\nPOP: " + population.size();
             throw new Exception(err);
         }
-
+        simulationData.paretoEpsilon -= 0.000001;
     }
 
     @Override
@@ -125,7 +125,7 @@ public class EMAS extends Algorithm {
                     continue;
                 }
                 Agent otherAgent = agentsList.get(j);
-                if (otherAgent.getSolution().checkIfDominates(currAgent.getSolution()) == 1) {
+                if (otherAgent.getSolution().checkIfDominates(currAgent.getSolution(), true) == 1) {
                     dominated = true;
                     break;
                 }

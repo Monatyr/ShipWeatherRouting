@@ -45,7 +45,7 @@ public abstract class Algorithm {
     }
 
     protected Set<Solution> getNonDominatedSolutions() {
-        List<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toList());
+        List<Solution> solutions = population.stream().map(Agent::getSolution).toList();
         Set<Solution> nonDominatedSolutions = new HashSet<>();
         for (int i = 0; i < solutions.size(); i++) {
             Solution currSolution = solutions.get(i);
@@ -55,7 +55,7 @@ public abstract class Algorithm {
                     continue;
                 }
                 Solution otherSolution = solutions.get(j);
-                if (otherSolution.checkIfDominates(currSolution) == 1) {
+                if (otherSolution.checkIfDominates(currSolution, true) == 1) {
                     dominated = true;
                     break;
                 }

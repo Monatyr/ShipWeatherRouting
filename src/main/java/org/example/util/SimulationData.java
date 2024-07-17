@@ -35,16 +35,17 @@ public final class SimulationData {
     public double reproductionEnergy;
     public double migrationEnergy;
     public double deathEnergyBound;
+    public double initialMutationRate;
     public double mutationRate;
     public double eliteMutationRate;
     public double reproductionProbability;
     public double migrationProbability;
-    public double eliteMigrationProbability;
     public int neededPrestige;
     public double energyTaken;
     public int startingTime;
     public double shipSpeed;
     public double similarityEpsilon;
+    public double paretoEpsilon;
     // ship
     public double L;
     public double L_pp;
@@ -97,11 +98,11 @@ public final class SimulationData {
             maxVerticalDistance = simulationObject.getInt("maxVerticalDistance");
             numberOfIslands = simulationObject.getInt("numberOfIslands");
             populationSize = simulationObject.getInt("populationSize");
+            initialMutationRate = simulationObject.getDouble("initialMutationRate");
             mutationRate = simulationObject.getDouble("mutationRate");
             eliteMutationRate = simulationObject.getDouble("eliteMutationRate");
             reproductionProbability = simulationObject.getDouble("reproductionProbability");
             migrationProbability = Math.round((1.0 - reproductionProbability) * 100) / 100.0;
-            eliteMigrationProbability = simulationObject.getDouble("eliteMigrationProbability");
             neededPrestige = simulationObject.getInt("neededPrestige");
             initialEnergy = simulationObject.getDouble("initialEnergy");
             reproductionEnergyBound = simulationObject.getDouble("reproductionEnergyBound");
@@ -112,6 +113,7 @@ public final class SimulationData {
             startingTime = simulationObject.getInt("startingTime");
             shipSpeed = simulationObject.getDouble("shipSpeed");
             similarityEpsilon = simulationObject.getDouble("similarityEpsilon");
+            paretoEpsilon = simulationObject.getDouble("paretoEpsilon");
 
             JSONObject shipObject = dataObject.getJSONObject("ship");
             L = shipObject.getDouble("L");

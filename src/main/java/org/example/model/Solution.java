@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static java.lang.Math.abs;
 import static org.example.model.OptimizedFunction.*;
 import static org.example.physicalModel.PhysicalModel.*;
 
@@ -39,27 +40,83 @@ public class Solution implements Comparable<Solution> {
     }
 
     // -1 if is dominated by other, 0 if none dominates, 1 if dominates other
-    public int checkIfDominates(Solution other) {
-        boolean canDominateOther = true;
-        boolean otherCanDominate = true;
+//    public int checkIfDominates(Solution other) {
+//        boolean canDominateOther = true;
+//        boolean otherCanDominate = true;
+//        for (Map.Entry<OptimizedFunction, Float> entry : functionValues.entrySet()) {
+//            Float value = entry.getValue();
+//            Float otherValue = other.functionValues.get(entry.getKey());
+//            // Watch out for the direction of operators! We are minimizing the values, not maximizing!!!!!!!!!!!!!
+//            if (value < otherValue) {
+//                otherCanDominate = false;
+//            } else if (value > otherValue) {
+//                canDominateOther = false;
+//            }
+//        }
+//        // if both cannot dominate each other or both can (have the same function values)
+//        if (canDominateOther == otherCanDominate) {
+//            return 0;
+//        } else if (canDominateOther) {
+//            return 1;
+//        } else {
+//            return -1;
+//        }
+//    }
+
+//    public int checkIfDominates(Solution other) { // TODO: make sure the epsilon-Pareto function is correctly implemented
+//        boolean aBetterInAtLeastOne = false;
+//        boolean bBetterInAtLeastOne = false;
+//
+//        for (Map.Entry<OptimizedFunction, Float> entry : functionValues.entrySet()) {
+//            Float value = entry.getValue();
+//            Float otherValue = other.functionValues.get(entry.getKey());
+//
+//            if (value < otherValue * (1 - simulationData.paretoEpsilon)) {
+//                aBetterInAtLeastOne = true;
+//            } else if (otherValue < value * (1 - simulationData.paretoEpsilon)) {
+//                bBetterInAtLeastOne = true;
+//            }
+//            if (aBetterInAtLeastOne && bBetterInAtLeastOne) {
+//                return 0;
+//            }
+//        }
+//        if (aBetterInAtLeastOne) {
+//            return 1;
+//        } else if (bBetterInAtLeastOne) {
+//            return -1;
+//        }
+//        return 0;
+//    }
+
+    //https://sci-hub.se/10.1145/1389095.1389224
+    public int checkIfDominates(Solution other, boolean epsilonDominance) { // TODO: make sure the epsilon-Pareto function is correctly implemented
+        double epsilon = simulationData.paretoEpsilon;
+        if (!epsilonDominance) {
+            epsilon = 0;
+        }
+        boolean dominatesOther = true;
+        boolean otherDominates = true;
+
         for (Map.Entry<OptimizedFunction, Float> entry : functionValues.entrySet()) {
             Float value = entry.getValue();
             Float otherValue = other.functionValues.get(entry.getKey());
-            // Watch out for the direction of operators! We are minimizing the values, not maximizing!!!!!!!!!!!!!
-            if (value < otherValue) {
-                otherCanDominate = false;
-            } else if (value > otherValue) {
-                canDominateOther = false;
+
+            if (value * (1 - epsilon) < otherValue) {
+                otherDominates = false;
+            }
+            else if (otherValue * (1 - epsilon) < value) { // TODO: else if is a workaround. Other agent has a disadvantage, but this does not lead to both solutions epsilon-dominating eachother at the same time
+                dominatesOther = false;
+            }
+            if (!otherDominates && !dominatesOther) {
+                return 0;
             }
         }
-        // if both cannot dominate each other or both can (have the same function values)
-        if (canDominateOther == otherCanDominate) {
-            return 0;
-        } else if (canDominateOther) {
+        if (dominatesOther) {
             return 1;
-        } else {
+        } else if (otherDominates) {
             return -1;
         }
+        return 0;
     }
 
     public void calculateFunctionValues() {
@@ -133,13 +190,14 @@ public class Solution implements Comparable<Solution> {
             double distance = Coordinates.realDistance(currPoint.getCoordinates(), prevPoint.getCoordinates()); // [km]
             double travelTimeSeconds = (int) (distance * 1000 / targetEndSpeed);
             double fuelUsed = getFuelUsed(totalPower, travelTimeSeconds / 3600); // TODO: is fuel calculated correctly?
+            double danger = currPoint.getFunctions().get(Danger);
 
             currTime += travelTimeSeconds;
 
             Map<OptimizedFunction, Double> newOptimizedFunctions = Map.of(
                     FuelUsed, fuelUsed,
                     TravelTime, travelTimeSeconds,
-                    Danger, 1.0
+                    Danger, danger
             );
             currPoint.setFunctions(newOptimizedFunctions);
             currPoint.setShipSpeed(targetEndSpeed);

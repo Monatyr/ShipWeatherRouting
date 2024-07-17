@@ -20,9 +20,13 @@ public class Agent {
     private Island island;
     private boolean madeAction;
     private Random random = new Random();
-    private SimulationData simulationData = SimulationData.getInstance();
+    private static SimulationData simulationData = SimulationData.getInstance();
     private Set<Agent> similarAgents = new HashSet<>(); // agents which solution is closer than epsilon
     private Map<Agent, Integer> differentAgents = new HashMap<>(); // agents that are not similar and the number of agents in their surroundings
+    private int meetings = 0;
+    private int dominatedTimes = 0;
+    public static int different = 0;
+    public static int same = 0;
     public int id;
 
     public Agent(Solution solution, double energy, double prestige, Island island, boolean madeAction) {
@@ -116,31 +120,60 @@ public class Agent {
 
     public void compareTo(Agent other) {
         Solution otherSolution = other.getSolution();
-        int dominationResult = solution.checkIfDominates(otherSolution);
-        if (dominationResult == 1) {
-            prestige++;
-            energy += Math.min(other.getEnergy(), simulationData.energyTaken);
-            other.energy -= Math.min(other.getEnergy(), simulationData.energyTaken);
-        } else if (dominationResult == -1) {
-            other.prestige++;
-            other.energy += Math.min(energy, simulationData.energyTaken);
-            energy -= Math.min(energy, simulationData.energyTaken);
+        int dominationResult = solution.checkIfDominates(otherSolution, true);
+        double agentDominationFactor = meetings != 0 ? (double) dominatedTimes / meetings : 0;
+        double otherDominationFactor = other.meetings != 0 ? (double) other.dominatedTimes / other.meetings : 0;
+        double agentCrowdingFactor = meetings != 0 ? (double) similarAgents.size() / meetings : 0;
+        double otherCrowdingFactor = other.meetings != 0 ? (double) other.similarAgents.size() / other.meetings : 0;
+
+        if (dominationResult == 0) {
+            if (agentDominationFactor != otherDominationFactor) {
+                different++;
+            } else {
+                same++;
+            }
+        }
+
+        if (dominationResult == 1 || (dominationResult == 0 && agentDominationFactor < otherDominationFactor)) { // agent dominates other
+            transferResources(this, other);
+        } else if (dominationResult == -1 || (dominationResult == 0 && otherDominationFactor < agentDominationFactor)) { // other dominates agent
+            transferResources(other, this);
+        } else { // neither of the 2 dominated the other
+            if (agentDominationFactor < otherDominationFactor) {
+                transferResources(this, other);
+            } else if (otherDominationFactor < agentDominationFactor) {
+                transferResources(other, this);
+//            } else if (agentCrowdingFactor < otherCrowdingFactor) { // TODO: decide if crowding factor is worth using
+//                transferResources(this, other);
+//            } else if (otherCrowdingFactor < agentCrowdingFactor) {
+//                transferResources(other, this);
+            }
         }
         // gathering information about the surroundings of different agents
         double solutionSimilarity = solution.similarityBetweenSolutions(otherSolution);
         if (solutionSimilarity >= simulationData.similarityEpsilon) {
             similarAgents.add(other);
-        } else {
-            int otherSurroundings = 0;
-            if (differentAgents.containsKey(other)) {
-                otherSurroundings = differentAgents.remove(other);
-            }
-            differentAgents.put(other, otherSurroundings + 1);
         }
+        int otherSurroundings = other.similarAgents.size();
+        if (differentAgents.containsKey(other)) {
+            differentAgents.remove(other);
+        }
+        differentAgents.put(other, otherSurroundings);
+
+        meetings++;
+        other.meetings++;
+    }
+
+    private static void transferResources(Agent toAgent, Agent fromAgent) {
+        toAgent.prestige++;
+        toAgent.energy += Math.min(fromAgent.energy, simulationData.energyTaken);
+        fromAgent.energy -= Math.min(fromAgent.energy, simulationData.energyTaken);
+        fromAgent.dominatedTimes++;
     }
 
     public boolean canMigrateToElite() {
         double avgSurroundings = (double) differentAgents.values().stream().reduce(0, Integer::sum) / differentAgents.size();
+        System.out.println(similarAgents.size() + " " + avgSurroundings);
         return similarAgents.size() > avgSurroundings;
     }
 
