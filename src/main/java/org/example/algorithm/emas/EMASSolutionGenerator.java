@@ -217,7 +217,10 @@ public class EMASSolutionGenerator {
             int currY = currRoutePoint.getGridCoordinates().y();
             for (int j = -simulationData.maxVerticalDistance; j <= simulationData.maxVerticalDistance; j++) {
                 int potentialHeight = currY + j;
-                if (potentialHeight < 0 || potentialHeight >= simulationData.mapHeight) {
+                if (potentialHeight < 0 ||
+                        potentialHeight >= simulationData.mapHeight ||
+                        !simulationData.isWater[potentialHeight][currRoutePoint.getGridCoordinates().x()]
+                ) {
                     continue;
                 }
                 if (abs(minY - potentialHeight) <= simulationData.maxVerticalDistance &&

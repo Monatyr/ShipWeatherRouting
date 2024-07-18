@@ -43,3 +43,4 @@ build/
 /**/*.png
 *.pyc
 /scripts/grid_points*
+/src/main/resources/is_water.txt

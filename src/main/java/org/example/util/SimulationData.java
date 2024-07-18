@@ -26,6 +26,7 @@ public final class SimulationData {
     public int populationSize;
     public Coordinates startCoordinates;
     public Coordinates endCoordinates;
+    public boolean[][] isWater;
     // simulation
     public int maxIterations;
     public int maxPopulation;
@@ -92,6 +93,8 @@ public final class SimulationData {
             JSONObject endPosObject = mapObject.getJSONObject("endPos");
             endCoordinates = new Coordinates(endPosObject.getDouble("latitude"), endPosObject.getDouble("longitude"));
 
+            isWater = readIsWaterFromFile("src/main/resources/is_water.txt");
+
             JSONObject simulationObject = dataObject.getJSONObject("simulation");
             maxIterations = simulationObject.getInt("maxIterations");
             maxPopulation = simulationObject.getInt("maxPopulation");
@@ -138,7 +141,7 @@ public final class SimulationData {
             minOutput = engineObject.getDouble("minOutput");
             maxOutput = engineObject.getDouble("maxOutput");
             minLoad = engineObject.getDouble("minLoad");
-            maxLatitude = engineObject.getDouble("maxLoad");
+            maxLoad = engineObject.getDouble("maxLoad");
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -161,12 +164,28 @@ public final class SimulationData {
 
         FileReader fileReader = new FileReader(filename);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
-        List<String> lines = new ArrayList<String>();
-        String line = null;
+        String line;
         while ((line = bufferedReader.readLine()) != null) {
-            List<Integer> forces = Arrays.stream(line.split(" ")).map(s -> Integer.valueOf(s)).toList();
+            List<Integer> forces = Arrays.stream(line.split(" ")).map(Integer::valueOf).toList();
             gridForces.add(forces);
         }
         bufferedReader.close();
+    }
+
+    public boolean[][] readIsWaterFromFile(String filename) throws IOException {
+        isWater = new boolean[mapHeight][mapWidth];
+        FileReader fileReader = new FileReader(filename);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            List<Integer> gridPointIsWater = Arrays.stream(line.split(" ")).map(Integer::valueOf).toList(); // height, width, isWater
+            if (gridPointIsWater.get(2) == 1) {
+                isWater[gridPointIsWater.get(0)][gridPointIsWater.get(1)] = true;
+            } else {
+                isWater[gridPointIsWater.get(0)][gridPointIsWater.get(1)] = false;
+            }
+        }
+        bufferedReader.close();
+        return isWater;
     }
 }

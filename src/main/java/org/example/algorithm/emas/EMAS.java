@@ -64,6 +64,7 @@ public class EMAS extends Algorithm {
         List<List<RoutePoint>> startingRoutes = new ArrayList<>();
         startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/great_circle_route.txt"));
         startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/rhumb_line_route.txt"));
+        System.out.println(startingRoutes.get(0).stream().map(a -> a.getCoordinates().latitude() + ", " + a.getCoordinates().longitude()));
         for (int i = 0; i < simulationData.populationSize; i++) {
             List<RoutePoint> route = startingRoutes.get(i % startingRoutes.size());
             Solution solution = EMASSolutionGenerator.generateSolution(route);
