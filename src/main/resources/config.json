@@ -6,11 +6,11 @@
     "rows": 200,
     "startPos": {
       "latitude": 40.7306,
-      "longitude": -73.9352
+      "longitude": -70.8435
     },
     "endPos": {
       "latitude": 38.7223,
-      "longitude": -9.1427
+      "longitude": -10.1082
     }
   },
   "simulation": {
