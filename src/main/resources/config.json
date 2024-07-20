@@ -27,7 +27,7 @@
     "mutationRate": 0.10,
     "eliteMutationRate": 0.05,
     "reproductionProbability": 0.99,
-    "neededPrestige": 2000,
+    "neededPrestige": 200,
     "numberOfIslands": 4,
     "populationSize": 60,
     "startingTime": 0,
@@ -60,5 +60,9 @@
     "minLoad": 30,
     "maxLoad": 100,
     "optimalLoad": 80
+  },
+  "conditions": {
+    "thresholdWindSpeed": 35,
+    "thresholdWindSpeedMargin": 10
   }
 }

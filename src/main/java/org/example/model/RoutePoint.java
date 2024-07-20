@@ -38,9 +38,7 @@ public class RoutePoint {
         this.conditions = new WeatherConditions(0.0, 0.0, 0.0, 0.0);
 
         // TODO: read the function values from actual data / calculate them
-        Double danger = 255 - SimulationData.getInstance().gridForces.get(gridCoordinates.y()).get(gridCoordinates.x()).doubleValue();
-        Double fuelUsed = SimulationData.getInstance().gridForces.get(gridCoordinates.y()).get(gridCoordinates.x()).doubleValue();
-        this.functions = Map.of(Danger, danger, FuelUsed, fuelUsed, TravelTime, random.nextDouble());
+        this.functions = Map.of(Danger, random.nextDouble(), FuelUsed, random.nextDouble(5, 10), TravelTime, random.nextDouble());
         //        this.functions = Map.of(Danger, random.nextDouble(), FuelUsed, random.nextDouble(), TravelTime, random.nextDouble());
     }
 

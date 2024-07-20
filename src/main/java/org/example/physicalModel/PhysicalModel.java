@@ -328,6 +328,10 @@ public abstract class PhysicalModel {
         return effectivePower / totalEfficiency;
     }
 
+    /**
+     * FUEL USAGE
+     */
+
     // TODO: change fuel used to full cost or something like that.
     public static double getFuelUsed(double brakePower, double journeyTimeInHours) {
         double engineLoad = brakePower / (simulationData.maxOutput);
@@ -339,6 +343,39 @@ public abstract class PhysicalModel {
         double fuelUsed = fuelUsageRate * brakePower * journeyTimeInHours / 1000; // in grams
         fuelUsed = fuelUsed / 1000 / 1000; // in tons
         return fuelUsed;
+    }
+
+
+    /**
+     * SAFETY
+     */
+    public static double getShapeCoefficient(double windAngle) {
+        if (windAngle < 0) {
+            windAngle += 360;
+        }
+        if (windAngle > 180) {
+            windAngle = 360 - windAngle;
+        }
+        if (windAngle >= 135) {
+            return 0.25;
+        }
+        return 0.0000235217 * Math.pow(windAngle, 2) + 0.000631451 * windAngle - 0.253409;
+    }
+
+    public static double getFractionalSafetyCoefficient(
+            double windSpeed,
+            double thresholdWindSpeed,
+            double thresholdWindSpeedMargin,
+            double windAngle
+    ) {
+        double shapeCoefficient = getShapeCoefficient(windAngle);
+        double maxWindSpeed = thresholdWindSpeed - shapeCoefficient * thresholdWindSpeedMargin;
+        if ((maxWindSpeed - windSpeed) / maxWindSpeed <= 0) {
+            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        } else if ((maxWindSpeed - windSpeed) / maxWindSpeed > 1) {
+            System.out.println("?????" + (maxWindSpeed - windSpeed) / maxWindSpeed);
+        }
+        return (maxWindSpeed - windSpeed) / maxWindSpeed;
     }
 
 
@@ -365,5 +402,7 @@ public abstract class PhysicalModel {
 
         System.out.println("End speed: " + endSpeed);;
         System.out.println("Calm water speed: " + calmWaterSpeed);
+
+        System.out.println(getShapeCoefficient(0));
     }
 }
