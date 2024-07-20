@@ -70,7 +70,9 @@ public final class SimulationData {
     public double maxOutput;
     public double minLoad = 0.3;
     public double maxLoad = 1.0;
-
+    // conditions
+    public double thresholdWindSpeed;
+    public double thresholdWindSpeedMargin;
 
     private int id;
 
@@ -143,6 +145,9 @@ public final class SimulationData {
             minLoad = engineObject.getDouble("minLoad");
             maxLoad = engineObject.getDouble("maxLoad");
 
+            JSONObject conditionsObject = dataObject.getJSONObject("conditions");
+            thresholdWindSpeed = conditionsObject.getDouble("thresholdWindSpeed");
+            thresholdWindSpeedMargin = conditionsObject.getDouble("thresholdWindSpeedMargin");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
