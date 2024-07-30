@@ -8,6 +8,8 @@ import org.example.util.Coordinates;
 import org.example.util.GridPoint;
 import org.example.util.SimulationData;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -45,6 +47,8 @@ public class EMASSolutionGenerator {
     }
 
     private static Coordinates[][] createMapGrid() {
+        String gridString = "";
+
         double currLongitude;
         double currLatitude = simulationData.maxLatitude;
         double latitudeChange = (simulationData.maxLatitude - simulationData.minLatitude) / (simulationData.mapHeight - 1);
@@ -56,10 +60,20 @@ public class EMASSolutionGenerator {
             grid[i] = new Coordinates[simulationData.mapWidth];
             for (int j = 0; j < simulationData.mapWidth; j++) {
                 grid[i][j] = new Coordinates(currLatitude, currLongitude);
+                gridString += currLatitude + ", " + currLongitude + "\n";
                 currLongitude += longitudeChange;
             }
             currLatitude -= latitudeChange;
         }
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/map-grid.txt"));
+            writer.write(gridString);
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         return grid;
     }
 

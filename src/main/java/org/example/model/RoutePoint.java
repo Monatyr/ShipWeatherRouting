@@ -35,11 +35,10 @@ public class RoutePoint {
         this.shipSpeed = SimulationData.getInstance().shipSpeed;
 
         // TODO: read the weather conditions from file
-        this.conditions = new WeatherConditions(0.0, 0.0, 0.0, 0.0);
+        this.conditions = new WeatherConditions(12.0, 180.0, 0.0, 0.0);
 
         // TODO: read the function values from actual data / calculate them
         this.functions = Map.of(Danger, random.nextDouble(), FuelUsed, random.nextDouble(5, 10), TravelTime, random.nextDouble());
-        //        this.functions = Map.of(Danger, random.nextDouble(), FuelUsed, random.nextDouble(), TravelTime, random.nextDouble());
     }
 
     public RoutePoint(RoutePoint other) {

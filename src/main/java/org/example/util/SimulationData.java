@@ -182,12 +182,17 @@ public final class SimulationData {
         FileReader fileReader = new FileReader(filename);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            List<Integer> gridPointIsWater = Arrays.stream(line.split(" ")).map(Integer::valueOf).toList(); // height, width, isWater
-            if (gridPointIsWater.get(2) == 1) {
-                isWater[gridPointIsWater.get(0)][gridPointIsWater.get(1)] = true;
-            } else {
-                isWater[gridPointIsWater.get(0)][gridPointIsWater.get(1)] = false;
+//        while ((line = bufferedReader.readLine()) != null) {
+//            List<Integer> gridPointIsWater = Arrays.stream(line.split(" ")).map(Integer::valueOf).toList(); // height, width, isWater
+//            if (gridPointIsWater.get(2) == 1) {
+//                isWater[gridPointIsWater.get(0)][gridPointIsWater.get(1)] = true;
+//            } else {
+//                isWater[gridPointIsWater.get(0)][gridPointIsWater.get(1)] = false;
+//            }
+//        }
+        for (int i = 0; i < mapHeight; i++) {
+            for (int j = 0; j < mapWidth; j++) {
+                isWater[i][j] = true;
             }
         }
         bufferedReader.close();

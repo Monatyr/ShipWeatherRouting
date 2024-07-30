@@ -1,9 +1,9 @@
 {
   "map": {
-    "maxLatitude": 60,
-    "minLatitude": 20,
+    "maxLatitude": 46,
+    "minLatitude": 35,
     "columns": 60,
-    "rows": 200,
+    "rows": 55,
     "startPos": {
       "latitude": 40.7306,
       "longitude": -70.8435

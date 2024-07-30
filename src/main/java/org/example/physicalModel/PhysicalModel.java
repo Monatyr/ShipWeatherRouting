@@ -347,7 +347,7 @@ public abstract class PhysicalModel {
 
 
     /**
-     * SAFETY
+     * SAFETY (based on https://www.researchgate.net/publication/261041886_Multicriteria_Optimisation_in_Weather_Routing)
      */
     public static double getShapeCoefficient(double windAngle) {
         if (windAngle < 0) {
@@ -359,6 +359,7 @@ public abstract class PhysicalModel {
         if (windAngle >= 135) {
             return 0.25;
         }
+        // function interpolated by Wolfram from the plot values in the paper
         return 0.0000235217 * Math.pow(windAngle, 2) + 0.000631451 * windAngle - 0.253409;
     }
 
