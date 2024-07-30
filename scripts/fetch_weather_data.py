@@ -24,6 +24,7 @@ WAIT_TIME = 65
 
 
 def read_grid(filename: str):
+	'''Read the grid corrdinates based on the generated file (at the start of each simulation)'''
 	with open(filename, 'r') as file:
 		lines = file.readlines()
 	lines = list(map(lambda x: (float(x.split(', ')[0]), float(x.split(', ')[1])), lines))
@@ -56,6 +57,7 @@ def fetch_grid(
 		points: list[tuple[float, float]],
 		result_filename: str
 ):
+	'''Fetch the data for the entire grid from the given url endpoints (forecast or marine)'''
 	result = dict()
 	file = open(result_filename, 'w')
 	for i, point in enumerate(points):
@@ -78,12 +80,46 @@ def fetch_grid(
 	file.close()
 
 
+def merge_dicts(dict1: dict, dict2: dict):
+	'''Merge data from the /foreast and /marine endpoints'''
+	for point, point_data in dict2.items():
+		if point in dict1.keys():
+			for timestamp, timestamp_data in point_data.items():
+				if timestamp in dict1[point].keys():
+					for variable, value in timestamp_data.items():
+						dict1[point][timestamp][variable] = value
+				else:
+					dict1[point][timestamp] = timestamp_data
+		else:
+			dict1[point] = point_data
+	return dict1
+
+
+
 
 if __name__ == "__main__":
 	start_date = '2024-07-22'
 	end_date = '2024-07-28'
 
 	points = read_grid(GRID_FILE)
-	fetch_grid(BASE_URL, start_date, end_date, BASE_VARIABLES, points, 'src/main/resources/weather-data.json')
+	# fetch_grid(MARINE_URL, start_date, end_date, MARINE_VARIABLES, points, 'src/main/resources/weather-data-marine.json')
 
-	
+
+	'''
+	Merging two dicts into one BELOW
+	'''
+	file1 = open('src/main/resources/weather-data-forecast.json')
+	file2 = open('src/main/resources/weather-data-marine.json')
+	str1 = file1.read()
+	str2 = file2.read()
+	file1.close()
+	file2.close()
+
+	d1 = json.loads(str1)
+	d2 = json.loads(str2)
+
+	resulting_dict = merge_dicts(d1, d2)
+
+	res_file = open('src/main/resources/weather-data.json', 'w')
+	json.dump(resulting_dict, res_file)
+	res_file.close()
