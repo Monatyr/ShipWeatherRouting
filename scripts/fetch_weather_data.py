@@ -102,11 +102,16 @@ if __name__ == "__main__":
 	end_date = '2024-07-28'
 
 	points = read_grid(GRID_FILE)
+
+	'''
+	1. Run below fetch_grid functions to gather data (uses API calls!)
+	'''
 	# fetch_grid(MARINE_URL, start_date, end_date, MARINE_VARIABLES, points, 'src/main/resources/weather-data-marine.json')
+	# fetch_grid(BASE_URL, start_date, end_date, BASE_VARIABLES, points, 'src/main/resources/weather-data-forecast.json')
 
 
 	'''
-	Merging two dicts into one BELOW
+	2. Merge two dicts into one
 	'''
 	file1 = open('src/main/resources/weather-data-forecast.json')
 	file2 = open('src/main/resources/weather-data-marine.json')

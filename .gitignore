@@ -44,3 +44,5 @@ build/
 *.pyc
 /scripts/grid_points*
 /src/main/resources/is_water.txt
+/src/main/resources/weather-*
+/src/main/resources/map-grid.txt
