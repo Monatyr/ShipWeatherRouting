@@ -30,7 +30,7 @@
     "neededPrestige": 200,
     "numberOfIslands": 4,
     "populationSize": 60,
-    "startingTime": 0,
+    "startingTime": "2024-07-22T00:00Z",
     "shipSpeed": 12.0,
     "similarityEpsilon": 0.90,
     "paretoEpsilon": 0.01
@@ -63,6 +63,7 @@
   },
   "conditions": {
     "thresholdWindSpeed": 35,
-    "thresholdWindSpeedMargin": 10
+    "thresholdWindSpeedMargin": 10,
+    "description": "Both speeds are in knots!"
   }
 }

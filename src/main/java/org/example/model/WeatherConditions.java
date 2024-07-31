@@ -4,6 +4,7 @@ public record WeatherConditions(
         double windSpeed,
         double windAngle,
         double waveHeight,
-        double waveSpeed
+        double oceanCurrentSpeed,
+        double oceanCurrentDirection
 ) {
 }

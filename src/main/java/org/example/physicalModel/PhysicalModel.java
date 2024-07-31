@@ -369,9 +369,11 @@ public abstract class PhysicalModel {
             double thresholdWindSpeedMargin,
             double windAngle
     ) {
+        windSpeed = 1.94384 * windSpeed; // to knots
         double shapeCoefficient = getShapeCoefficient(windAngle);
         double maxWindSpeed = thresholdWindSpeed - shapeCoefficient * thresholdWindSpeedMargin;
         if ((maxWindSpeed - windSpeed) / maxWindSpeed <= 0) {
+            System.out.println(maxWindSpeed + " " + windSpeed);
             System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         } else if ((maxWindSpeed - windSpeed) / maxWindSpeed > 1) {
             System.out.println("?????" + (maxWindSpeed - windSpeed) / maxWindSpeed);
