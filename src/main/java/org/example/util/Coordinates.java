@@ -23,4 +23,9 @@ public record Coordinates(double latitude, double longitude) {
         return 2 * radius * Math.asin(Math.sqrt((1 - Math.cos(latitude2 - latitude1)
                 + Math.cos(latitude1) * Math.cos(latitude2) * (1 - Math.cos(longitude2 - longitude1)))/2));
     }
+
+    @Override
+    public String toString() {
+        return latitude + ", " + longitude;
+    }
 }

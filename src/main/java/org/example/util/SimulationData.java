@@ -1,5 +1,6 @@
 package org.example.util;
 
+import org.example.model.WeatherConditions;
 import org.json.*;
 
 import java.io.BufferedReader;
@@ -7,14 +8,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 public final class SimulationData {
     private static SimulationData instance;
     private final String configPath = "src/main/resources/config.json";
+    private final String weatherPath = "src/main/resources/weather-data.json";
 
+    private JSONObject weatherData;
+    public ZonedDateTime startingTime;
     // temporary static grid with forces in each of its cells
     public List<List<Integer>> gridForces;
     // grid
@@ -43,7 +46,6 @@ public final class SimulationData {
     public double migrationProbability;
     public int neededPrestige;
     public double energyTaken;
-    public int startingTime;
     public double shipSpeed;
     public double similarityEpsilon;
     public double paretoEpsilon;
@@ -81,7 +83,10 @@ public final class SimulationData {
         try {
             readGridFromFile("scripts/heightmap.txt");
 
-            String jsonString = new String(Files.readAllBytes(Paths.get(configPath)));
+            String jsonString = new String(Files.readAllBytes(Paths.get(weatherPath)));
+            weatherData = new JSONObject(jsonString);
+
+            jsonString = new String(Files.readAllBytes(Paths.get(configPath)));
             JSONObject dataObject = new JSONObject(jsonString);
 
             JSONObject mapObject = dataObject.getJSONObject("map");
@@ -115,7 +120,7 @@ public final class SimulationData {
             migrationEnergy = simulationObject.getDouble("migrationEnergy");
             energyTaken = simulationObject.getDouble("energyTaken");
             deathEnergyBound = simulationObject.getDouble("deathEnergyBound");
-            startingTime = simulationObject.getInt("startingTime");
+            startingTime = ZonedDateTime.parse(simulationObject.getString("startingTime"));
             shipSpeed = simulationObject.getDouble("shipSpeed");
             similarityEpsilon = simulationObject.getDouble("similarityEpsilon");
             paretoEpsilon = simulationObject.getDouble("paretoEpsilon");
@@ -175,6 +180,29 @@ public final class SimulationData {
             gridForces.add(forces);
         }
         bufferedReader.close();
+    }
+
+    public WeatherConditions getWeatherConditions(Coordinates coordinates, ZonedDateTime arrivalDateTime) {
+        JSONObject timestampData  = weatherData.getJSONObject(coordinates.toString());
+        long minDifference = Long.MAX_VALUE;
+        long difference;
+        String closestTimestamp = null;
+
+        for (String keyTimestamp : timestampData.keySet()) {
+            difference = Math.abs(ZonedDateTime.parse(keyTimestamp + "Z").toEpochSecond() - arrivalDateTime.toEpochSecond());
+            if (difference < minDifference) {
+                minDifference = difference;
+                closestTimestamp = keyTimestamp;
+            }
+        }
+        JSONObject conditions = timestampData.getJSONObject(closestTimestamp);
+        return new WeatherConditions(
+                conditions.getDouble("wind_speed_10m") / 3.6, // from km/h to m/s
+                conditions.getDouble("wind_direction_10m"),
+                conditions.getDouble("wave_height"),
+                conditions.getDouble("ocean_current_velocity") / 3.6, // from km/h to m/s
+                conditions.getDouble("ocean_current_direction")
+        );
     }
 
     public boolean[][] readIsWaterFromFile(String filename) throws IOException {

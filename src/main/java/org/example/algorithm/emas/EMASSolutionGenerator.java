@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static java.lang.Math.*;
@@ -163,7 +164,7 @@ public class EMASSolutionGenerator {
         for (Pair<Integer, Integer> gridPoint : gridRoute) {
             GridPoint gridCoords = new GridPoint(gridPoint.getFirst(), gridPoint.getSecond());
             Coordinates coordinates = grid[gridCoords.y()][gridCoords.x()];
-            RoutePoint routePoint = new RoutePoint(gridCoords, coordinates, 0);
+            RoutePoint routePoint = new RoutePoint(gridCoords, coordinates, simulationData.startingTime);
             route.add(routePoint);
         }
         System.out.println(route.size() + " " + route.stream().map(RoutePoint::getGridCoordinates).toList());
@@ -252,7 +253,7 @@ public class EMASSolutionGenerator {
             int newHeight = availableHeights.get(0);
             // TODO: insert real time data from an API and not randomly generated
             GridPoint newGridCoordinates = new GridPoint(newHeight, currRoutePoint.getGridCoordinates().x());
-            RoutePoint newRoutePoint = new RoutePoint(newGridCoordinates, calculateCoordinates(newGridCoordinates), 0);
+            RoutePoint newRoutePoint = new RoutePoint(newGridCoordinates, calculateCoordinates(newGridCoordinates), simulationData.startingTime);
             mutatedSolution.getRoutePoints().set(pointIndex, newRoutePoint);
         }
         mutatedSolution.calculateRouteValues();

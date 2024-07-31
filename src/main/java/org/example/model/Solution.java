@@ -3,6 +3,7 @@ package org.example.model;
 import org.example.util.Coordinates;
 import org.example.util.SimulationData;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +89,7 @@ public class Solution implements Comparable<Solution> {
 
     //TODO: Go through the RoutePoints and calculate their arrival time, set weather conditions and calculate function values
     public void calculateRouteValues() {
-        int currTime = simulationData.startingTime;
+        ZonedDateTime currTime = simulationData.startingTime;
         routePoints.get(0).updateData(currTime);
         for (int i = 1; i < routePoints.size(); i++) {
             RoutePoint prevPoint = routePoints.get(i-1);
@@ -138,7 +139,7 @@ public class Solution implements Comparable<Solution> {
 
 
             double distance = Coordinates.realDistance(currPoint.getCoordinates(), prevPoint.getCoordinates()); // [km]
-            double travelTimeSeconds = (int) (distance * 1000 / targetEndSpeed);
+            int travelTimeSeconds = (int) (distance * 1000 / targetEndSpeed);
             double fuelUsed = getFuelUsed(totalPower, travelTimeSeconds / 3600); // TODO: is fuel calculated correctly?
             double danger = getFractionalSafetyCoefficient( // TODO: MUST BE THE SAME UNIT. IN THE PAPER IT'S IN KNOTS!
                     prevPoint.getWeatherConditions().windSpeed(),
@@ -147,11 +148,11 @@ public class Solution implements Comparable<Solution> {
                     windAngle
             );
 
-            currTime += travelTimeSeconds;
+            currTime.plusSeconds(travelTimeSeconds);
 
             Map<OptimizedFunction, Double> newOptimizedFunctions = Map.of(
                     FuelUsed, fuelUsed,
-                    TravelTime, travelTimeSeconds,
+                    TravelTime, (double) travelTimeSeconds,
                     Danger, danger
             );
             currPoint.setFunctions(newOptimizedFunctions);
