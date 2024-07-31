@@ -1,10 +1,10 @@
 package org.example.model;
 
 public record WeatherConditions(
-        double windSpeed,
-        double windAngle,
-        double waveHeight,
-        double oceanCurrentSpeed,
-        double oceanCurrentDirection
+        Double windSpeed,
+        Double windAngle,
+        Double waveHeight,
+        Double oceanCurrentSpeed,
+        Double oceanCurrentDirection
 ) {
 }
