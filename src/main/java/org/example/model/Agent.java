@@ -19,10 +19,10 @@ public class Agent {
     private double prestige;
     private Island island;
     private boolean madeAction;
-    private Random random = new Random();
-    private static SimulationData simulationData = SimulationData.getInstance();
-    private Set<Agent> similarAgents = new HashSet<>(); // agents which solution is closer than epsilon
-    private Map<Agent, Integer> differentAgents = new HashMap<>(); // agents that are not similar and the number of agents in their surroundings
+    private final Random random = new Random();
+    private static final SimulationData simulationData = SimulationData.getInstance();
+    private final Set<Agent> similarAgents = new HashSet<>(); // agents which solution is closer than epsilon
+    private final Map<Agent, Integer> differentAgents = new HashMap<>(); // agents that are not similar and the number of agents in their surroundings
     private int meetings = 0;
     private int dominatedTimes = 0;
     public static int different = 0;
@@ -120,7 +120,7 @@ public class Agent {
 
     public void compareTo(Agent other) {
         Solution otherSolution = other.getSolution();
-        int dominationResult = solution.checkIfDominates(otherSolution, false);
+        int dominationResult = solution.checkIfDominates(otherSolution, true);
         double agentDominationFactor = meetings != 0 ? (double) dominatedTimes / meetings : 0;
         double otherDominationFactor = other.meetings != 0 ? (double) other.dominatedTimes / other.meetings : 0;
         double agentCrowdingFactor = meetings != 0 ? (double) similarAgents.size() / meetings : 0;
@@ -155,9 +155,7 @@ public class Agent {
             similarAgents.add(other);
         }
         int otherSurroundings = other.similarAgents.size();
-        if (differentAgents.containsKey(other)) {
-            differentAgents.remove(other);
-        }
+        differentAgents.remove(other);
         differentAgents.put(other, otherSurroundings);
 
         meetings++;
@@ -173,7 +171,7 @@ public class Agent {
 
     public boolean canMigrateToElite() {
         double avgSurroundings = (double) differentAgents.values().stream().reduce(0, Integer::sum) / differentAgents.size();
-        System.out.println(similarAgents.size() + " " + avgSurroundings);
+        System.out.println("Elite check: " + similarAgents.size() + " " + avgSurroundings);
         return similarAgents.size() > avgSurroundings;
     }
 

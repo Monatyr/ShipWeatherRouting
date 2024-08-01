@@ -382,6 +382,40 @@ public abstract class PhysicalModel {
     }
 
 
+    /**
+     * UTILS
+     */
+
+    public static int convertWindSpeedToBeaufort(double windSpeedMs) {
+        if (windSpeedMs < 0.3) {
+            return 0; // Calm
+        } else if (windSpeedMs < 1.6) {
+            return 1; // Light Air
+        } else if (windSpeedMs < 3.4) {
+            return 2; // Light Breeze
+        } else if (windSpeedMs < 5.5) {
+            return 3; // Gentle Breeze
+        } else if (windSpeedMs < 8.0) {
+            return 4; // Moderate Breeze
+        } else if (windSpeedMs < 10.8) {
+            return 5; // Fresh Breeze
+        } else if (windSpeedMs < 13.9) {
+            return 6; // Strong Breeze
+        } else if (windSpeedMs < 17.2) {
+            return 7; // Near Gale
+        } else if (windSpeedMs < 20.8) {
+            return 8; // Gale
+        } else if (windSpeedMs < 24.5) {
+            return 9; // Strong Gale
+        } else if (windSpeedMs < 28.5) {
+            return 10; // Storm
+        } else if (windSpeedMs < 32.7) {
+            return 11; // Violent Storm
+        } else {
+            return 12; // Hurricane Force
+        }
+    }
+
     private static double maxRecordedEngineLoad = 0.0;
 
     public static void main(String[] args) {

@@ -86,8 +86,6 @@ public class Main {
         System.out.println("Danger: " + solSafety.getFunctionValues() + "\n\n");
 
         solTime.getRoutePoints().stream().map(RoutePoint::getCoordinates).map(a -> a.longitude() + ", " + a.latitude()).forEach(System.out::println);
-//        System.out.println("\n\n");
-//        solFuel.getRoutePoints().stream().map(RoutePoint::getCoordinates).map(a -> a.longitude() + ", " + a.latitude()).forEach(System.out::println);
         System.out.println("Same: " + Agent.same + "\tDifferent: " + Agent.different);
     }
 

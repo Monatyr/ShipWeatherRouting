@@ -31,7 +31,7 @@
     "numberOfIslands": 4,
     "populationSize": 60,
     "startingTime": "2024-07-22T00:00Z",
-    "shipSpeed": 12.0,
+    "shipSpeed": 10,
     "similarityEpsilon": 0.90,
     "paretoEpsilon": 0.01
   },
@@ -59,7 +59,9 @@
     "maxOutput": 45000,
     "minLoad": 30,
     "maxLoad": 100,
-    "optimalLoad": 80
+    "optimalLoad": 80,
+    "minSpeed": 8,
+    "maxSpeed": 12
   },
   "conditions": {
     "thresholdWindSpeed": 35,
