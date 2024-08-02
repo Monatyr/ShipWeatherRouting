@@ -98,23 +98,25 @@ def merge_dicts(dict1: dict, dict2: dict):
 
 
 if __name__ == "__main__":
-	start_date = '2024-07-22'
-	end_date = '2024-07-28'
+	start_date = '2024-07-29'
+	end_date = '2024-08-01'
 
 	points = read_grid(GRID_FILE)
 
 	'''
 	1. Run below fetch_grid functions to gather data (uses API calls!)
 	'''
-	# fetch_grid(MARINE_URL, start_date, end_date, MARINE_VARIABLES, points, 'src/main/resources/weather-data-marine.json')
-	# fetch_grid(BASE_URL, start_date, end_date, BASE_VARIABLES, points, 'src/main/resources/weather-data-forecast.json')
+	# fetch_grid(BASE_URL, start_date, end_date, BASE_VARIABLES, points, 'src/main/resources/weather-data-forecast-2907-0108.json')
+	# fetch_grid(MARINE_URL, start_date, end_date, MARINE_VARIABLES, points, 'src/main/resources/weather-data-marine-2907-0108.json')
 
 
 	'''
 	2. Merge two dicts into one
 	'''
-	file1 = open('src/main/resources/weather-data-forecast.json')
-	file2 = open('src/main/resources/weather-data-marine.json')
+	# file1 = open('src/main/resources/weather-data-forecast-2907-0108.json')
+	# file2 = open('src/main/resources/weather-data-marine-2907-0108.json')
+	file1 = open('src/main/resources/weather-data.json')
+	file2 = open('src/main/resources/weather-data-2907-0108.json')
 	str1 = file1.read()
 	str2 = file2.read()
 	file1.close()
@@ -125,6 +127,6 @@ if __name__ == "__main__":
 
 	resulting_dict = merge_dicts(d1, d2)
 
-	res_file = open('src/main/resources/weather-data.json', 'w')
+	res_file = open('src/main/resources/weather-data-full.json', 'w')
 	json.dump(resulting_dict, res_file)
 	res_file.close()

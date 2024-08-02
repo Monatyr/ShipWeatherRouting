@@ -14,7 +14,7 @@ import java.util.*;
 public final class SimulationData {
     private static SimulationData instance;
     private final String configPath = "src/main/resources/config.json";
-    private final String weatherPath = "src/main/resources/weather-data.json";
+    private final String weatherPath = "src/main/resources/weather-data-full.json";
 
     private JSONObject weatherData;
     public ZonedDateTime startingTime;
@@ -195,9 +195,9 @@ public final class SimulationData {
     public WeatherConditions getWeatherConditions(Coordinates coordinates, ZonedDateTime arrivalDateTime) {
         JSONObject timestampData  = weatherData.getJSONObject(coordinates.toString());
         arrivalDateTime = getNearestFullHour(arrivalDateTime);
-        if (arrivalDateTime.getDayOfMonth() > 28) {
-            arrivalDateTime = arrivalDateTime.withDayOfMonth(28).withHour(23); // TODO: get more weather data; dont limit the data to the last existing weather record
-        }
+//        if (arrivalDateTime.getDayOfMonth() > 28) {
+//            arrivalDateTime = arrivalDateTime.withDayOfMonth(28).withHour(23); // TODO: get more weather data; dont limit the data to the last existing weather record
+//        }
         JSONObject conditions = timestampData.getJSONObject(arrivalDateTime.toString().replace("Z", ""));
         return new WeatherConditions(
                 conditions.getDouble("wind_speed_10m") / 3.6, // from km/h to m/s // TODO: check is water. Use an external API (open-meteo cannot reliably tell)
