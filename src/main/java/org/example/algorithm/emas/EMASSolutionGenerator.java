@@ -230,9 +230,10 @@ public class EMASSolutionGenerator {
             int currY = currRoutePoint.getGridCoordinates().y();
             for (int j = -simulationData.maxVerticalDistance; j <= simulationData.maxVerticalDistance; j++) {
                 int potentialHeight = currY + j;
-                if (potentialHeight < 0 ||
+                if (
+                        potentialHeight < 0 ||
                         potentialHeight >= simulationData.mapHeight ||
-                        simulationData.getWeatherConditions(currRoutePoint.getCoordinates(), simulationData.startingTime).waveHeight() == null // semi-optimal check if is water
+                        !simulationData.checkIfWater(currRoutePoint.getCoordinates())
                 ) {
                     continue;
                 }

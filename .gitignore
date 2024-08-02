@@ -43,6 +43,6 @@ build/
 /**/*.png
 *.pyc
 /scripts/grid_points*
-/src/main/resources/is_water.txt
+/src/main/resources/is_water.json
 /src/main/resources/weather-*
 /src/main/resources/map-grid.txt
