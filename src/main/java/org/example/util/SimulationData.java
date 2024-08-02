@@ -72,6 +72,9 @@ public final class SimulationData {
     public double maxOutput;
     public double minLoad = 0.3;
     public double maxLoad = 1.0;
+    // ship speed
+    public double minSpeed;
+    public double maxSpeed;
     // conditions
     public double thresholdWindSpeed;
     public double thresholdWindSpeedMargin;
@@ -149,6 +152,8 @@ public final class SimulationData {
             maxOutput = engineObject.getDouble("maxOutput");
             minLoad = engineObject.getDouble("minLoad");
             maxLoad = engineObject.getDouble("maxLoad");
+            minSpeed = engineObject.getDouble("minSpeed");
+            maxSpeed = engineObject.getDouble("maxSpeed");
 
             JSONObject conditionsObject = dataObject.getJSONObject("conditions");
             thresholdWindSpeed = conditionsObject.getDouble("thresholdWindSpeed");
@@ -182,26 +187,24 @@ public final class SimulationData {
         bufferedReader.close();
     }
 
+    private ZonedDateTime getNearestFullHour(ZonedDateTime arrivalDateTime) {
+        arrivalDateTime = arrivalDateTime.plusMinutes(30).withMinute(0).withSecond(0);
+        return arrivalDateTime;
+    }
+
     public WeatherConditions getWeatherConditions(Coordinates coordinates, ZonedDateTime arrivalDateTime) {
         JSONObject timestampData  = weatherData.getJSONObject(coordinates.toString());
-        long minDifference = Long.MAX_VALUE;
-        long difference;
-        String closestTimestamp = null;
-
-        for (String keyTimestamp : timestampData.keySet()) {
-            difference = Math.abs(ZonedDateTime.parse(keyTimestamp + "Z").toEpochSecond() - arrivalDateTime.toEpochSecond());
-            if (difference < minDifference) {
-                minDifference = difference;
-                closestTimestamp = keyTimestamp;
-            }
+        arrivalDateTime = getNearestFullHour(arrivalDateTime);
+        if (arrivalDateTime.getDayOfMonth() > 28) {
+            arrivalDateTime = arrivalDateTime.withDayOfMonth(28).withHour(23); // TODO: get more weather data; dont limit the data to the last existing weather record
         }
-        JSONObject conditions = timestampData.getJSONObject(closestTimestamp);
+        JSONObject conditions = timestampData.getJSONObject(arrivalDateTime.toString().replace("Z", ""));
         return new WeatherConditions(
-                conditions.getDouble("wind_speed_10m") / 3.6, // from km/h to m/s
+                conditions.getDouble("wind_speed_10m") / 3.6, // from km/h to m/s // TODO: check is water. Use an external API (open-meteo cannot reliably tell)
                 conditions.getDouble("wind_direction_10m"),
                 conditions.getDouble("wave_height"),
-                conditions.getDouble("ocean_current_velocity") / 3.6, // from km/h to m/s
-                conditions.getDouble("ocean_current_direction")
+                conditions.optDouble("ocean_current_velocity", 0) / 3.6, // from km/h to m/s
+                conditions.optDouble("ocean_current_direction", 0)
         );
     }
 

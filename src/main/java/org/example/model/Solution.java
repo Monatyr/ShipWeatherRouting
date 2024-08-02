@@ -1,5 +1,6 @@
 package org.example.model;
 
+import org.example.physicalModel.PhysicalModel;
 import org.example.util.Coordinates;
 import org.example.util.SimulationData;
 
@@ -70,23 +71,6 @@ public class Solution implements Comparable<Solution> {
         return 0;
     }
 
-    public void calculateFunctionValues() {
-        float fuelUsed = 0;
-        float travelTime = 0;
-        float routeAvgDanger = 0;
-        for (RoutePoint routePoint : routePoints) {
-            Map<OptimizedFunction, Double> pointFunctions = routePoint.getFunctions();
-            fuelUsed += pointFunctions.get(FuelUsed);
-            travelTime += pointFunctions.get(TravelTime);
-            routeAvgDanger += Math.pow(1 - pointFunctions.get(Danger), 2);
-        }
-        this.functionValues = Map.of(
-                FuelUsed, fuelUsed,
-                TravelTime, travelTime,
-                Danger, routeAvgDanger / routePoints.size()
-        );
-    }
-
     //TODO: Go through the RoutePoints and calculate their arrival time, set weather conditions and calculate function values
     public void calculateRouteValues() {
         ZonedDateTime currTime = simulationData.startingTime;
@@ -98,16 +82,19 @@ public class Solution implements Comparable<Solution> {
             // From the previous point all the weather data will be collected and used to calculate the speed and resistances.
             // Based on the travel time data for the current point will be found out.
             double shipHeadingAngle = getShipHeadingAngle(prevPoint.getCoordinates(), currPoint.getCoordinates());
-            double windAngle = prevPoint.getWeatherConditions().windAngle(); // make sure the wind angle is the angle FROM which the wind is blowing
+            double windAngle = prevPoint.getWeatherConditions().windAngle(); // TODO: make sure the wind angle is the angle FROM which the wind is blowing
             double waveHeight = prevPoint.getWeatherConditions().waveHeight();
+            double windSpeed = prevPoint.getWeatherConditions().windSpeed();
+            int BN = PhysicalModel.convertWindSpeedToBeaufort(windSpeed);
 
-            Random random = new Random();
-            int BN = 7; // TODO: use weather data
             // speed in each leg of the journey should also be a variable in the optimization process // TODO: don't read it from the config file but actually adapt the value
-            double targetEndSpeed = simulationData.shipSpeed + random.nextDouble(-2, 2); // TODO: evolve the value in a more sophisticated manner
+            double targetEndSpeed = currPoint.getShipSpeed(); // TODO: evolve the speed during mutation
+            if (targetEndSpeed < 0.1) {
+                System.out.println("SPEED TOO SMALL: " + targetEndSpeed);
+            }
 
-            // adjust speed if the engine does not operate in such forces
-            double calmWaterSpeed = getCalmWaterSpeed(targetEndSpeed, 1e-2, 10, BN, shipHeadingAngle, windAngle); // TODO: use actual weather data
+            // get calmWaterSpeed necessary for the targetEndSpeed
+            double calmWaterSpeed = getCalmWaterSpeed(targetEndSpeed, 1e-2, 10, BN, shipHeadingAngle, windAngle);
             calmWaterSpeed = adjustSpeedForWaveHeight(calmWaterSpeed, waveHeight);
             double totalResistance = getTotalCalmWaterResistance(calmWaterSpeed, 1.19 * Math.pow(10, -6)); // TODO: change viscosity to actual value dependent on temp?
             double totalPower = getBrakePower(totalResistance, calmWaterSpeed) / 1000; // in kW
@@ -121,10 +108,13 @@ public class Solution implements Comparable<Solution> {
             }
             //
 
+            // adjust speed if the engine does not operate in the forces required by the targetSpeed
             while (totalPower < simulationData.minOutput || totalPower > simulationData.maxOutput) {
                 if (totalPower < simulationData.minOutput) {
+//                    System.out.println("SMALL: " + calmWaterSpeed);
                     calmWaterSpeed += 0.2;
                 } else {
+//                    System.out.println("BIG: " + calmWaterSpeed);
                     calmWaterSpeed -= 0.2;
                 }
                 totalResistance = getTotalCalmWaterResistance(calmWaterSpeed, 1.19 * Math.pow(10, -6));
@@ -140,7 +130,7 @@ public class Solution implements Comparable<Solution> {
 
             double distance = Coordinates.realDistance(currPoint.getCoordinates(), prevPoint.getCoordinates()); // [km]
             int travelTimeSeconds = (int) (distance * 1000 / targetEndSpeed);
-            double fuelUsed = getFuelUsed(totalPower, travelTimeSeconds / 3600); // TODO: is fuel calculated correctly?
+            double fuelUsed = getFuelUsed(totalPower, (double) travelTimeSeconds / 3600); // TODO: is fuel calculated correctly?
             double danger = getFractionalSafetyCoefficient( // TODO: MUST BE THE SAME UNIT. IN THE PAPER IT'S IN KNOTS!
                     prevPoint.getWeatherConditions().windSpeed(),
                     simulationData.thresholdWindSpeed,
@@ -148,7 +138,7 @@ public class Solution implements Comparable<Solution> {
                     windAngle
             );
 
-            currTime.plusSeconds(travelTimeSeconds);
+            currTime = currTime.plusSeconds(travelTimeSeconds);
 
             Map<OptimizedFunction, Double> newOptimizedFunctions = Map.of(
                     FuelUsed, fuelUsed,
@@ -159,6 +149,24 @@ public class Solution implements Comparable<Solution> {
             currPoint.setShipSpeed(targetEndSpeed);
             currPoint.updateData(currTime);
         }
+    }
+
+    public void calculateFunctionValues() {
+        float fuelUsed = 0;
+        float travelTime = 0;
+        float routeAvgDanger = 0;
+        for (int i = 1; i < routePoints.size(); i++) {  // the first point does not hold any information required for the result
+            RoutePoint routePoint = routePoints.get(i);
+            Map<OptimizedFunction, Double> pointFunctions = routePoint.getFunctions();
+            fuelUsed += pointFunctions.get(FuelUsed);
+            travelTime += pointFunctions.get(TravelTime);
+            routeAvgDanger += Math.pow(1 - pointFunctions.get(Danger), 2);
+        }
+        this.functionValues = Map.of(
+                FuelUsed, fuelUsed,
+                TravelTime, travelTime,
+                Danger, routeAvgDanger / routePoints.size()
+        );
     }
 
     public double similarityBetweenSolutions(Solution other) {

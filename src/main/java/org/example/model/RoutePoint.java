@@ -1,5 +1,6 @@
 package org.example.model;
 
+import org.example.physicalModel.PhysicalModel;
 import org.example.util.Coordinates;
 import org.example.util.GridPoint;
 import org.example.util.SimulationData;
@@ -21,45 +22,45 @@ import static org.example.model.OptimizedFunction.*;
 public class RoutePoint {
     private GridPoint gridCoordinates;
     private Coordinates coordinates;
-    private ZonedDateTime arrivalTime;
+    private ZonedDateTime arrivalTime = SimulationData.getInstance().startingTime;
     private WeatherConditions conditions;
     private Map<OptimizedFunction, Double> functions;
     private double shipSpeed;
     private static Random random = new Random();
 
 
-    public RoutePoint(GridPoint gridCoordinates, Coordinates coordinates, ZonedDateTime arrivalTime) {
+    public RoutePoint(GridPoint gridCoordinates, Coordinates coordinates) {
         this.gridCoordinates = gridCoordinates;
         this.coordinates = coordinates;
+//        this.arrivalTime = arrivalTime;
+//        this.shipSpeed = shipSpeed; // TODO: evolve speed
 
-        this.arrivalTime = arrivalTime;
-        this.shipSpeed = SimulationData.getInstance().shipSpeed;
-
-        // TODO: read the weather conditions from file
-        this.conditions = SimulationData.getInstance().getWeatherConditions(coordinates, arrivalTime);
+//        this.conditions = SimulationData.getInstance().getWeatherConditions(coordinates, arrivalTime);
 
         // TODO: read the function values from actual data / calculate them
-        this.functions = Map.of(Danger, random.nextDouble(), FuelUsed, random.nextDouble(5, 10), TravelTime, random.nextDouble());
+//        this.functions = PhysicalModel.
+//        this.functions = Map.of(Danger, random.nextDouble(), FuelUsed, random.nextDouble(5, 10), TravelTime, random.nextDouble());
     }
 
     public RoutePoint(RoutePoint other) {
         this.gridCoordinates = other.getGridCoordinates();
         this.coordinates = other.getCoordinates();
+        this.shipSpeed = other.shipSpeed;
 
         // TODO: read the weather conditions from file and base their value on the time of arrival in this particular solution
-        this.conditions = other.conditions;
+//        this.conditions = other.conditions;
 
         // TODO: read from actual data
-        this.functions = Map.of(
-                Danger, other.functions.get(Danger),
-                FuelUsed, other.functions.get(FuelUsed),
-                TravelTime, other.functions.get(TravelTime)
-        );
+//        this.functions = Map.of(
+//                Danger, other.functions.get(Danger),
+//                FuelUsed, other.functions.get(FuelUsed),
+//                TravelTime, other.functions.get(TravelTime)
+//        );
     }
 
     public void updateData(ZonedDateTime arrivalTime) {
         this.arrivalTime = arrivalTime;
-        // TODO: read all of the values from the weather data and calculate resistances
+        this.conditions = SimulationData.getInstance().getWeatherConditions(coordinates, arrivalTime);
     }
 
     public GridPoint getGridCoordinates() {
@@ -105,4 +106,6 @@ public class RoutePoint {
     public void setShipSpeed(double targetEndSpeed) {
         this.shipSpeed = targetEndSpeed;
     }
+
+    public double getShipSpeed() { return shipSpeed; }
 }

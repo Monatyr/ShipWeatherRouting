@@ -5,8 +5,6 @@ import org.example.model.Agent;
 import org.example.model.Island;
 import org.example.model.RoutePoint;
 import org.example.model.Solution;
-import org.example.model.action.Action;
-import org.example.model.action.ActionType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,7 +19,7 @@ import java.util.stream.Collectors;
 public class EMAS extends Algorithm {
     private final int islandsNumber = simulationData.numberOfIslands;
     private final List<Island> islands = new ArrayList<>();
-
+    private final static Random random = new Random();
 
     public EMAS() {
         createIslands(); // create empty islands
@@ -62,11 +60,18 @@ public class EMAS extends Algorithm {
     @Override
     protected void generateInitialPopulation() {
         List<List<RoutePoint>> startingRoutes = new ArrayList<>();
-        startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/great_circle_route.txt"));
-        startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/rhumb_line_route.txt"));
-        System.out.println(startingRoutes.get(0).stream().map(a -> a.getCoordinates().latitude() + ", " + a.getCoordinates().longitude()));
         for (int i = 0; i < simulationData.populationSize; i++) {
-            List<RoutePoint> route = startingRoutes.get(i % startingRoutes.size());
+            if (i % 2 == 0) {
+                startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/great_circle_route.txt"));
+            } else {
+                startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/rhumb_line_route.txt"));
+            }
+        }
+        for (List<RoutePoint> route : startingRoutes) {
+            double routeTargetSpeed = random.nextDouble(simulationData.minSpeed, simulationData.maxSpeed);
+            for (RoutePoint routePoint : route) {
+                routePoint.setShipSpeed(routeTargetSpeed);
+            }
             Solution solution = EMASSolutionGenerator.generateSolution(route);
             solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.initialMutationRate);
             population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));

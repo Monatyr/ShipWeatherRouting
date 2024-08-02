@@ -334,15 +334,16 @@ public abstract class PhysicalModel {
 
     // TODO: change fuel used to full cost or something like that.
     public static double getFuelUsed(double brakePower, double journeyTimeInHours) {
-        double engineLoad = brakePower / (simulationData.maxOutput);
+        double engineLoad = brakePower / (simulationData.maxOutput); // fraction from <0, 1>
         if (engineLoad > maxRecordedEngineLoad) {
-            System.out.println("New max engine load (should be <=0 1) " + engineLoad);
+            System.out.println("New max engine load (should be <0, 1>) " + engineLoad);
             maxRecordedEngineLoad = engineLoad;
         }
-        double fuelUsageRate = 17.28 * Math.pow(engineLoad, 3) + 11.23 * Math.pow(engineLoad, 2) - 47.36 * engineLoad + 180.54; // taken from the paper (described in the fuel usage Story)
-        double fuelUsed = fuelUsageRate * brakePower * journeyTimeInHours / 1000; // in grams
-        fuelUsed = fuelUsed / 1000 / 1000; // in tons
-        return fuelUsed;
+        // below formula is taken from the paper (described in the fuel usage Story)
+        double fuelUsageRate = 17.28 * Math.pow(engineLoad, 3) + 11.23 * Math.pow(engineLoad, 2) - 47.36 * engineLoad + 180.54; // g/kW*h
+        double fuelConsumptionPerHour = fuelUsageRate * brakePower / 1000; // kg/h
+        double fuelUsed = journeyTimeInHours * fuelConsumptionPerHour; // kg
+        return fuelUsed / 1000; // in tons
     }
 
 
@@ -381,6 +382,40 @@ public abstract class PhysicalModel {
         return (maxWindSpeed - windSpeed) / maxWindSpeed;
     }
 
+
+    /**
+     * UTILS
+     */
+
+    public static int convertWindSpeedToBeaufort(double windSpeedMs) {
+        if (windSpeedMs < 0.3) {
+            return 0; // Calm
+        } else if (windSpeedMs < 1.6) {
+            return 1; // Light Air
+        } else if (windSpeedMs < 3.4) {
+            return 2; // Light Breeze
+        } else if (windSpeedMs < 5.5) {
+            return 3; // Gentle Breeze
+        } else if (windSpeedMs < 8.0) {
+            return 4; // Moderate Breeze
+        } else if (windSpeedMs < 10.8) {
+            return 5; // Fresh Breeze
+        } else if (windSpeedMs < 13.9) {
+            return 6; // Strong Breeze
+        } else if (windSpeedMs < 17.2) {
+            return 7; // Near Gale
+        } else if (windSpeedMs < 20.8) {
+            return 8; // Gale
+        } else if (windSpeedMs < 24.5) {
+            return 9; // Strong Gale
+        } else if (windSpeedMs < 28.5) {
+            return 10; // Storm
+        } else if (windSpeedMs < 32.7) {
+            return 11; // Violent Storm
+        } else {
+            return 12; // Hurricane Force
+        }
+    }
 
     private static double maxRecordedEngineLoad = 0.0;
 

@@ -88,7 +88,6 @@ public class EMASSolutionGenerator {
         // somehow be notified.
         List<Pair<Integer, Integer>> gridPlacement = new ArrayList<>();
         List<String> pathPointsList = null;
-        System.out.println("Grid size: " + grid.length + " " + grid[0].length);
         try {
             pathPointsList = Files.readAllLines(Paths.get(filename));
         } catch (IOException e) {
@@ -164,10 +163,9 @@ public class EMASSolutionGenerator {
         for (Pair<Integer, Integer> gridPoint : gridRoute) {
             GridPoint gridCoords = new GridPoint(gridPoint.getFirst(), gridPoint.getSecond());
             Coordinates coordinates = grid[gridCoords.y()][gridCoords.x()];
-            RoutePoint routePoint = new RoutePoint(gridCoords, coordinates, simulationData.startingTime);
+            RoutePoint routePoint = new RoutePoint(gridCoords, coordinates);
             route.add(routePoint);
         }
-        System.out.println(route.size() + " " + route.stream().map(RoutePoint::getGridCoordinates).toList());
         return route;
     }
 
@@ -251,9 +249,17 @@ public class EMASSolutionGenerator {
             }
             Collections.shuffle(availableHeights);
             int newHeight = availableHeights.get(0);
-            // TODO: insert real time data from an API and not randomly generated
             GridPoint newGridCoordinates = new GridPoint(newHeight, currRoutePoint.getGridCoordinates().x());
-            RoutePoint newRoutePoint = new RoutePoint(newGridCoordinates, calculateCoordinates(newGridCoordinates), simulationData.startingTime);
+            RoutePoint newRoutePoint = new RoutePoint(newGridCoordinates, calculateCoordinates(newGridCoordinates)); // TODO: does the arrival time get updated in the calculateRouteValues function?
+
+            // Mutate speed
+            double mutatedSpeed = currRoutePoint.getShipSpeed();
+            double speedChange = random.nextDouble(-0.5, 0.5);
+            if (mutatedSpeed + speedChange >= simulationData.minSpeed && mutatedSpeed + speedChange <= simulationData.maxSpeed) {
+                mutatedSpeed += speedChange;
+            }
+            newRoutePoint.setShipSpeed(mutatedSpeed);
+
             mutatedSolution.getRoutePoints().set(pointIndex, newRoutePoint);
         }
         mutatedSolution.calculateRouteValues();
