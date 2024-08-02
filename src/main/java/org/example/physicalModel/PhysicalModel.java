@@ -334,15 +334,16 @@ public abstract class PhysicalModel {
 
     // TODO: change fuel used to full cost or something like that.
     public static double getFuelUsed(double brakePower, double journeyTimeInHours) {
-        double engineLoad = brakePower / (simulationData.maxOutput);
+        double engineLoad = brakePower / (simulationData.maxOutput); // fraction from <0, 1>
         if (engineLoad > maxRecordedEngineLoad) {
-            System.out.println("New max engine load (should be <=0 1) " + engineLoad);
+            System.out.println("New max engine load (should be <0, 1>) " + engineLoad);
             maxRecordedEngineLoad = engineLoad;
         }
-        double fuelUsageRate = 17.28 * Math.pow(engineLoad, 3) + 11.23 * Math.pow(engineLoad, 2) - 47.36 * engineLoad + 180.54; // taken from the paper (described in the fuel usage Story)
-        double fuelUsed = fuelUsageRate * brakePower * journeyTimeInHours / 1000; // in grams
-        fuelUsed = fuelUsed / 1000 / 1000; // in tons
-        return fuelUsed;
+        // below formula is taken from the paper (described in the fuel usage Story)
+        double fuelUsageRate = 17.28 * Math.pow(engineLoad, 3) + 11.23 * Math.pow(engineLoad, 2) - 47.36 * engineLoad + 180.54; // g/kW*h
+        double fuelConsumptionPerHour = fuelUsageRate * brakePower / 1000; // kg/h
+        double fuelUsed = journeyTimeInHours * fuelConsumptionPerHour; // kg
+        return fuelUsed / 1000; // in tons
     }
 
 

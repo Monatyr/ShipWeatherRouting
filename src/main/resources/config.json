@@ -56,11 +56,11 @@
   },
   "engine": {
     "minOutput": 15000,
-    "maxOutput": 45000,
+    "maxOutput": 40000,
     "minLoad": 30,
     "maxLoad": 100,
     "optimalLoad": 80,
-    "minSpeed": 8,
+    "minSpeed": 10,
     "maxSpeed": 12
   },
   "conditions": {

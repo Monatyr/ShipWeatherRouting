@@ -198,22 +198,13 @@ public final class SimulationData {
         if (arrivalDateTime.getDayOfMonth() > 28) {
             arrivalDateTime = arrivalDateTime.withDayOfMonth(28).withHour(23); // TODO: get more weather data; dont limit the data to the last existing weather record
         }
-
         JSONObject conditions = timestampData.getJSONObject(arrivalDateTime.toString().replace("Z", ""));
-
-        try {
-            conditions.getDouble("ocean_current_velocity");
-        } catch (Exception e) {
-            System.out.println(coordinates + " " + arrivalDateTime);
-            throw e;
-        }
-
         return new WeatherConditions(
-                conditions.getDouble("wind_speed_10m") / 3.6, // from km/h to m/s
+                conditions.getDouble("wind_speed_10m") / 3.6, // from km/h to m/s // TODO: check is water. Use an external API (open-meteo cannot reliably tell)
                 conditions.getDouble("wind_direction_10m"),
                 conditions.getDouble("wave_height"),
-                conditions.getDouble("ocean_current_velocity") / 3.6, // from km/h to m/s
-                conditions.getDouble("ocean_current_direction")
+                conditions.optDouble("ocean_current_velocity", 0) / 3.6, // from km/h to m/s
+                conditions.optDouble("ocean_current_direction", 0)
         );
     }
 
