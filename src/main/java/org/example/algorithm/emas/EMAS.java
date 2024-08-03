@@ -84,7 +84,11 @@ public class EMAS extends Algorithm {
             Set<Agent> agentsToAdd = new HashSet<>();
             Set<Agent> agentsToRemove = new HashSet<>();
 
-            for (Agent agent : island.getAgents()) {
+            // shuffle agents to further randomize the evolution process
+            List<Agent> shuffledAgents = new ArrayList<>(island.getAgents().stream().toList());
+            Collections.shuffle(shuffledAgents);
+
+            for (Agent agent : shuffledAgents) {
                 /* If agent did not make an action this iteration (e.g. took part in
                 reproduction or migrated to a subsequent island */
                 if (!agent.getMadeAction()) {
