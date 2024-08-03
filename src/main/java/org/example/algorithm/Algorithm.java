@@ -23,7 +23,7 @@ public abstract class Algorithm {
             runIteration();
             iterations++;
             if (iterations % 500 == 0) {
-                System.out.println("Iteration: " + iterations + (iterations < 10000 ? "\t" : "" ) + "\tPopulation: " + population.size() + "\t\tElite: " + population.stream().filter(o -> o.getIsland().isElite()).toList().size());
+                System.out.println("Iteration: " + iterations + (iterations < 10000 ? "\t" : "" ) + "\tPopulation: " + population.size() + "\t\tElite: " + population.stream().filter(o -> o.getIsland().isElite()).toList().size() + "\tEpsilon: " + simulationData.paretoEpsilon);
                 System.out.println("Below: " + Solution.below + "\tAbove: " + Solution.above);
                 System.out.println("Avg engine load: " + Solution.fullNodePower / Solution.nodeNumber / SimulationData.getInstance().maxOutput + "\tAvg speed: " + Solution.fullNodeSpeed / Solution.nodeNumber);
             }

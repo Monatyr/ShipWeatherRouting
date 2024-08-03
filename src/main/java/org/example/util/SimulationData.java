@@ -29,7 +29,6 @@ public final class SimulationData {
     public int populationSize;
     public Coordinates startCoordinates;
     public Coordinates endCoordinates;
-    public boolean[][] isWater;
     // simulation
     public int maxIterations;
     public int maxPopulation;
@@ -70,8 +69,8 @@ public final class SimulationData {
     // engine
     public double minOutput;
     public double maxOutput;
-    public double minLoad = 0.3;
-    public double maxLoad = 1.0;
+    public double minLoad;
+    public double maxLoad;
     // ship speed
     public double minSpeed;
     public double maxSpeed;
