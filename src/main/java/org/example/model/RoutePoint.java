@@ -108,4 +108,9 @@ public class RoutePoint {
     }
 
     public double getShipSpeed() { return shipSpeed; }
+
+    @Override
+    public String toString() {
+        return "(" + coordinates.toString() + ")";
+    }
 }

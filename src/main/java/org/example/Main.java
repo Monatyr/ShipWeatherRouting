@@ -16,7 +16,8 @@ public class Main {
     private static EMAS emas;
 
     public static void main(String[] args) throws Exception {
-        runRouteGenerationScript();
+        // route generation script
+        runPythonScript("scripts/generate_initial_routes.py", "");
         emas = new EMAS();
 
         getIslandsInfo(emas);
@@ -28,18 +29,19 @@ public class Main {
         Set<Solution> solutions = emas.run();
 
         generalInfo(solutions);
-        getBestPerCategory(solutions);
+        List<String> topRoutes = getBestPerCategory(solutions);
         getIslandsInfo(emas);
         System.out.println(Action.actionCount);
+        // visualise routes
+        runPythonScript("scripts/plot_routes.py", topRoutes.toString());
     }
 
-    public static void runRouteGenerationScript() {
-        String scriptPath = "scripts/generate_initial_routes.py";
-        ProcessBuilder processBuilder = new ProcessBuilder("/run/current-system/sw/bin/python", scriptPath);
+    public static void runPythonScript(String scriptPath, String args) {
+        ProcessBuilder processBuilder = new ProcessBuilder("/run/current-system/sw/bin/python", scriptPath, args);
         try {
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
-            System.out.println("Initial route generation exit code: " + exitCode);
+            System.out.println(scriptPath + " exit code: " + exitCode);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -65,7 +67,7 @@ public class Main {
         System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum) + " ---");
     }
 
-    public static void getBestPerCategory(Set<Solution> solutions) {
+    public static List<String> getBestPerCategory(Set<Solution> solutions) {
         List<Solution> solList = solutions.stream().toList();
         Solution solTime = solList.get(0);
         Solution solFuel = solList.get(0);
@@ -85,8 +87,12 @@ public class Main {
         System.out.println("Fuel: " + solFuel.getFunctionValues());
         System.out.println("Danger: " + solSafety.getFunctionValues() + "\n\n");
 
-        solSafety.getRoutePoints().stream().map(RoutePoint::getCoordinates).map(a -> a.longitude() + ", " + a.latitude()).forEach(System.out::println);
         System.out.println("Same: " + Agent.same + "\tDifferent: " + Agent.different);
+        return List.of(
+                solTime.getRoutePoints().toString(),
+                solFuel.getRoutePoints().toString(),
+                solSafety.getRoutePoints().toString()
+        );
     }
 
     public static void getIslandsInfo(EMAS emas) {
