@@ -16,6 +16,7 @@ public class MigrationAction extends Action {
     @Override
     public void perform(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) throws Exception {
         agentsToRemove.add(agent);
+        agent.setPreviousIsland(agent.getIsland());
         agent.setIsland(targetIsland);
         targetIsland.addAgent(agent);
         Action.actionCount.put(ActionType.Migration, Action.actionCount.get(ActionType.Migration) + 1);

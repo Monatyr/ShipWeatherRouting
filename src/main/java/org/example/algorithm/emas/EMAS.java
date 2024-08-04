@@ -5,9 +5,12 @@ import org.example.model.Agent;
 import org.example.model.Island;
 import org.example.model.RoutePoint;
 import org.example.model.Solution;
+import org.example.util.UtilFunctions;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.example.util.UtilFunctions.redistributeEnergyLeft;
 
 /**
  * Exemplary ships:
@@ -152,32 +155,19 @@ public class EMAS extends Algorithm {
         Set<Agent> nonDominatedAgents = getNonDominatedAgents(eliteAgents);
         Set<Agent> dominatedAgents = new HashSet<>(eliteAgents);
         dominatedAgents.removeAll(nonDominatedAgents);
-        islands.get(0).setAgents(nonDominatedAgents);
-        double energyToDistribute = dominatedAgents.stream().map(Agent::getEnergy).reduce(0.0, Double::sum);
-        redistributeEnergyToAgents(energyToDistribute, false);
+        islands.get(0).setAgents(nonDominatedAgents); // 0 is the elite island
+        for (Agent agent : dominatedAgents) {
+            redistributeEnergyLeft(agent, agent.getPreviousIsland());
+        }
         simulationData.populationSize -= dominatedAgents.size();
     }
 
     private void evaluateAgents() {
-        for (Island island: islands) {
+        List<Island> nonEliteIslands = islands.stream() // agents on the elite island do not compare themselves to each other
+                .filter(i -> !i.isElite())
+                .toList();
+        for (Island island: nonEliteIslands) {
             island.evaluateAgents();
-        }
-    }
-
-    private void redistributeEnergyToAgents(double energy, boolean includeElite) {
-        List<Island> targetIslands;
-        if (includeElite) {
-            targetIslands = islands;
-        } else {
-            targetIslands = islands.stream().filter(i -> !i.isElite()).toList();
-        }
-        Set<Agent> nonEliteAgents = targetIslands.stream()
-                .flatMap(i -> i.getAgents().stream())
-                .filter(a -> a.getEnergy() > simulationData.deathEnergyBound)
-                .collect(Collectors.toSet());
-        double energyPerAgent = energy / nonEliteAgents.size();
-        for (Agent agent : nonEliteAgents) {
-            agent.setEnergy(agent.getEnergy() + energyPerAgent);
         }
     }
 
