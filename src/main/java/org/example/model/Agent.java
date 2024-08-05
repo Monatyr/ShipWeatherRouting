@@ -18,6 +18,7 @@ public class Agent {
     private double energy;
     private double prestige;
     private Island island;
+    private Island previousIsland;
     private boolean madeAction;
     private final Random random = new Random();
     private static final SimulationData simulationData = SimulationData.getInstance();
@@ -35,6 +36,7 @@ public class Agent {
         this.prestige = prestige;
         this.madeAction = madeAction;
         this.island = island;
+        this.previousIsland = island;
         this.id = SimulationData.getInstance().generateId();
     }
 
@@ -171,7 +173,7 @@ public class Agent {
 
     public boolean canMigrateToElite() {
         double avgSurroundings = (double) differentAgents.values().stream().reduce(0, Integer::sum) / differentAgents.size();
-        System.out.println("Elite check: " + similarAgents.size() + " " + avgSurroundings);
+//        System.out.println("Elite check: " + similarAgents.size() + " " + avgSurroundings);
         return similarAgents.size() > avgSurroundings;
     }
 
@@ -210,4 +212,13 @@ public class Agent {
     public void setMadeAction(boolean value) {
         this.madeAction = value;
     }
+
+    public Island getPreviousIsland() {
+        return previousIsland;
+    }
+
+    public void setPreviousIsland(Island previousIsland) {
+        this.previousIsland = previousIsland;
+    }
+
 }

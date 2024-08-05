@@ -7,9 +7,12 @@ import org.example.model.Agent;
 import org.example.model.Island;
 import org.example.util.GridPoint;
 import org.example.util.SimulationData;
+import org.example.util.UtilFunctions;
 
 import java.util.List;
 import java.util.Random;
+
+import static org.example.util.UtilFunctions.redistributeEnergyLeft;
 
 
 public abstract class ActionFactory {
@@ -31,6 +34,9 @@ public abstract class ActionFactory {
         }
 
         if (agent.getIsland().isElite()) {
+            if (agent.getEnergy() != 0) { // make sure that the elite agent distributes its energy to normal agents in the first iteration it spends on the elite island
+                redistributeEnergyLeft(agent, agent.getPreviousIsland());
+            }
             return new EliteMutation(agent);
         }
 

@@ -24,20 +24,28 @@ public class Main {
         Set<Agent> population = emas.getPopulation();
         System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum));
 
-        getBestPerCategory(population.stream().map(Agent::getSolution).collect(Collectors.toSet()));
+        List<String> topRoutes = getBestPerCategory(population.stream().map(Agent::getSolution).collect(Collectors.toSet()));
+        runPythonScript("scripts/plot_routes.py", "initial_routes.png " + topRoutes.toString());
 
         Set<Solution> solutions = emas.run();
 
         generalInfo(solutions);
-        List<String> topRoutes = getBestPerCategory(solutions);
+        topRoutes = getBestPerCategory(solutions);
         getIslandsInfo(emas);
         System.out.println(Action.actionCount);
         // visualise routes
-        runPythonScript("scripts/plot_routes.py", topRoutes.toString());
+        runPythonScript("scripts/plot_routes.py", "top3_routes.png "  + topRoutes.toString());
     }
 
     public static void runPythonScript(String scriptPath, String args) {
-        ProcessBuilder processBuilder = new ProcessBuilder("/run/current-system/sw/bin/python", scriptPath, args);
+        ProcessBuilder processBuilder;
+        List<String> parameters;
+        if (args.isEmpty()) {
+            processBuilder = new ProcessBuilder("/run/current-system/sw/bin/python", scriptPath);
+        } else {
+            parameters = List.of(args.split(" ", 2));
+            processBuilder = new ProcessBuilder("/run/current-system/sw/bin/python", scriptPath, parameters.get(0), parameters.get(1));
+        }
         try {
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
