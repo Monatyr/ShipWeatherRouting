@@ -6,6 +6,7 @@ import argparse
 import ast
 
 parser = argparse.ArgumentParser()
+parser.add_argument('file', type=str)
 parser.add_argument('routes', type=str)
 args = parser.parse_args()
 
@@ -42,5 +43,5 @@ plt.ylabel('Latitude')
 plt.legend()
 
 # Display the plot
-plt.savefig('results/top3_routes.png')
+plt.savefig(f'results/{args.file}')
 # plt.show()
