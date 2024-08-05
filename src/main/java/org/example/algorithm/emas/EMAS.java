@@ -115,8 +115,12 @@ public class EMAS extends Algorithm {
                 .flatMap(island -> island.getAgents().stream())
                 .collect(Collectors.toSet());
 
-        if (simulationData.populationSize != population.size()) {
-            String err = "\nITER: " + iterations + "\nSIM-DATA-POP: " + simulationData.populationSize + "\nPOP: " + population.size();
+        long nonElitePopulationSize = population.stream()
+                .filter(agent -> !agent.getIsland().isElite())
+                .count();
+
+        if (simulationData.populationSize != nonElitePopulationSize) {
+            String err = "\nITER: " + iterations + "\nSIM-DATA-POP: " + simulationData.populationSize + "\nPOP: " + nonElitePopulationSize;
             throw new Exception(err);
         }
         simulationData.paretoEpsilon -= 0.000001;
@@ -159,7 +163,7 @@ public class EMAS extends Algorithm {
         for (Agent agent : dominatedAgents) {
             redistributeEnergyLeft(agent, agent.getPreviousIsland());
         }
-        simulationData.populationSize -= dominatedAgents.size();
+//        simulationData.populationSize -= dominatedAgents.size();
     }
 
     private void evaluateAgents() {

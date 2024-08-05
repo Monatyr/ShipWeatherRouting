@@ -108,8 +108,12 @@ public class Solution implements Comparable<Solution> {
             }
             //
 
+            int counter = 0;
             // adjust speed if the engine does not operate in the forces required by the targetSpeed
             while (totalPower < simulationData.minOutput || totalPower > simulationData.maxOutput) {
+                if (counter > 1000) {
+                    System.out.println(counter);
+                }
                 if (totalPower < simulationData.minOutput) {
 //                    System.out.println("SMALL: " + calmWaterSpeed);
                     calmWaterSpeed += 0.2;
@@ -119,6 +123,7 @@ public class Solution implements Comparable<Solution> {
                 }
                 totalResistance = getTotalCalmWaterResistance(calmWaterSpeed, 1.19 * Math.pow(10, -6));
                 totalPower = getBrakePower(totalResistance, calmWaterSpeed) / 1000;
+                counter++;
             }
             // calculate end speed again in case the engine cannot perform under previous conditions
             targetEndSpeed = getEndSpeed(calmWaterSpeed, shipHeadingAngle, windAngle, BN);

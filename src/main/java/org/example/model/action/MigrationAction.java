@@ -21,5 +21,8 @@ public class MigrationAction extends Action {
         targetIsland.addAgent(agent);
         Action.actionCount.put(ActionType.Migration, Action.actionCount.get(ActionType.Migration) + 1);
         super.perform(agentsToAdd, agentsToRemove);
+        if (targetIsland.isElite()) { // if an agent decides to migrate to the elite island do not count it to the total population
+            simulationData.populationSize--;
+        }
     }
 }
