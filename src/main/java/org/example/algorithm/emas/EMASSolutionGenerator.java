@@ -42,8 +42,18 @@ public class EMASSolutionGenerator {
     }
 
     public static Solution generateSolution(Solution sol1, Solution sol2, List<GridPoint> commonGridPoints) {
-        Solution newSolution = crossoverSolutions(sol1, sol2, commonGridPoints);
-        newSolution = mutateSolution(newSolution, simulationData.mutationRate);
+        Solution newSolution;
+        int counter = 0;
+        do {
+            if (counter != 0) {
+                System.out.println("DANGEROUS: " + counter);
+            }
+            newSolution = crossoverSolutions(sol1, sol2, commonGridPoints);
+            newSolution = mutateSolution(newSolution, simulationData.mutationRate);
+            newSolution.calculateRouteValues();
+            counter++;
+        } while (newSolution.isTooDangerous());
+        newSolution.calculateFunctionValues();
         return newSolution;
     }
 

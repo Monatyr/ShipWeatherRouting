@@ -373,13 +373,14 @@ public abstract class PhysicalModel {
         windSpeed = 1.94384 * windSpeed; // to knots
         double shapeCoefficient = getShapeCoefficient(windAngle);
         double maxWindSpeed = thresholdWindSpeed - shapeCoefficient * thresholdWindSpeedMargin;
-        if ((maxWindSpeed - windSpeed) / maxWindSpeed <= 0) {
+        double fractionalSafetyCoefficient = (maxWindSpeed - windSpeed) / maxWindSpeed;
+        if (fractionalSafetyCoefficient <= 0) {
             System.out.println("Max wind speed (kn): " + maxWindSpeed + "\tCurrent wind speed (kn): " + windSpeed);
             System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        } else if ((maxWindSpeed - windSpeed) / maxWindSpeed > 1) {
-            System.out.println("?????" + (maxWindSpeed - windSpeed) / maxWindSpeed);
+        } else if (fractionalSafetyCoefficient > 1) {
+            System.out.println("?????" + fractionalSafetyCoefficient);
         }
-        return (maxWindSpeed - windSpeed) / maxWindSpeed;
+        return fractionalSafetyCoefficient > 0 ? fractionalSafetyCoefficient : 0;
     }
 
 
