@@ -36,7 +36,7 @@ public class Island {
 
     public void removeAgent(Set<Agent> agents) { this.agents.removeAll(agents); }
 
-    public void evaluateAgents() {
+    public void evaluateAgents() { // TODO: rethink if that's the way I want to compare agents (maybe not that many comparisons or comparison as a separate action)
         for (Agent agent: agents) {
             List<Agent> neighbours = getAgents().stream()
                     .filter(a -> !a.equals(agent))

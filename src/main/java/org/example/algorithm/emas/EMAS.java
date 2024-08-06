@@ -76,7 +76,16 @@ public class EMAS extends Algorithm {
                 routePoint.setShipSpeed(routeTargetSpeed);
             }
             Solution solution = EMASSolutionGenerator.generateSolution(route);
-            solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.initialMutationRate);
+            int counter = 0;
+            do {
+                if (counter != 0) {
+                    System.out.println("Initial population too dangerous: " + counter);
+                }
+                solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.initialMutationRate);
+                solution.calculateRouteValues();
+                counter++;
+            } while (solution.isTooDangerous());
+            solution.calculateFunctionValues();
             population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));
         }
     }
@@ -110,6 +119,7 @@ public class EMAS extends Algorithm {
         }
         // Compare agents - energy distribution, prestige gains
         evaluateAgents();
+//        pruneDangerousAgents();
         pruneDominatedEliteAgents();
         population = islands.stream()
                 .flatMap(island -> island.getAgents().stream())
@@ -154,6 +164,20 @@ public class EMAS extends Algorithm {
         return nonDominatedAgents;
     }
 
+//    private void pruneDangerousAgents() {
+//        List<Island> nonEliteIslands = islands.stream()
+//                .filter(i -> !i.isElite())
+//                .toList();
+//        for (Island island : nonEliteIslands) { // elite agents check the danger level of the new solution themselves
+//            Set<Agent> dangerousAgents = island.getAgents().stream()
+//                    .filter(agent -> agent.getSolution().isTooDangerous())
+//                    .collect(Collectors.toSet());
+//            for (Agent agent : dangerousAgents) {
+//                redistributeEnergyLeft(agent, island);
+//            }
+//        }
+//    }
+
     private void pruneDominatedEliteAgents() {
         Set<Agent> eliteAgents = islands.get(0).getAgents();
         Set<Agent> nonDominatedAgents = getNonDominatedAgents(eliteAgents);
@@ -163,7 +187,6 @@ public class EMAS extends Algorithm {
         for (Agent agent : dominatedAgents) {
             redistributeEnergyLeft(agent, agent.getPreviousIsland());
         }
-//        simulationData.populationSize -= dominatedAgents.size();
     }
 
     private void evaluateAgents() {

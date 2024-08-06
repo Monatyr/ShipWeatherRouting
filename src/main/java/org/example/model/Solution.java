@@ -8,7 +8,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import static org.example.model.OptimizedFunction.*;
 import static org.example.physicalModel.PhysicalModel.*;
@@ -17,6 +16,7 @@ public class Solution implements Comparable<Solution> {
     private List<RoutePoint> routePoints = new ArrayList<>();
     private Map<OptimizedFunction, Float> functionValues;
     private SimulationData simulationData = SimulationData.getInstance();
+    private boolean tooDangerous = false;
 
     //test variables TODO: delete later
     public static int below = 0;
@@ -142,7 +142,9 @@ public class Solution implements Comparable<Solution> {
                     simulationData.thresholdWindSpeedMargin,
                     windAngle
             );
-
+            if (danger == 0) {
+                tooDangerous = true; // if a solution has a segment that is too dangerous mark it as dangerous and delete it
+            }
             currTime = currTime.plusSeconds(travelTimeSeconds);
 
             Map<OptimizedFunction, Double> newOptimizedFunctions = Map.of(
@@ -197,6 +199,10 @@ public class Solution implements Comparable<Solution> {
 
     public List<RoutePoint> getRoutePoints() {
         return routePoints;
+    }
+
+    public boolean isTooDangerous() {
+        return tooDangerous;
     }
 
     @Override
