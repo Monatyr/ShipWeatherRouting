@@ -108,9 +108,9 @@ def increase_weather_conditions(
 
 if __name__ == "__main__":
     increase_weather_conditions(
-        (42, -30),
+        (42, -60),
         (45, -20),
         6,
         "src/main/resources/weather-data-final.json",
-        'src/main/resources/weather-data-rough.json'
+        'src/main/resources/weather-data-rough-2.json'
     )

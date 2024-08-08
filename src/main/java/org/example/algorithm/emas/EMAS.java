@@ -61,36 +61,6 @@ public class EMAS extends Algorithm {
     }
 
     @Override
-    protected void generateInitialPopulation() {
-        List<List<RoutePoint>> startingRoutes = new ArrayList<>();
-        for (int i = 0; i < simulationData.populationSize; i++) {
-            if (i % 2 == 0) {
-                startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/great_circle_route.txt"));
-            } else {
-                startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/rhumb_line_route.txt"));
-            }
-        }
-        for (List<RoutePoint> route : startingRoutes) {
-            double routeTargetSpeed = random.nextDouble(simulationData.minSpeed, simulationData.maxSpeed);
-            for (RoutePoint routePoint : route) {
-                routePoint.setShipSpeed(routeTargetSpeed);
-            }
-            Solution solution = EMASSolutionGenerator.generateSolution(route);
-            int counter = 0;
-            do {
-                if (counter != 0) {
-                    System.out.println("Initial population too dangerous: " + counter);
-                }
-                solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.initialMutationRate);
-                solution.calculateRouteValues();
-                counter++;
-            } while (solution.isTooDangerous());
-            solution.calculateFunctionValues();
-            population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));
-        }
-    }
-
-    @Override
     protected void runIteration() throws Exception {
         for (Island island : islands) {
             Set<Agent> agentsToAdd = new HashSet<>();

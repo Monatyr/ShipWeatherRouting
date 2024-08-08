@@ -14,7 +14,7 @@ import java.util.*;
 public final class SimulationData {
     private static SimulationData instance;
     private final String configPath = "src/main/resources/config.json";
-    private final String weatherPath = "src/main/resources/weather-data-rough.json";
+    private final String weatherPath = "src/main/resources/weather-data-rough-2.json";
 
     private JSONObject weatherData;
     public ZonedDateTime startingTime;
@@ -77,6 +77,9 @@ public final class SimulationData {
     // conditions
     public double thresholdWindSpeed;
     public double thresholdWindSpeedMargin;
+    // jmetal lib algorithms
+    public double crossoverProbability;
+    public double mutationProbability;
 
     private int id;
 
@@ -155,6 +158,10 @@ public final class SimulationData {
             JSONObject conditionsObject = dataObject.getJSONObject("conditions");
             thresholdWindSpeed = conditionsObject.getDouble("thresholdWindSpeed");
             thresholdWindSpeedMargin = conditionsObject.getDouble("thresholdWindSpeedMargin");
+
+            JSONObject jmetalObject = dataObject.getJSONObject("jmetal");
+            crossoverProbability = jmetalObject.getDouble("crossoverProbability");
+            mutationProbability = jmetalObject.getDouble("mutationProbability");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

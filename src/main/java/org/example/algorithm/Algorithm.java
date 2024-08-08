@@ -1,18 +1,21 @@
 package org.example.algorithm;
 
+import org.example.algorithm.emas.EMASSolutionGenerator;
 import org.example.model.Agent;
+import org.example.model.RoutePoint;
 import org.example.model.Solution;
 import org.example.util.SimulationData;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.example.util.UtilFunctions.getBestPerCategory;
 
 public abstract class Algorithm {
     protected static SimulationData simulationData = SimulationData.getInstance();
     protected static int iterations = 0;
     protected static Set<Agent> population = new HashSet<>();
+    protected static Random random = new Random();
 
     public Set<Solution> run() throws Exception {
         if (population.isEmpty()) {
@@ -22,11 +25,12 @@ public abstract class Algorithm {
         while (validState() && !checkStopCondition()) {
             runIteration();
             iterations++;
-            if (iterations % 500 == 0 || (iterations > 0.9 * simulationData.maxIterations && iterations % 5 == 0)) {
+            if (iterations % 500 == 0) { // || (iterations > 0.9 * simulationData.maxIterations && iterations % 5 == 0)) {
                 long nonElitePopulationSize = population.stream().filter(agent -> !agent.getIsland().isElite()).count();
                 System.out.println("Iteration: " + iterations + (iterations < 10000 ? "\t" : "" ) + "\tNon-elite population: " + nonElitePopulationSize + "\t\tElite: " + population.stream().filter(o -> o.getIsland().isElite()).toList().size() + "\tEpsilon: " + simulationData.paretoEpsilon);
                 System.out.println("Below: " + Solution.below + "\tAbove: " + Solution.above);
                 System.out.println("Avg engine load: " + Solution.fullNodePower / Solution.nodeNumber / SimulationData.getInstance().maxOutput + "\tAvg speed: " + Solution.fullNodeSpeed / Solution.nodeNumber);
+                getBestPerCategory(population.stream().map(Agent::getSolution).collect(Collectors.toSet()));
             }
         }
 
@@ -68,7 +72,39 @@ public abstract class Algorithm {
         return nonDominatedSolutions;
     }
 
-    protected abstract void generateInitialPopulation();
+    public static Solution generateInitialSolution(List<RoutePoint> route) {
+        double routeTargetSpeed = random.nextDouble(simulationData.minSpeed, simulationData.maxSpeed);
+        for (RoutePoint routePoint : route) {
+            routePoint.setShipSpeed(routeTargetSpeed);
+        }
+        Solution solution = EMASSolutionGenerator.generateSolution(route);
+        int counter = 0;
+        do {
+            if (counter != 0) {
+                System.out.println("Initial population too dangerous: " + counter);
+            }
+            solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.initialMutationRate);
+            solution.calculateRouteValues();
+            counter++;
+        } while (solution.isTooDangerous());
+        return solution;
+    }
+
+    protected static void generateInitialPopulation() {
+        List<List<RoutePoint>> startingRoutes = new ArrayList<>();
+        for (int i = 0; i < simulationData.populationSize; i++) {
+            if (i % 2 == 0) {
+                startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/great_circle_route.txt"));
+            } else {
+                startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/rhumb_line_route.txt"));
+            }
+        }
+        for (List<RoutePoint> route : startingRoutes) {
+            Solution solution = generateInitialSolution(route);
+            solution.calculateFunctionValues();
+            population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));
+        }
+    }
 
     protected abstract void runIteration() throws Exception;
 }

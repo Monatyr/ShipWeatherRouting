@@ -67,5 +67,9 @@
     "thresholdWindSpeed": 35,
     "thresholdWindSpeedMargin": 10,
     "description": "Both speeds are in knots!"
+  },
+  "jmetal": {
+    "crossoverProbability": 0.9,
+    "mutationProbability": 0.3
   }
 }

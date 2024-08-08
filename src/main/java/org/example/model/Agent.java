@@ -136,9 +136,9 @@ public class Agent {
             }
         }
 
-        if (dominationResult == 1 || (dominationResult == 0 && agentDominationFactor < otherDominationFactor)) { // agent dominates other
+        if (dominationResult == 1) { // agent dominates other
             transferResources(this, other);
-        } else if (dominationResult == -1 || (dominationResult == 0 && otherDominationFactor < agentDominationFactor)) { // other dominates agent
+        } else if (dominationResult == -1) { // other dominates agent
             transferResources(other, this);
         } else { // neither of the 2 dominated the other
             if (agentDominationFactor < otherDominationFactor) {
