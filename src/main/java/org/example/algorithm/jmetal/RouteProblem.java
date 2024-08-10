@@ -6,8 +6,12 @@ import org.example.model.RoutePoint;
 import org.example.model.Solution;
 import org.uma.jmetal.problem.Problem;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+
+import static org.example.model.action.ActionFactory.simulationData;
 
 public class RouteProblem implements Problem<RouteSolution> {
     private Random random = new Random();
@@ -15,10 +19,7 @@ public class RouteProblem implements Problem<RouteSolution> {
             "src/main/resources/initial-routes/great_circle_route.txt",
             "src/main/resources/initial-routes/rhumb_line_route.txt"
     };
-
-    public RouteProblem() {
-
-    }
+    private Set<Solution> initialSolutions = new HashSet<>();
 
     // Getters
     @Override
@@ -46,6 +47,7 @@ public class RouteProblem implements Problem<RouteSolution> {
     public RouteSolution evaluate(RouteSolution routeSolution) {
         routeSolution.getSolution().calculateRouteValues();
         routeSolution.getSolution().calculateFunctionValues();
+        simulationData.paretoEpsilon = Math.max(simulationData.paretoEpsilon - 0.000001, 0);
         return routeSolution;
     }
 
@@ -53,6 +55,11 @@ public class RouteProblem implements Problem<RouteSolution> {
     public RouteSolution createSolution() {
         List<RoutePoint> route = EMASSolutionGenerator.getRouteFromFile(routeFiles[random.nextInt(0, 2)]);
         Solution solution = Algorithm.generateInitialSolution(route);
+        initialSolutions.add(solution);
         return new RouteSolution(solution, 1, 3);
+    }
+
+    public Set<Solution> getInitialSolutions() {
+        return initialSolutions;
     }
 }

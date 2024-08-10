@@ -11,12 +11,15 @@ public class RouteMutationOperator implements MutationOperator<RouteSolution> {
     @Override
     public RouteSolution execute(RouteSolution routeSolution) {
         Solution solution;
+        int counter = 0;
         do {
             solution = EMASSolutionGenerator.mutateSolution(routeSolution.getSolution(), mutationProbability());
             solution.calculateRouteValues();
-            System.out.println("TOOOOOO DANGEROUS");
-        } while (solution.isTooDangerous());
-        routeSolution.setSolution(solution);
+            counter++;
+        } while (solution.isTooDangerous() && counter < 10);
+        if (counter < 10) {
+            routeSolution.setSolution(solution);
+        }
         return routeSolution;
     }
 
