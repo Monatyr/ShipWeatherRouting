@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class Test {
     public static void main(String[] args) {
 
-        int evaluations = 100;
+        int evaluations = 50000;
         int populationSize = 100;
         int matingPoolSize = 100;
         int offspringSize = 100;
@@ -33,12 +33,13 @@ public class Test {
         MutationOperator<RouteSolution> mutationOperator = new RouteMutationOperator();
         SelectionOperator<List<RouteSolution>, RouteSolution> selectionOperator = new BinaryTournamentSelection<>();
         DominanceComparator<RouteSolution> dominanceComparator = new RouteDominanceComparator(epsilonDominance);
-        DominanceComparator<RouteSolution> epsilonDominanceComparator = new EpsilonDominanceComparator<>(0.01);
+        DominanceComparator<RouteSolution> epsilonDominanceComparator = new EpsilonDominanceComparator<>();
         RouteProblem routeProblem = new RouteProblem();
 
         NSGAII<RouteSolution> algorithm = new NSGAIIBuilder<RouteSolution>(routeProblem, crossoverOperator, mutationOperator, populationSize)
                 .setSelectionOperator(selectionOperator)
-                .setDominanceComparator(epsilonDominanceComparator)
+                .setDominanceComparator(dominanceComparator)
+                .setMaxEvaluations(evaluations)
                 .build();
 
         // Run

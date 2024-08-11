@@ -57,9 +57,14 @@ public abstract class UtilFunctions {
         }
         System.out.println("\nTime: " + solTime.getFunctionValues());
         System.out.println("Fuel: " + solFuel.getFunctionValues());
-        System.out.println("Danger: " + solSafety.getFunctionValues() + "\n\n");
+        System.out.println("Danger: " + solSafety.getFunctionValues());
 
-        System.out.println("Same: " + Agent.same + "\tDifferent: " + Agent.different);
+        double totalTime = solList.stream().map(s -> s.getFunctionValues().get(OptimizedFunction.TravelTime)).reduce(Float::sum).get();
+        double totalFuel = solList.stream().map(s -> s.getFunctionValues().get(OptimizedFunction.FuelUsed)).reduce(Float::sum).get();
+        double totalDanger = solList.stream().map(s -> s.getFunctionValues().get(OptimizedFunction.Danger)).reduce(Float::sum).get();
+        System.out.println("Avg time: " + totalTime/solList.size() + "\tAvg fuel: " + totalFuel/solList.size() + "\tAvg danger: " + totalDanger/solList.size());
+
+        System.out.println("\n\nSame: " + Agent.same + "\tDifferent: " + Agent.different);
         return List.of(
                 solTime.getRoutePoints().toString(),
                 solFuel.getRoutePoints().toString(),

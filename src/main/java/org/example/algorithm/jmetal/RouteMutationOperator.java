@@ -13,7 +13,8 @@ public class RouteMutationOperator implements MutationOperator<RouteSolution> {
         Solution solution;
         int counter = 0;
         do {
-            solution = EMASSolutionGenerator.mutateSolution(routeSolution.getSolution(), mutationProbability());
+//            solution = EMASSolutionGenerator.mutateSolution(routeSolution.getSolution(), mutationProbability());
+            solution = EMASSolutionGenerator.mutateSolution(routeSolution.getSolution(), simulationData.mutationRate);
             solution.calculateRouteValues();
             counter++;
         } while (solution.isTooDangerous() && counter < 10);
@@ -25,6 +26,7 @@ public class RouteMutationOperator implements MutationOperator<RouteSolution> {
 
     @Override
     public double mutationProbability() {
-        return simulationData.mutationProbability;
+        return 1;
+//        return simulationData.mutationProbability;
     }
 }

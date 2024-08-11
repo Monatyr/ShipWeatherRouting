@@ -33,7 +33,10 @@
     "startingTime": "2024-07-22T00:00Z",
     "shipSpeed": 10,
     "similarityEpsilon": 0.90,
-    "paretoEpsilon": 0.01
+    "paretoEpsilon": 0.01,
+    "travelTimeEpsilon": 100,
+    "fuelEpsilon": 5,
+    "safetyEpsilon": 0.01
   },
   "ship": {
     "L": 205.0,
@@ -64,7 +67,7 @@
     "maxSpeed": 12
   },
   "conditions": {
-    "thresholdWindSpeed": 35,
+    "thresholdWindSpeed": 38,
     "thresholdWindSpeedMargin": 10,
     "description": "Both speeds are in knots!"
   },

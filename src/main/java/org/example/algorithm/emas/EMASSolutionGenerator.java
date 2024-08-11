@@ -52,9 +52,12 @@ public class EMASSolutionGenerator {
             newSolution = mutateSolution(newSolution, simulationData.mutationRate);
             newSolution.calculateRouteValues();
             counter++;
-        } while (newSolution.isTooDangerous());
-        newSolution.calculateFunctionValues();
-        return newSolution;
+        } while (newSolution.isTooDangerous());// && counter < 10);
+//        if (counter < 10) {
+            newSolution.calculateFunctionValues();
+            return newSolution;
+//        }
+//        return new Solution(sol1);
     }
 
     private static Coordinates[][] createMapGrid() {

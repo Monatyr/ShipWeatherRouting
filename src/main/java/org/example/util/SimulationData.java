@@ -1,5 +1,6 @@
 package org.example.util;
 
+import org.example.model.OptimizedFunction;
 import org.example.model.WeatherConditions;
 import org.json.*;
 
@@ -48,6 +49,7 @@ public final class SimulationData {
     public double shipSpeed;
     public double similarityEpsilon;
     public double paretoEpsilon;
+    public Map<OptimizedFunction, Double> epsilonMap = new HashMap<>();
     // ship
     public double L;
     public double L_pp;
@@ -127,6 +129,9 @@ public final class SimulationData {
             shipSpeed = simulationObject.getDouble("shipSpeed");
             similarityEpsilon = simulationObject.getDouble("similarityEpsilon");
             paretoEpsilon = simulationObject.getDouble("paretoEpsilon");
+            epsilonMap.put(OptimizedFunction.TravelTime, simulationObject.getDouble("travelTimeEpsilon"));
+            epsilonMap.put(OptimizedFunction.FuelUsed, simulationObject.getDouble("fuelEpsilon"));
+            epsilonMap.put(OptimizedFunction.Danger, simulationObject.getDouble("safetyEpsilon"));
 
             JSONObject shipObject = dataObject.getJSONObject("ship");
             L = shipObject.getDouble("L");
