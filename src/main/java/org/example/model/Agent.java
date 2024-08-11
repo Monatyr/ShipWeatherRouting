@@ -123,6 +123,7 @@ public class Agent {
     public void compareTo(Agent other) {
         Solution otherSolution = other.getSolution();
         int dominationResult = solution.checkIfDominates(otherSolution, true);
+//        int dominationResult = solution.checkIfEpsilonDominates(otherSolution);
         double agentDominationFactor = meetings != 0 ? (double) dominatedTimes / meetings : 0;
         double otherDominationFactor = other.meetings != 0 ? (double) other.dominatedTimes / other.meetings : 0;
         double agentCrowdingFactor = meetings != 0 ? (double) similarAgents.size() / meetings : 0;
@@ -136,9 +137,9 @@ public class Agent {
             }
         }
 
-        if (dominationResult == 1 || (dominationResult == 0 && agentDominationFactor < otherDominationFactor)) { // agent dominates other
+        if (dominationResult == 1) { // agent dominates other
             transferResources(this, other);
-        } else if (dominationResult == -1 || (dominationResult == 0 && otherDominationFactor < agentDominationFactor)) { // other dominates agent
+        } else if (dominationResult == -1) { // other dominates agent
             transferResources(other, this);
         } else { // neither of the 2 dominated the other
             if (agentDominationFactor < otherDominationFactor) {

@@ -2,7 +2,10 @@ package org.example.util;
 
 import org.example.model.Agent;
 import org.example.model.Island;
+import org.example.model.OptimizedFunction;
+import org.example.model.Solution;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,5 +36,39 @@ public abstract class UtilFunctions {
             neighbour.setEnergy(neighbour.getEnergy() + energyForEach);
         }
         agent.setEnergy(0.0);
+    }
+
+
+    public static List<String> getBestPerCategory(Set<Solution> solutions) {
+        List<Solution> solList = solutions.stream().toList();
+        Solution solTime = solList.get(0);
+        Solution solFuel = solList.get(0);
+        Solution solSafety = solList.get(0);
+        for (Solution s : solutions) {
+            if (s.getFunctionValues().get(OptimizedFunction.TravelTime) < solTime.getFunctionValues().get(OptimizedFunction.TravelTime)) {
+                solTime = s;
+            }
+            if (s.getFunctionValues().get(OptimizedFunction.FuelUsed) < solFuel.getFunctionValues().get(OptimizedFunction.FuelUsed)) {
+                solFuel = s;
+            }
+            if (s.getFunctionValues().get(OptimizedFunction.Danger) < solSafety.getFunctionValues().get(OptimizedFunction.Danger)) {
+                solSafety = s;
+            }
+        }
+        System.out.println("\nTime: " + solTime.getFunctionValues());
+        System.out.println("Fuel: " + solFuel.getFunctionValues());
+        System.out.println("Danger: " + solSafety.getFunctionValues());
+
+        double totalTime = solList.stream().map(s -> s.getFunctionValues().get(OptimizedFunction.TravelTime)).reduce(Float::sum).get();
+        double totalFuel = solList.stream().map(s -> s.getFunctionValues().get(OptimizedFunction.FuelUsed)).reduce(Float::sum).get();
+        double totalDanger = solList.stream().map(s -> s.getFunctionValues().get(OptimizedFunction.Danger)).reduce(Float::sum).get();
+        System.out.println("Avg time: " + totalTime/solList.size() + "\tAvg fuel: " + totalFuel/solList.size() + "\tAvg danger: " + totalDanger/solList.size());
+
+        System.out.println("\n\nSame: " + Agent.same + "\tDifferent: " + Agent.different);
+        return List.of(
+                solTime.getRoutePoints().toString(),
+                solFuel.getRoutePoints().toString(),
+                solSafety.getRoutePoints().toString()
+        );
     }
 }

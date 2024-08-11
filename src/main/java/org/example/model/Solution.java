@@ -4,10 +4,12 @@ import org.example.physicalModel.PhysicalModel;
 import org.example.util.Coordinates;
 import org.example.util.SimulationData;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.example.model.OptimizedFunction.*;
 import static org.example.physicalModel.PhysicalModel.*;
@@ -69,6 +71,70 @@ public class Solution implements Comparable<Solution> {
             return -1;
         }
         return 0;
+    }
+
+//     copied from jMetal
+    public int checkIfEpsilonDominates(Solution other) {
+        boolean bestIsOne = false;
+        boolean bestIsTwo = false;
+        List<OptimizedFunction> keys = functionValues.keySet().stream().toList();
+        double minTime = 400000;
+        double maxTime = 600000;
+        double minFuel = 450;
+        double maxFuel = 600;
+//        System.out.println();
+        for (int i = 0; i < this.functionValues.size(); i++) {
+            OptimizedFunction key = keys.get(i);
+            double epsilon = simulationData.epsilonMap.get(key);
+            double value1 = Math.floor(this.functionValues.get(key) / epsilon);
+            double value2 = Math.floor(other.functionValues.get(key) / epsilon);
+//            System.out.println(key + ": " + value1 + ", " + value2);
+            if (value1 < value2) {
+                bestIsOne = true;
+                if (bestIsTwo) {
+                    return 0;
+                }
+            } else if (value2 < value1) {
+                bestIsTwo = true;
+                if (bestIsOne) {
+                    return 0 ;
+                }
+            }
+        }
+        // temporary workaround
+        if (!bestIsOne && !bestIsTwo) {
+            return 0;
+        } else if (bestIsOne) {
+            return -1;
+        } else {
+            return 1;
+        }
+        // the objective values should probably be normalized. Otherwise travel time completely dominates the distance
+//        if (!bestIsOne && !bestIsTwo) {
+//            double dist1 = 0.0;
+//            double dist2 = 0.0;
+//
+//            for (int i = 0; i < this.functionValues.size(); i++) {
+//                OptimizedFunction key = keys.get(i);
+//                double epsilon = simulationData.epsilonMap.get(key);
+//                double index1 = Math.floor(this.functionValues.get(key) / epsilon);
+//                double index2 = Math.floor(other.functionValues.get(key) / epsilon);
+//
+//                dist1 += Math.pow(this.functionValues.get(key) - index1 * epsilon,
+//                        2.0);
+//                dist2 += Math.pow(other.functionValues.get(key) - index2 * epsilon,
+//                        2.0);
+//            }
+//            if (dist1 < dist2) {
+//                return -1;
+//            } else {
+//                return 1;
+//            }
+//        } else if (bestIsTwo) {
+//            return 1;
+//        } else {
+//            return -1;
+//        }
     }
 
     //TODO: Go through the RoutePoints and calculate their arrival time, set weather conditions and calculate function values

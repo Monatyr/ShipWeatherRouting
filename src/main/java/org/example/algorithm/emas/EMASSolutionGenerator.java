@@ -52,9 +52,12 @@ public class EMASSolutionGenerator {
             newSolution = mutateSolution(newSolution, simulationData.mutationRate);
             newSolution.calculateRouteValues();
             counter++;
-        } while (newSolution.isTooDangerous());
-        newSolution.calculateFunctionValues();
-        return newSolution;
+        } while (newSolution.isTooDangerous());// && counter < 10);
+//        if (counter < 10) {
+            newSolution.calculateFunctionValues();
+            return newSolution;
+//        }
+//        return new Solution(sol1);
     }
 
     private static Coordinates[][] createMapGrid() {
@@ -183,7 +186,7 @@ public class EMASSolutionGenerator {
         return grid[gridPoint.y()][gridPoint.x()];
     }
 
-    private static Solution crossoverSolutions(Solution sol1, Solution sol2, List<GridPoint> commonGridPoints) {
+    public static Solution crossoverSolutions(Solution sol1, Solution sol2, List<GridPoint> commonGridPoints) {
         List<RoutePoint> sourcePoints = sol1.getRoutePoints();
         List<RoutePoint> otherPoints = sol2.getRoutePoints();
         List<RoutePoint> newRoutePoints = new ArrayList<>();

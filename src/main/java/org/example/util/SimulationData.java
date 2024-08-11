@@ -1,5 +1,6 @@
 package org.example.util;
 
+import org.example.model.OptimizedFunction;
 import org.example.model.WeatherConditions;
 import org.json.*;
 
@@ -14,7 +15,7 @@ import java.util.*;
 public final class SimulationData {
     private static SimulationData instance;
     private final String configPath = "src/main/resources/config.json";
-    private final String weatherPath = "src/main/resources/weather-data-rough.json";
+    private final String weatherPath = "src/main/resources/weather-data-rough-2.json";
 
     private JSONObject weatherData;
     public ZonedDateTime startingTime;
@@ -48,6 +49,7 @@ public final class SimulationData {
     public double shipSpeed;
     public double similarityEpsilon;
     public double paretoEpsilon;
+    public Map<OptimizedFunction, Double> epsilonMap = new HashMap<>();
     // ship
     public double L;
     public double L_pp;
@@ -77,6 +79,9 @@ public final class SimulationData {
     // conditions
     public double thresholdWindSpeed;
     public double thresholdWindSpeedMargin;
+    // jmetal lib algorithms
+    public double crossoverProbability;
+    public double mutationProbability;
 
     private int id;
 
@@ -124,6 +129,9 @@ public final class SimulationData {
             shipSpeed = simulationObject.getDouble("shipSpeed");
             similarityEpsilon = simulationObject.getDouble("similarityEpsilon");
             paretoEpsilon = simulationObject.getDouble("paretoEpsilon");
+            epsilonMap.put(OptimizedFunction.TravelTime, simulationObject.getDouble("travelTimeEpsilon"));
+            epsilonMap.put(OptimizedFunction.FuelUsed, simulationObject.getDouble("fuelEpsilon"));
+            epsilonMap.put(OptimizedFunction.Danger, simulationObject.getDouble("safetyEpsilon"));
 
             JSONObject shipObject = dataObject.getJSONObject("ship");
             L = shipObject.getDouble("L");
@@ -155,6 +163,10 @@ public final class SimulationData {
             JSONObject conditionsObject = dataObject.getJSONObject("conditions");
             thresholdWindSpeed = conditionsObject.getDouble("thresholdWindSpeed");
             thresholdWindSpeedMargin = conditionsObject.getDouble("thresholdWindSpeedMargin");
+
+            JSONObject jmetalObject = dataObject.getJSONObject("jmetal");
+            crossoverProbability = jmetalObject.getDouble("crossoverProbability");
+            mutationProbability = jmetalObject.getDouble("mutationProbability");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

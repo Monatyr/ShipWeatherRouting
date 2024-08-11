@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.min;
+import static org.example.util.UtilFunctions.getBestPerCategory;
 
 
 public class Main {
@@ -73,34 +74,6 @@ public class Main {
 
         Set<Agent> population = emas.getPopulation();
         System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum) + " ---");
-    }
-
-    public static List<String> getBestPerCategory(Set<Solution> solutions) {
-        List<Solution> solList = solutions.stream().toList();
-        Solution solTime = solList.get(0);
-        Solution solFuel = solList.get(0);
-        Solution solSafety = solList.get(0);
-        for (Solution s : solutions) {
-            if (s.getFunctionValues().get(OptimizedFunction.TravelTime) < solTime.getFunctionValues().get(OptimizedFunction.TravelTime)) {
-                solTime = s;
-            }
-            if (s.getFunctionValues().get(OptimizedFunction.FuelUsed) < solFuel.getFunctionValues().get(OptimizedFunction.FuelUsed)) {
-                solFuel = s;
-            }
-            if (s.getFunctionValues().get(OptimizedFunction.Danger) < solSafety.getFunctionValues().get(OptimizedFunction.Danger)) {
-                solSafety = s;
-            }
-        }
-        System.out.println("\nTime: " + solTime.getFunctionValues());
-        System.out.println("Fuel: " + solFuel.getFunctionValues());
-        System.out.println("Danger: " + solSafety.getFunctionValues() + "\n\n");
-
-        System.out.println("Same: " + Agent.same + "\tDifferent: " + Agent.different);
-        return List.of(
-                solTime.getRoutePoints().toString(),
-                solFuel.getRoutePoints().toString(),
-                solSafety.getRoutePoints().toString()
-        );
     }
 
     public static void getIslandsInfo(EMAS emas) {
