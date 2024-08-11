@@ -47,6 +47,7 @@ public final class SimulationData {
     public int neededPrestige;
     public double energyTaken;
     public double shipSpeed;
+    public int routeSwitches;
     public double similarityEpsilon;
     public double paretoEpsilon;
     public Map<OptimizedFunction, Double> epsilonMap = new HashMap<>();
@@ -127,6 +128,7 @@ public final class SimulationData {
             deathEnergyBound = simulationObject.getDouble("deathEnergyBound");
             startingTime = ZonedDateTime.parse(simulationObject.getString("startingTime"));
             shipSpeed = simulationObject.getDouble("shipSpeed");
+            routeSwitches = simulationObject.getInt("routeSwitches");
             similarityEpsilon = simulationObject.getDouble("similarityEpsilon");
             paretoEpsilon = simulationObject.getDouble("paretoEpsilon");
             epsilonMap.put(OptimizedFunction.TravelTime, simulationObject.getDouble("travelTimeEpsilon"));

@@ -32,6 +32,7 @@
     "populationSize": 60,
     "startingTime": "2024-07-22T00:00Z",
     "shipSpeed": 10,
+    "routeSwitches": 5,
     "similarityEpsilon": 0.90,
     "paretoEpsilon": 0.01,
     "travelTimeEpsilon": 100,

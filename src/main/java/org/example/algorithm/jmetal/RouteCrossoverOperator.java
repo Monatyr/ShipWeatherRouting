@@ -49,7 +49,7 @@ public class RouteCrossoverOperator implements CrossoverOperator<RouteSolution> 
         if (!commonGridPoints.isEmpty()) {
             newSolution = new Solution(p1.getSolution());
         } else {
-            newSolution = EMASSolutionGenerator.crossoverSolutions(p1.getSolution(), p2.getSolution(), commonGridPoints);
+            newSolution = EMASSolutionGenerator.crossoverSolutions(p1.getSolution(), p2.getSolution(), commonGridPoints, simulationData.routeSwitches);
         }
         return List.of(new RouteSolution(newSolution, p1.variables().size(), p1.objectives().length));
     }
