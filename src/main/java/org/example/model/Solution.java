@@ -43,31 +43,69 @@ public class Solution implements Comparable<Solution> {
     }
 
     //https://sci-hub.se/10.1145/1389095.1389224
-    public int checkIfDominates(Solution other, boolean epsilonDominance) { // TODO: make sure the epsilon-Pareto function is correctly implemented
+//    public int checkIfDominates(Solution other, boolean epsilonDominance) { // TODO: make sure the epsilon-Pareto function is correctly implemented
+//        double epsilon = simulationData.paretoEpsilon;
+//        if (!epsilonDominance) {
+//            epsilon = 0;
+//        }
+//        boolean dominatesOther = true;
+//        boolean otherDominates = true;
+//
+//        for (Map.Entry<OptimizedFunction, Float> entry : functionValues.entrySet()) {
+//            Float value = entry.getValue();
+//            Float otherValue = other.functionValues.get(entry.getKey());
+//
+//            if (value * (1 - epsilon) < otherValue) {
+//                otherDominates = false;
+//            }
+//            else if (otherValue * (1 - epsilon) < value) { // TODO: else if is a workaround. Other agent has a disadvantage, but this does not lead to both solutions epsilon-dominating eachother at the same time
+//                dominatesOther = false;
+//            }
+//            if (!otherDominates && !dominatesOther) {
+//                return 0;
+//            }
+//        }
+//        if (dominatesOther) {
+//            return 1;
+//        } else if (otherDominates) {
+//            return -1;
+//        }
+//        return 0;
+//    }
+
+    public int checkIfDominates(Solution other, boolean epsilonDominance) {
         double epsilon = simulationData.paretoEpsilon;
         if (!epsilonDominance) {
             epsilon = 0;
         }
-        boolean dominatesOther = true;
-        boolean otherDominates = true;
+        int dominatesOtherCounter = 0;
+        int otherDominatesCounter = 0;
+        boolean epsilonDominatesOther = false;
+        boolean otherEpsilonDominates = false;
 
         for (Map.Entry<OptimizedFunction, Float> entry : functionValues.entrySet()) {
             Float value = entry.getValue();
             Float otherValue = other.functionValues.get(entry.getKey());
 
-            if (value * (1 - epsilon) < otherValue) {
-                otherDominates = false;
-            }
-            else if (otherValue * (1 - epsilon) < value) { // TODO: else if is a workaround. Other agent has a disadvantage, but this does not lead to both solutions epsilon-dominating eachother at the same time
-                dominatesOther = false;
-            }
-            if (!otherDominates && !dominatesOther) {
-                return 0;
+            if (value < otherValue) {
+                dominatesOtherCounter++;
+                if (otherValue * (1 - epsilon) < value) {
+                    otherEpsilonDominates = true;
+                }
+            } else if (otherValue < value) {
+                otherDominatesCounter++;
+                if (value * (1 - epsilon) < otherValue) {
+                    epsilonDominatesOther = true;
+                }
             }
         }
-        if (dominatesOther) {
+        if (dominatesOtherCounter == functionValues.size()) {
             return 1;
-        } else if (otherDominates) {
+        } else if (otherDominatesCounter == functionValues.size()) {
+            return -1;
+        } else if (dominatesOtherCounter == functionValues.size() - 1 && epsilonDominatesOther) {
+            return 1;
+        } else if (otherDominatesCounter == functionValues.size() - 1 && otherEpsilonDominates) {
             return -1;
         }
         return 0;
