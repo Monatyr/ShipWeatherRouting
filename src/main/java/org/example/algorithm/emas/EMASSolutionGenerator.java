@@ -1,7 +1,6 @@
 package org.example.algorithm.emas;
 
 import org.apache.commons.math3.util.Pair;
-import org.example.model.OptimizedFunction;
 import org.example.model.RoutePoint;
 import org.example.model.Solution;
 import org.example.util.Coordinates;
@@ -13,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.ZonedDateTime;
 import java.util.*;
 
 import static java.lang.Math.*;
@@ -48,7 +46,7 @@ public class EMASSolutionGenerator {
             if (counter != 0) {
                 System.out.println("DANGEROUS: " + counter);
             }
-            newSolution = crossoverSolutions(sol1, sol2, commonGridPoints);
+            newSolution = crossoverSolutions(sol1, sol2, commonGridPoints, simulationData.routeSwitches);
             newSolution = mutateSolution(newSolution, simulationData.mutationRate);
             newSolution.calculateRouteValues();
             counter++;
@@ -186,9 +184,18 @@ public class EMASSolutionGenerator {
         return grid[gridPoint.y()][gridPoint.x()];
     }
 
-    public static Solution crossoverSolutions(Solution sol1, Solution sol2, List<GridPoint> commonGridPoints) {
+    public static Solution crossoverSolutions(Solution sol1, Solution sol2, List<GridPoint> commonGridPoints, int numOfSwitches) {
         List<RoutePoint> sourcePoints = sol1.getRoutePoints();
         List<RoutePoint> otherPoints = sol2.getRoutePoints();
+        if (numOfSwitches < 0 || numOfSwitches > commonGridPoints.size()) {
+            numOfSwitches = commonGridPoints.size();
+        }
+        final int[] switchPointsIndices = Arrays.stream(new Random().ints(0, commonGridPoints.size()).distinct().limit(numOfSwitches).toArray()).sorted().toArray();
+        List<GridPoint> switchPoints = new ArrayList<>();
+        for (int index : switchPointsIndices) {
+            switchPoints.add(commonGridPoints.get(index));
+        }
+
         List<RoutePoint> newRoutePoints = new ArrayList<>();
         int solutionLength = sourcePoints.size();
         boolean routeOneFirst = random.nextBoolean();
@@ -198,19 +205,26 @@ public class EMASSolutionGenerator {
             sourcePoints = otherPoints;
             otherPoints = temp;
         }
+
         int currCommonIndex = 0;
-        // the idea is to switch the source of the route at each intersection point
+        GridPoint currCommonPoint = null;
+        if (switchPoints.size() != 0) {
+            currCommonPoint = switchPoints.get(currCommonIndex);
+        }
         for (int i = 0; i < solutionLength; i++) {
             RoutePoint currPoint = sourcePoints.get(i);
             RoutePoint newPoint = new RoutePoint(currPoint);
             newRoutePoints.add(newPoint);
-            GridPoint currCommonPoint = commonGridPoints.get(currCommonIndex);
-            if (currCommonPoint.x() == currPoint.getGridCoordinates().x()
-                    && currCommonPoint.y() == currPoint.getGridCoordinates().y()) {
-                temp = sourcePoints;
-                sourcePoints = otherPoints;
-                otherPoints = temp;
-                currCommonIndex++;
+            if (switchPoints.size() != 0) {
+                if (currCommonIndex < switchPoints.size()) {
+                    currCommonPoint = switchPoints.get(currCommonIndex);
+                }
+                if (currPoint.getGridCoordinates().x() == currCommonPoint.x() && currPoint.getGridCoordinates().y() == currCommonPoint.y()) {
+                    temp = sourcePoints;
+                    sourcePoints = otherPoints;
+                    otherPoints = temp;
+                    currCommonIndex++;
+                }
             }
         }
         return new Solution(newRoutePoints);
@@ -251,8 +265,8 @@ public class EMASSolutionGenerator {
                     continue;
                 }
                 if (abs(minY - potentialHeight) <= simulationData.maxVerticalDistance &&
-                        abs(maxY - potentialHeight) <= simulationData.maxVerticalDistance &&
-                        potentialHeight != currY
+                        abs(maxY - potentialHeight) <= simulationData.maxVerticalDistance// &&
+//                        potentialHeight != currY
                 ) {
                     availableHeights.add(potentialHeight);
                 }
