@@ -36,7 +36,8 @@ public abstract class Algorithm {
 
         Set<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toSet());
         System.out.println("\n\nSOLUTIONS: " + solutions.size());
-        Set<Solution> nonDominatedSolutions = getNonDominatedSolutions();
+        Set<Solution> nonDominatedSolutions = getNonDominatedSolutions(null);
+        nonDominatedSolutions = lastSolutionImprovement(nonDominatedSolutions);
         System.out.println("NONDOMINATED SOLUTIONS: " + nonDominatedSolutions.size());
         return nonDominatedSolutions;
     }
@@ -49,8 +50,10 @@ public abstract class Algorithm {
         return iterations > simulationData.maxIterations;
     }
 
-    protected Set<Solution> getNonDominatedSolutions() {
-        List<Solution> solutions = population.stream().map(Agent::getSolution).toList();
+    protected Set<Solution> getNonDominatedSolutions(List<Solution> solutions) {
+        if (solutions == null) {
+            solutions = population.stream().map(Agent::getSolution).toList();
+        }
         Set<Solution> nonDominatedSolutions = new HashSet<>();
         for (int i = 0; i < solutions.size(); i++) {
             Solution currSolution = solutions.get(i);
@@ -104,6 +107,20 @@ public abstract class Algorithm {
             solution.calculateFunctionValues();
             population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));
         }
+    }
+
+    private Set<Solution> lastSolutionImprovement(Set<Solution> solutions) {
+        List<Solution> nonDominatedSolutionsList = new ArrayList<>(solutions.stream().toList());
+        for (int i = 0; i < nonDominatedSolutionsList.size(); i++) {
+            for (int j = 0; j < 400; j++) {
+                Solution sol = nonDominatedSolutionsList.get(i);
+                Solution newSolution = EMASSolutionGenerator.mutateSolution(sol, simulationData.eliteMutationRate);
+                if (newSolution.checkIfDominates(sol, false) > 0 && !newSolution.isTooDangerous()) {
+                    nonDominatedSolutionsList.set(i, newSolution);
+                }
+            }
+        }
+        return getNonDominatedSolutions(nonDominatedSolutionsList);
     }
 
     protected abstract void runIteration() throws Exception;

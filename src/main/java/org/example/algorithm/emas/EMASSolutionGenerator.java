@@ -1,7 +1,6 @@
 package org.example.algorithm.emas;
 
 import org.apache.commons.math3.util.Pair;
-import org.example.model.OptimizedFunction;
 import org.example.model.RoutePoint;
 import org.example.model.Solution;
 import org.example.util.Coordinates;
@@ -13,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.ZonedDateTime;
 import java.util.*;
 
 import static java.lang.Math.*;
@@ -267,8 +265,8 @@ public class EMASSolutionGenerator {
                     continue;
                 }
                 if (abs(minY - potentialHeight) <= simulationData.maxVerticalDistance &&
-                        abs(maxY - potentialHeight) <= simulationData.maxVerticalDistance &&
-                        potentialHeight != currY
+                        abs(maxY - potentialHeight) <= simulationData.maxVerticalDistance// &&
+//                        potentialHeight != currY
                 ) {
                     availableHeights.add(potentialHeight);
                 }
