@@ -1,10 +1,14 @@
 package org.example;
 
+import com.sun.istack.Nullable;
 import org.example.algorithm.emas.EMAS;
 import org.example.model.*;
 import org.example.model.action.Action;
+import org.example.util.SimulationData;
+import weka.core.stopwords.Null;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,7 +22,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         // route generation script
-        runPythonScript("scripts/generate_initial_routes.py", "");
+        runPythonScript("scripts/generate_initial_routes.py", null);
         emas = new EMAS();
 
         getIslandsInfo(emas);
@@ -26,7 +30,12 @@ public class Main {
         System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum));
 
         List<String> topRoutes = getBestPerCategory(population.stream().map(Agent::getSolution).collect(Collectors.toSet()));
-        runPythonScript("scripts/plot_routes.py", "initial_routes.png " + topRoutes.toString());
+        List<String> arguments = List.of(
+                "--resultFile", "initial_routes.png",
+                "--weatherFile", SimulationData.getInstance().weatherPath,
+                "--routes", topRoutes.toString()
+        );
+        runPythonScript("scripts/plot_routes.py", arguments);
 
         Set<Solution> solutions = emas.run();
 
@@ -34,19 +43,25 @@ public class Main {
         topRoutes = getBestPerCategory(solutions);
         getIslandsInfo(emas);
         System.out.println(Action.actionCount);
-        // visualise routes
-        runPythonScript("scripts/plot_routes.py", "top3_routes.png "  + topRoutes.toString());
+        arguments = List.of(
+                "--resultFile", "top3_routes.png",
+                "--weatherFile", SimulationData.getInstance().weatherPath,
+                "--routes", topRoutes.toString()
+        );
+        runPythonScript("scripts/plot_routes.py", arguments);
     }
 
-    public static void runPythonScript(String scriptPath, String args) {
+    public static void runPythonScript(String scriptPath, @Nullable List<String> args) {
         ProcessBuilder processBuilder;
-        List<String> parameters;
-        if (args.isEmpty()) {
-            processBuilder = new ProcessBuilder("/run/current-system/sw/bin/python", scriptPath);
-        } else {
-            parameters = List.of(args.split(" ", 2));
-            processBuilder = new ProcessBuilder("/run/current-system/sw/bin/python", scriptPath, parameters.get(0), parameters.get(1));
+        List<String> command = new ArrayList<>();
+        command.add("/run/current-system/sw/bin/python");
+        command.add(scriptPath);
+        if (args != null && !args.isEmpty()) {
+            for (String arg : args) {
+                command.add(arg);
+            }
         }
+        processBuilder = new ProcessBuilder(command);
         try {
             Process process = processBuilder.start();
             int exitCode = process.waitFor();

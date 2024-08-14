@@ -15,7 +15,7 @@ import java.util.*;
 public final class SimulationData {
     private static SimulationData instance;
     private final String configPath = "src/main/resources/config.json";
-    private final String weatherPath = "src/main/resources/weather-data-rough-2.json";
+    public final String weatherPath = "src/main/resources/weather-data-rough-2.json";
 
     private JSONObject weatherData;
     public ZonedDateTime startingTime;
