@@ -214,17 +214,12 @@ public class Solution implements Comparable<Solution> {
 
             int counter = 0;
             // adjust speed if the engine does not operate in the forces required by the targetSpeed
-            while (totalPower < simulationData.minOutput || totalPower > simulationData.maxOutput) {
+            while (totalPower > simulationData.maxOutput) {
                 if (counter > 1000) {
-                    System.out.println(counter);
+                    System.out.println("STUCK IN LOOP: " + counter);
                 }
-                if (totalPower < simulationData.minOutput) {
-//                    System.out.println("SMALL: " + calmWaterSpeed);
-                    calmWaterSpeed += 0.2;
-                } else {
-//                    System.out.println("BIG: " + calmWaterSpeed);
-                    calmWaterSpeed -= 0.2;
-                }
+                calmWaterSpeed -= 0.2;
+                calmWaterSpeed = adjustSpeedForWaveHeight(calmWaterSpeed, waveHeight);
                 totalResistance = getTotalCalmWaterResistance(calmWaterSpeed, 1.19 * Math.pow(10, -6));
                 totalPower = getBrakePower(totalResistance, calmWaterSpeed) / 1000;
                 counter++;

@@ -227,18 +227,6 @@ public abstract class PhysicalModel {
         return 0.7 * BN + Math.pow(BN, 6.5) / (22 * Math.pow(displacement, 2.0/3));
     }
 
-    private static double getSpeedAfterVoluntarySlowDownDueToWaveHeight(double v, double waveHeight) {
-        if (waveHeight <= 6) {
-            return v;
-        } else if (waveHeight <= 9) {
-            return v * 0.75;
-        } else if (waveHeight <= 12) {
-            return v * 0.5;
-        } else {
-            return v * 0.25;
-        }
-    }
-
     // in head wind BN >= 10 give speeds close to 0 or even negative; 12 BN can give e.g. -25m/s
     public static double getEndSpeed(double calmWaterSpeed, double shipHeadingAngle, double windAngle, int BN) {
         C_beta = getDirectionReductionCoefficient(shipHeadingAngle, windAngle, BN);
@@ -269,15 +257,19 @@ public abstract class PhysicalModel {
         return calmWaterSpeed;
     }
 
+    // Limit the maximum speed depending on waveHeight
     public static double adjustSpeedForWaveHeight(double calmWaterSpeed, double waveHeight) {
+        double forcedMaxSpeed;
         if (waveHeight < 6) {
-            return calmWaterSpeed;
+            forcedMaxSpeed = simulationData.maxSpeed;
         } else if (waveHeight < 9) {
-            return 0.75 * calmWaterSpeed;
+            forcedMaxSpeed = 0.75 * simulationData.maxSpeed;
         } else if (waveHeight < 12) {
-            return 0.5 * calmWaterSpeed;
+            forcedMaxSpeed = 0.5 * simulationData.maxSpeed;
+        } else {
+            forcedMaxSpeed = 0.25 * simulationData.maxSpeed;
         }
-        return 0.25 * calmWaterSpeed;
+        return Math.min(calmWaterSpeed, forcedMaxSpeed);
     }
 
     /** Utils functions */
