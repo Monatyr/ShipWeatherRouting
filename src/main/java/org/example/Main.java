@@ -5,7 +5,6 @@ import org.example.algorithm.emas.EMAS;
 import org.example.model.*;
 import org.example.model.action.Action;
 import org.example.util.SimulationData;
-import weka.core.stopwords.Null;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +14,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.Math.min;
 import static org.example.util.UtilFunctions.getBestPerCategory;
+import static org.example.util.UtilFunctions.getSortedByObjective;
 
 
 public class Main {
@@ -41,6 +41,7 @@ public class Main {
 
         generalInfo(solutions);
         topRoutes = getBestPerCategory(solutions);
+//        topRoutes = getSortedByObjective(solutions, OptimizedFunction.FuelUsed);
         getIslandsInfo(emas);
         System.out.println(Action.actionCount);
         arguments = List.of(

@@ -60,7 +60,7 @@
   },
   "engine": {
     "minOutput": 15000,
-    "maxOutput": 40000,
+    "maxOutput": 29000,
     "minLoad": 30,
     "maxLoad": 100,
     "optimalLoad": 80,

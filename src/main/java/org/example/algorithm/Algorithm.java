@@ -25,7 +25,7 @@ public abstract class Algorithm {
         while (validState() && !checkStopCondition()) {
             runIteration();
             iterations++;
-            if (iterations % 500 == 0) { // || (iterations > 0.9 * simulationData.maxIterations && iterations % 5 == 0)) {
+            if (iterations % 500 == 0) {
                 long nonElitePopulationSize = population.stream().filter(agent -> !agent.getIsland().isElite()).count();
                 System.out.println("Iteration: " + iterations + (iterations < 10000 ? "\t" : "" ) + "\tNon-elite population: " + nonElitePopulationSize + "\t\tElite: " + population.stream().filter(o -> o.getIsland().isElite()).toList().size() + "\tEpsilon: " + simulationData.paretoEpsilon);
                 System.out.println("Below: " + Solution.below + "\tAbove: " + Solution.above);
