@@ -5,8 +5,7 @@ import org.example.model.Island;
 import org.example.model.OptimizedFunction;
 import org.example.model.Solution;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class UtilFunctions {
@@ -70,5 +69,13 @@ public abstract class UtilFunctions {
                 solFuel.getRoutePoints().toString(),
                 solSafety.getRoutePoints().toString()
         );
+    }
+
+    // returns the last 3 best routes per category
+    public static List<String> getSortedByObjective(Set<Solution> solutions, OptimizedFunction sortObjective) {
+        int n = solutions.size();
+        List<Solution> solList = new ArrayList<>(solutions.stream().toList());
+        solList.sort((o1, o2) -> Float.compare(o1.getFunctionValues().get(sortObjective), o2.getFunctionValues().get(sortObjective)));
+        return solList.stream().map(sol -> sol.getRoutePoints().toString()).toList().subList(n-3, n);
     }
 }
