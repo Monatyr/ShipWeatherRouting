@@ -95,7 +95,7 @@ public abstract class Algorithm {
 
     protected static void generateInitialPopulation() {
         List<List<RoutePoint>> startingRoutes = new ArrayList<>();
-        double[] factors = {0.2, 0.4, 0.6, 0.8};
+        double[] factors = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
         int routesPerType = simulationData.populationSize / (factors.length + 2);
         List<RoutePoint> gcr = EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/great_circle_route.txt");
         for (double factor : factors) {
@@ -115,9 +115,7 @@ public abstract class Algorithm {
             solution.calculateFunctionValues();
             population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));
         }
-
-        System.out.println(simulationData.populationSize - routesPerType * (factors.length + 2));
-        System.out.println("STARTING ROUTES" + startingRoutes.size());
+        System.out.println("\nSTARTING ROUTES: " + startingRoutes.size());
     }
 
     private Set<Solution> lastSolutionImprovement(Set<Solution> solutions) {
