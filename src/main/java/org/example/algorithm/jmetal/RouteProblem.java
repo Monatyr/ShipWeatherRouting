@@ -2,14 +2,12 @@ package org.example.algorithm.jmetal;
 
 import org.example.algorithm.Algorithm;
 import org.example.algorithm.emas.EMASSolutionGenerator;
+import org.example.model.OptimizedFunction;
 import org.example.model.RoutePoint;
 import org.example.model.Solution;
 import org.uma.jmetal.problem.Problem;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import static org.example.model.action.ActionFactory.simulationData;
 
@@ -48,6 +46,27 @@ public class RouteProblem implements Problem<RouteSolution> {
         routeSolution.getSolution().calculateRouteValues();
         routeSolution.getSolution().calculateFunctionValues();
         simulationData.paretoEpsilon = Math.max(simulationData.paretoEpsilon - 0.000001, 0);
+
+
+        Map<OptimizedFunction, Float> functions = routeSolution.getSolution().getFunctionValues();
+        if (functions.get(OptimizedFunction.TravelTime) < RouteSolution.minTime) {
+            RouteSolution.minTime = functions.get(OptimizedFunction.TravelTime);
+        }
+        if (functions.get(OptimizedFunction.FuelUsed) < RouteSolution.minFuel) {
+            RouteSolution.minFuel = functions.get(OptimizedFunction.FuelUsed);
+        }
+        if (functions.get(OptimizedFunction.Danger) < RouteSolution.minSafety) {
+            RouteSolution.minSafety = functions.get(OptimizedFunction.Danger);
+        }
+        if (functions.get(OptimizedFunction.TravelTime) > RouteSolution.maxTime) {
+            RouteSolution.maxTime = functions.get(OptimizedFunction.TravelTime);
+        }
+        if (functions.get(OptimizedFunction.FuelUsed) > RouteSolution.maxFuel) {
+            RouteSolution.maxFuel = functions.get(OptimizedFunction.FuelUsed);
+        }
+        if (functions.get(OptimizedFunction.Danger) > RouteSolution.maxSafety) {
+            RouteSolution.maxSafety = functions.get(OptimizedFunction.Danger);
+        }
         return routeSolution;
     }
 

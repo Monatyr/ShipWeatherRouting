@@ -16,6 +16,14 @@ public class RouteSolution implements Solution<RoutePoint> {
 
     private org.example.model.Solution solution;
 
+    public static double minTime = Double.POSITIVE_INFINITY;
+    public static double minFuel = Double.POSITIVE_INFINITY;
+    public static double minSafety = Double.POSITIVE_INFINITY;
+    public static double maxTime = Double.NEGATIVE_INFINITY;
+    public static double maxFuel = Double.NEGATIVE_INFINITY;
+    public static double maxSafety = Double.NEGATIVE_INFINITY;
+
+
     public RouteSolution(org.example.model.Solution solution, int numberOfVariables, int numberOfObjectives) {
         this.solution = solution;
         variables = new ArrayList<>(numberOfVariables);
@@ -31,11 +39,18 @@ public class RouteSolution implements Solution<RoutePoint> {
     @Override
     public double[] objectives() {
         Map<OptimizedFunction, Float> functionValues = solution.getFunctionValues();
+
+        double timeNormalized = (functionValues.get(OptimizedFunction.TravelTime).doubleValue() - RouteSolution.minTime) / (RouteSolution.maxTime - RouteSolution.minTime);
+        double fuelNormalized = (functionValues.get(OptimizedFunction.FuelUsed).doubleValue() - RouteSolution.minFuel) / (RouteSolution.maxFuel - RouteSolution.minFuel);
+        double safetyNormalized = (functionValues.get(OptimizedFunction.Danger).doubleValue() - RouteSolution.minSafety) / (RouteSolution.maxSafety - RouteSolution.minSafety);
+
+
         double[] res = {
-                functionValues.get(OptimizedFunction.TravelTime).doubleValue(),
-                functionValues.get(OptimizedFunction.FuelUsed).doubleValue(),
-                functionValues.get(OptimizedFunction.Danger).doubleValue()
+                timeNormalized,
+                fuelNormalized,
+                safetyNormalized
         };
+//        System.out.println("TIME: " + res[0] + "\tFUEL: " + res[1] + "\tSAFETY: " + res[2]);
         return res;
     }
 
