@@ -180,6 +180,45 @@ public class EMASSolutionGenerator {
         return route;
     }
 
+    public static List<RoutePoint> flattenRoute(List<RoutePoint> arcPoints, double flattenFactor) {
+        List<RoutePoint> flattenedPoints = new ArrayList<>();
+        flattenedPoints.add(new RoutePoint(arcPoints.get(0)));
+        int n = arcPoints.size();
+
+        // Calculate the direction vector from start to end (AB)
+        double[] AB = new double[]{arcPoints.get(n-1).getGridCoordinates().y() - arcPoints.get(0).getGridCoordinates().y(), arcPoints.get(n-1).getGridCoordinates().x() - arcPoints.get(0).getGridCoordinates().x()};
+        double ABNorm = Math.sqrt(AB[0] * AB[0] + AB[1] * AB[1]);
+        double[] ABNormalized = new double[]{AB[0] / ABNorm, AB[1] / ABNorm};
+
+        for (int i = 1; i < n - 1; i++) {
+            RoutePoint point = arcPoints.get(i);
+            // Calculate vector AP (from start to point P)
+            double[] AP = new double[]{point.getGridCoordinates().y() - arcPoints.get(0).getGridCoordinates().y(), point.getGridCoordinates().x() - arcPoints.get(0).getGridCoordinates().x()};
+
+            // Projection of AP onto AB (dot product)
+            double projectionLength = AP[0] * ABNormalized[0] + AP[1] * ABNormalized[1];
+
+            // Closest point on the line from start to end
+            double[] closestPoint = new double[]{
+                    arcPoints.get(0).getGridCoordinates().y() + projectionLength * ABNormalized[0],
+                    arcPoints.get(0).getGridCoordinates().x() + projectionLength * ABNormalized[1]
+            };
+
+            int newY = (int) (point.getGridCoordinates().y() + flattenFactor * (closestPoint[0] - point.getGridCoordinates().y()));
+
+            int prevY = flattenedPoints.get(i - 1).getGridCoordinates().y();
+            if (Math.abs(newY - prevY) > simulationData.maxVerticalDistance) {
+                newY = prevY + (newY > prevY ? simulationData.maxVerticalDistance : -simulationData.maxVerticalDistance);  // Adjust the Y value to respect the maximum difference of 2
+            }
+            GridPoint gridCoords = new GridPoint(newY, point.getGridCoordinates().x());
+            Coordinates coordinates = grid[gridCoords.y()][gridCoords.x()];
+            RoutePoint routePoint = new RoutePoint(gridCoords, coordinates);
+            flattenedPoints.add(routePoint);
+        }
+        flattenedPoints.add(new RoutePoint(arcPoints.get(n-1)));
+        return flattenedPoints;
+    }
+
     public static Coordinates calculateCoordinates(GridPoint gridPoint) {
         return grid[gridPoint.y()][gridPoint.x()];
     }
@@ -293,6 +332,15 @@ public class EMASSolutionGenerator {
         mutatedSolution.calculateRouteValues();
         mutatedSolution.calculateFunctionValues();
         return mutatedSolution;
+    }
+
+    public static void main(String[] args) {
+        List<RoutePoint> gcr = EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/great_circle_route.txt");
+        gcr.forEach(p -> System.out.println(p.getCoordinates().longitude() + ", " + p.getCoordinates().latitude()));
+        EMASSolutionGenerator.flattenRoute(gcr, 0.1).forEach(p -> System.out.println(p.getCoordinates().longitude() + ", " + p.getCoordinates().latitude()));
+        EMASSolutionGenerator.flattenRoute(gcr, 0.2).forEach(p -> System.out.println(p.getCoordinates().longitude() + ", " + p.getCoordinates().latitude()));
+        EMASSolutionGenerator.flattenRoute(gcr, 0.4).forEach(p -> System.out.println(p.getCoordinates().longitude() + ", " + p.getCoordinates().latitude()));
+        EMASSolutionGenerator.flattenRoute(gcr, 0.6).forEach(p -> System.out.println(p.getCoordinates().longitude() + ", " + p.getCoordinates().latitude()));
     }
 }
 
