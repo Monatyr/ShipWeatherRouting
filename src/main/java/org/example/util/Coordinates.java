@@ -1,6 +1,8 @@
 package org.example.util;
 
-public record Coordinates(double latitude, double longitude) {
+import com.google.gson.annotations.Expose;
+
+public record Coordinates(@Expose double latitude, @Expose double longitude) {
     /** Use the haversine formula to calculate the distance between two points on a sphere */
     public static double realDistance(Coordinates coords1, Coordinates coords2) {
         int radius = 6371; // [km]

@@ -1,5 +1,6 @@
 package org.example.util;
 
+import com.google.gson.annotations.Expose;
 import org.example.model.OptimizedFunction;
 import org.example.model.WeatherConditions;
 import org.json.*;
@@ -18,6 +19,7 @@ public final class SimulationData {
     public final String weatherPath = "src/main/resources/weather-data-rough-2.json";
 
     private JSONObject weatherData;
+    @Expose
     public ZonedDateTime startingTime;
     // temporary static grid with forces in each of its cells
     public List<List<Integer>> gridForces;

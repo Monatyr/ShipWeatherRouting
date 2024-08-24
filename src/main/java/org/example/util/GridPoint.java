@@ -1,3 +1,5 @@
 package org.example.util;
 
-public record GridPoint(int y, int x) {}
+import com.google.gson.annotations.Expose;
+
+public record GridPoint(@Expose int y, @Expose int x) {}

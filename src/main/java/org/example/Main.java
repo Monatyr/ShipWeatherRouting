@@ -1,11 +1,14 @@
 package org.example;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.istack.Nullable;
 import org.example.algorithm.emas.EMAS;
 import org.example.model.*;
 import org.example.model.action.Action;
 import org.example.util.SimulationData;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,7 @@ public class Main {
 
         getIslandsInfo(emas);
         Set<Agent> population = emas.getPopulation();
+        saveSolutionsToJson(population.stream().map(Agent::getSolution).collect(Collectors.toSet()), "results/initialSolutions.json");
         System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum));
 
         List<String> topRoutes = getBestPerCategory(population.stream().map(Agent::getSolution).collect(Collectors.toSet()));
@@ -50,6 +54,7 @@ public class Main {
                 "--routes", topRoutes.toString()
         );
         runPythonScript("scripts/plot_routes.py", arguments);
+        saveSolutionsToJson(solutions, "results/resultSolutions.json");
     }
 
     public static void runPythonScript(String scriptPath, @Nullable List<String> args) {
@@ -96,5 +101,17 @@ public class Main {
         List<Island> islands = emas.getIslands();
         islands.forEach(i -> System.out.println((i.isElite() ? "\n ELITE:\t" : "NORMAL:\t") + i.getAgents().size()));
         System.out.println();
+    }
+
+    public static void saveSolutionsToJson(Set<Solution> solutions, String resultFile) {
+        Gson gson = new GsonBuilder().setPrettyPrinting()
+                .excludeFieldsWithoutExposeAnnotation()
+                .create();
+        try (FileWriter writer = new FileWriter(resultFile)) {
+            gson.toJson(solutions, writer);
+            System.out.println("Solutions have been saved to " + resultFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

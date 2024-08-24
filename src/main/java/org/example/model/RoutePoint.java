@@ -1,5 +1,6 @@
 package org.example.model;
 
+import com.google.gson.annotations.Expose;
 import org.example.physicalModel.PhysicalModel;
 import org.example.util.Coordinates;
 import org.example.util.GridPoint;
@@ -20,11 +21,18 @@ import static org.example.model.OptimizedFunction.*;
  * - a set of optimized metrics and their values in the previous leg of the journey (fuel consumption, ship speed, danger)
  */
 public class RoutePoint {
+    @Expose
     private GridPoint gridCoordinates;
+    @Expose
     private Coordinates coordinates;
     private ZonedDateTime arrivalTime = SimulationData.getInstance().startingTime;
+    @Expose
+    private String arrivalTimeStr = SimulationData.getInstance().startingTime.toString();
+    @Expose
     private WeatherConditions conditions;
+    @Expose
     private Map<OptimizedFunction, Double> functions;
+    @Expose
     private double shipSpeed;
     private static Random random = new Random();
 
@@ -60,6 +68,7 @@ public class RoutePoint {
 
     public void updateData(ZonedDateTime arrivalTime) {
         this.arrivalTime = arrivalTime;
+        this.arrivalTimeStr = arrivalTime.toString();
         this.conditions = SimulationData.getInstance().getWeatherConditions(coordinates, arrivalTime);
     }
 
@@ -85,6 +94,7 @@ public class RoutePoint {
 
     public void setArrivalTime(ZonedDateTime arrivalTime) {
         this.arrivalTime = arrivalTime;
+        this.arrivalTimeStr = arrivalTime.toString();
     }
 
     public WeatherConditions getWeatherConditions() {

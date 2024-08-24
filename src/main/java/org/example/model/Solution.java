@@ -1,5 +1,6 @@
 package org.example.model;
 
+import com.google.gson.annotations.Expose;
 import org.example.physicalModel.PhysicalModel;
 import org.example.util.Coordinates;
 import org.example.util.SimulationData;
@@ -15,7 +16,9 @@ import static org.example.model.OptimizedFunction.*;
 import static org.example.physicalModel.PhysicalModel.*;
 
 public class Solution implements Comparable<Solution> {
+    @Expose
     private List<RoutePoint> routePoints = new ArrayList<>();
+    @Expose
     private Map<OptimizedFunction, Float> functionValues;
     private SimulationData simulationData = SimulationData.getInstance();
     private boolean tooDangerous = false;
