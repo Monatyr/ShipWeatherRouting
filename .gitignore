@@ -46,6 +46,7 @@ build/
 /src/main/resources/is_water.json
 /src/main/resources/weather-*
 /src/main/resources/map-grid.txt
+/src/main/resources/visualisation-solutions
 
 
 /results/*

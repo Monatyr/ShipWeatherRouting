@@ -8,6 +8,7 @@ import org.example.model.*;
 import org.example.model.action.Action;
 import org.example.util.SimulationData;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,25 +34,29 @@ public class Main {
         saveSolutionsToJson(population.stream().map(Agent::getSolution).collect(Collectors.toSet()), "results/initialSolutions.json");
         System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum));
 
+        List<String> allRoutes = population.stream().map(Agent::getSolution).map(s -> s.getRoutePoints().toString()).toList();
         List<String> topRoutes = getBestPerCategory(population.stream().map(Agent::getSolution).collect(Collectors.toSet()));
+        writeSolutionsToFile(allRoutes, "src/main/resources/visualisation-solutions/initial-solutions.txt");
         List<String> arguments = List.of(
                 "--resultFile", "initial_routes.png",
                 "--weatherFile", SimulationData.getInstance().weatherPath,
-                "--routes", topRoutes.toString()
+                "--routes", "src/main/resources/visualisation-solutions/initial-solutions.txt"
         );
         runPythonScript("scripts/plot_routes.py", arguments);
 
         Set<Solution> solutions = emas.run();
 
         generalInfo(solutions);
+        allRoutes = solutions.stream().map(s -> s.getRoutePoints().toString()).toList();
         topRoutes = getBestPerCategory(solutions);
 //        topRoutes = getSortedByObjective(solutions, OptimizedFunction.FuelUsed);
+        writeSolutionsToFile(allRoutes, "src/main/resources/visualisation-solutions/resulting-solutions.txt");
         getIslandsInfo(emas);
         System.out.println(Action.actionCount);
         arguments = List.of(
                 "--resultFile", "top3_routes.png",
                 "--weatherFile", SimulationData.getInstance().weatherPath,
-                "--routes", topRoutes.toString()
+                "--routes", "src/main/resources/visualisation-solutions/resulting-solutions.txt"
         );
         runPythonScript("scripts/plot_routes.py", arguments);
         saveSolutionsToJson(solutions, "results/resultSolutions.json");
@@ -110,6 +115,17 @@ public class Main {
         try (FileWriter writer = new FileWriter(resultFile)) {
             gson.toJson(solutions, writer);
             System.out.println("Solutions have been saved to " + resultFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeSolutionsToFile(List<String> solutions, String filename) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            for (String line : solutions) {
+                writer.write(line);
+                writer.newLine();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
