@@ -6,6 +6,8 @@ import org.example.model.*;
 import org.example.model.action.Action;
 import org.example.util.SimulationData;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.min;
-import static org.example.util.UtilFunctions.getBestPerCategory;
-import static org.example.util.UtilFunctions.getSortedByObjective;
+import static org.example.util.UtilFunctions.*;
 
 
 public class Main {
@@ -27,29 +28,36 @@ public class Main {
 
         getIslandsInfo(emas);
         Set<Agent> population = emas.getPopulation();
+        saveToJson(population.stream().map(Agent::getSolution).collect(Collectors.toSet()), "results/initialSolutions.json");
         System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum));
 
+        List<String> allRoutes = population.stream().map(Agent::getSolution).map(s -> s.getRoutePoints().toString()).toList();
         List<String> topRoutes = getBestPerCategory(population.stream().map(Agent::getSolution).collect(Collectors.toSet()));
+        writeSolutionsToFile(allRoutes, "src/main/resources/visualisation-solutions/initial-solutions.txt");
         List<String> arguments = List.of(
                 "--resultFile", "initial_routes.png",
                 "--weatherFile", SimulationData.getInstance().weatherPath,
-                "--routes", topRoutes.toString()
+                "--routes", "src/main/resources/visualisation-solutions/initial-solutions.txt"
         );
         runPythonScript("scripts/plot_routes.py", arguments);
 
         Set<Solution> solutions = emas.run();
 
         generalInfo(solutions);
+        allRoutes = solutions.stream().map(s -> s.getRoutePoints().toString()).toList();
         topRoutes = getBestPerCategory(solutions);
 //        topRoutes = getSortedByObjective(solutions, OptimizedFunction.FuelUsed);
+        writeSolutionsToFile(allRoutes, "src/main/resources/visualisation-solutions/resulting-solutions.txt");
         getIslandsInfo(emas);
         System.out.println(Action.actionCount);
         arguments = List.of(
                 "--resultFile", "top3_routes.png",
                 "--weatherFile", SimulationData.getInstance().weatherPath,
-                "--routes", topRoutes.toString()
+                "--routes", "src/main/resources/visualisation-solutions/resulting-solutions.txt"
         );
         runPythonScript("scripts/plot_routes.py", arguments);
+        runPythonScript("scripts/plot_average_values.py", List.of("--resultFile", "average_function_values.png"));
+        saveToJson(solutions, "results/resultSolutions.json");
     }
 
     public static void runPythonScript(String scriptPath, @Nullable List<String> args) {
@@ -96,5 +104,16 @@ public class Main {
         List<Island> islands = emas.getIslands();
         islands.forEach(i -> System.out.println((i.isElite() ? "\n ELITE:\t" : "NORMAL:\t") + i.getAgents().size()));
         System.out.println();
+    }
+
+    public static void writeSolutionsToFile(List<String> solutions, String filename) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            for (String line : solutions) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

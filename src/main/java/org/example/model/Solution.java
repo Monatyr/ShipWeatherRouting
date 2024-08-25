@@ -1,5 +1,6 @@
 package org.example.model;
 
+import com.google.gson.annotations.Expose;
 import org.example.physicalModel.PhysicalModel;
 import org.example.util.Coordinates;
 import org.example.util.SimulationData;
@@ -15,7 +16,9 @@ import static org.example.model.OptimizedFunction.*;
 import static org.example.physicalModel.PhysicalModel.*;
 
 public class Solution implements Comparable<Solution> {
+    @Expose
     private List<RoutePoint> routePoints = new ArrayList<>();
+    @Expose
     private Map<OptimizedFunction, Float> functionValues;
     private SimulationData simulationData = SimulationData.getInstance();
     private boolean tooDangerous = false;
@@ -215,7 +218,7 @@ public class Solution implements Comparable<Solution> {
             int counter = 0;
             // adjust speed if the engine does not operate in the forces required by the targetSpeed
             while (totalPower > simulationData.maxOutput) {
-                if (counter > 1000) {
+                if (counter > 20) {
                     System.out.println("STUCK IN LOOP: " + counter);
                 }
                 calmWaterSpeed -= 0.2;

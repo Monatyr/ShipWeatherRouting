@@ -11,7 +11,12 @@ parser.add_argument('--weatherFile',type=str)
 parser.add_argument('--routes', type=str)
 args = parser.parse_args()
 
-routes = ast.literal_eval(args.routes)
+# routes = ast.literal_eval(args.routes)
+routes = []
+
+with open(args.routes) as file:
+    for line in file.readlines():
+        routes.append(ast.literal_eval(line))
 
 # Create a figure with a specific size
 fig = plt.figure(figsize=(20, 15))
@@ -31,7 +36,7 @@ labels = ["Time", "Fuel", "Safety"]
 for i, route in enumerate(routes):
     lats, lons = zip(*route)
     color = colors[i % len(colors)]  # Cycle through the list of colors
-    ax.plot(lons, lats, color=color, linewidth=2, marker='o', transform=ccrs.PlateCarree(), label=f'{labels[i]} route')
+    ax.plot(lons, lats, linewidth=1, marker='o', transform=ccrs.PlateCarree(), label=f'{labels[i % len(labels)]} route')
 
 # Extend the image with invisible points
 ax.plot([-70, -10], [50, 30], alpha=0)
@@ -65,7 +70,8 @@ plt.xlabel('Longitude')
 plt.ylabel('Latitude')
 
 # Add a legend
-plt.legend()
+if len(routes) <= 3:
+    plt.legend()
 
 # Display the plot
 plt.savefig(f'results/{args.resultFile}', bbox_inches='tight')

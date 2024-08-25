@@ -1,10 +1,14 @@
 package org.example.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.example.model.Agent;
 import org.example.model.Island;
 import org.example.model.OptimizedFunction;
 import org.example.model.Solution;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -77,5 +81,17 @@ public abstract class UtilFunctions {
         List<Solution> solList = new ArrayList<>(solutions.stream().toList());
         solList.sort((o1, o2) -> Float.compare(o1.getFunctionValues().get(sortObjective), o2.getFunctionValues().get(sortObjective)));
         return solList.stream().map(sol -> sol.getRoutePoints().toString()).toList().subList(n-3, n);
+    }
+
+    public static void saveToJson(Object object, String resultFile) {
+        Gson gson = new GsonBuilder().setPrettyPrinting()
+                .excludeFieldsWithoutExposeAnnotation()
+                .create();
+        try (FileWriter writer = new FileWriter(resultFile)) {
+            gson.toJson(object, writer);
+            System.out.println("Solutions have been saved to " + resultFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

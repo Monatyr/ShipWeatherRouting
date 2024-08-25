@@ -14,7 +14,7 @@
     }
   },
   "simulation": {
-    "maxIterations": 8000,
+    "maxIterations": 5000,
     "maxPopulation": 100,
     "maxVerticalDistance": 2,
     "initialEnergy": 100,
@@ -32,7 +32,7 @@
     "populationSize": 60,
     "startingTime": "2024-07-22T00:00Z",
     "shipSpeed": 10,
-    "routeSwitches": 5,
+    "routeSwitches": 1,
     "similarityEpsilon": 0.90,
     "paretoEpsilon": 0.01,
     "travelTimeEpsilon": 100,
