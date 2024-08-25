@@ -57,6 +57,7 @@ public class Main {
         );
         runPythonScript("scripts/plot_routes.py", arguments);
         runPythonScript("scripts/plot_average_values.py", List.of("--resultFile", "average_function_values.png"));
+        runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/resultSolutions.json", "--resultFile", "pareto_front.png"));
         saveToJson(solutions, "results/resultSolutions.json");
     }
 
