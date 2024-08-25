@@ -11,7 +11,6 @@ parser.add_argument('--weatherFile',type=str)
 parser.add_argument('--routes', type=str)
 args = parser.parse_args()
 
-# routes = ast.literal_eval(args.routes)
 routes = []
 
 with open(args.routes) as file:
