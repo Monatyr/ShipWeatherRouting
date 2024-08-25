@@ -2,20 +2,26 @@ package org.example.algorithm;
 
 import org.example.algorithm.emas.EMASSolutionGenerator;
 import org.example.model.Agent;
+import org.example.model.OptimizedFunction;
 import org.example.model.RoutePoint;
 import org.example.model.Solution;
 import org.example.util.SimulationData;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.example.util.UtilFunctions.getBestPerCategory;
+import static org.example.util.UtilFunctions.saveToJson;
 
 public abstract class Algorithm {
     protected static SimulationData simulationData = SimulationData.getInstance();
     protected static int iterations = 0;
     protected static Set<Agent> population = new HashSet<>();
     protected static Random random = new Random();
+    private List<Map<OptimizedFunction, Float>> averageFunctionValues = new ArrayList<>();
 
     public Set<Solution> run() throws Exception {
         if (population.isEmpty()) {
@@ -25,6 +31,7 @@ public abstract class Algorithm {
         while (validState() && !checkStopCondition()) {
             runIteration();
             iterations++;
+            averageFunctionValues.add(calculateAverageFunctionValues());
             if (iterations % 500 == 0) {
                 long nonElitePopulationSize = population.stream().filter(agent -> !agent.getIsland().isElite()).count();
                 System.out.println("Iteration: " + iterations + (iterations < 10000 ? "\t" : "" ) + "\tNon-elite population: " + nonElitePopulationSize + "\t\tElite: " + population.stream().filter(o -> o.getIsland().isElite()).toList().size() + "\tEpsilon: " + simulationData.paretoEpsilon);
@@ -34,6 +41,7 @@ public abstract class Algorithm {
             }
         }
 
+        saveToJson(averageFunctionValues, "results/averageValues.json");
         Set<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toSet());
         System.out.println("\n\nSOLUTIONS: " + solutions.size());
         Set<Solution> nonDominatedSolutions = getNonDominatedSolutions(null);
@@ -133,6 +141,17 @@ public abstract class Algorithm {
         }
         System.out.println("\nSolution improved " + counter + " times :)");
         return getNonDominatedSolutions(nonDominatedSolutionsList);
+    }
+
+    private Map<OptimizedFunction, Float> calculateAverageFunctionValues() {
+        Float totalTime = population.stream().map(a -> a.getSolution().getFunctionValues().get(OptimizedFunction.TravelTime)).reduce(Float::sum).get();
+        Float totalFuel = population.stream().map(a -> a.getSolution().getFunctionValues().get(OptimizedFunction.FuelUsed)).reduce(Float::sum).get();
+        Float totalSafety = population.stream().map(a -> a.getSolution().getFunctionValues().get(OptimizedFunction.Danger)).reduce(Float::sum).get();
+        return Map.of(
+                OptimizedFunction.TravelTime, totalTime / population.size(),
+                OptimizedFunction.FuelUsed, totalFuel / population.size(),
+                OptimizedFunction.Danger, totalSafety / population.size()
+        );
     }
 
     protected abstract void runIteration() throws Exception;

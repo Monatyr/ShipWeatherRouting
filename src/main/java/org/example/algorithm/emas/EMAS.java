@@ -89,7 +89,6 @@ public class EMAS extends Algorithm {
         }
         // Compare agents - energy distribution, prestige gains
         evaluateAgents();
-//        pruneDangerousAgents();
         pruneDominatedEliteAgents();
         population = islands.stream()
                 .flatMap(island -> island.getAgents().stream())

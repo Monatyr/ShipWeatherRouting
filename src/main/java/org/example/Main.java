@@ -1,7 +1,5 @@
 package org.example;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.sun.istack.Nullable;
 import org.example.algorithm.emas.EMAS;
 import org.example.model.*;
@@ -17,8 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.min;
-import static org.example.util.UtilFunctions.getBestPerCategory;
-import static org.example.util.UtilFunctions.getSortedByObjective;
+import static org.example.util.UtilFunctions.*;
 
 
 public class Main {
@@ -31,7 +28,7 @@ public class Main {
 
         getIslandsInfo(emas);
         Set<Agent> population = emas.getPopulation();
-        saveSolutionsToJson(population.stream().map(Agent::getSolution).collect(Collectors.toSet()), "results/initialSolutions.json");
+        saveToJson(population.stream().map(Agent::getSolution).collect(Collectors.toSet()), "results/initialSolutions.json");
         System.out.println("\n--- TOTAL ENERGY: " + population.stream().map(Agent::getEnergy).reduce(0.0, Double::sum));
 
         List<String> allRoutes = population.stream().map(Agent::getSolution).map(s -> s.getRoutePoints().toString()).toList();
@@ -59,7 +56,8 @@ public class Main {
                 "--routes", "src/main/resources/visualisation-solutions/resulting-solutions.txt"
         );
         runPythonScript("scripts/plot_routes.py", arguments);
-        saveSolutionsToJson(solutions, "results/resultSolutions.json");
+        runPythonScript("scripts/plot_average_values.py", List.of("--resultFile", "average_function_values.png"));
+        saveToJson(solutions, "results/resultSolutions.json");
     }
 
     public static void runPythonScript(String scriptPath, @Nullable List<String> args) {
@@ -106,18 +104,6 @@ public class Main {
         List<Island> islands = emas.getIslands();
         islands.forEach(i -> System.out.println((i.isElite() ? "\n ELITE:\t" : "NORMAL:\t") + i.getAgents().size()));
         System.out.println();
-    }
-
-    public static void saveSolutionsToJson(Set<Solution> solutions, String resultFile) {
-        Gson gson = new GsonBuilder().setPrettyPrinting()
-                .excludeFieldsWithoutExposeAnnotation()
-                .create();
-        try (FileWriter writer = new FileWriter(resultFile)) {
-            gson.toJson(solutions, writer);
-            System.out.println("Solutions have been saved to " + resultFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void writeSolutionsToFile(List<String> solutions, String filename) {

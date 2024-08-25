@@ -36,7 +36,7 @@ labels = ["Time", "Fuel", "Safety"]
 for i, route in enumerate(routes):
     lats, lons = zip(*route)
     color = colors[i % len(colors)]  # Cycle through the list of colors
-    ax.plot(lons, lats, color=color, linewidth=1, marker='o', transform=ccrs.PlateCarree(), label=f'{labels[i % len(labels)]} route')
+    ax.plot(lons, lats, linewidth=1, marker='o', transform=ccrs.PlateCarree(), label=f'{labels[i % len(labels)]} route')
 
 # Extend the image with invisible points
 ax.plot([-70, -10], [50, 30], alpha=0)
