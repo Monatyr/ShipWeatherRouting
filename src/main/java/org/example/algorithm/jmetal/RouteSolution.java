@@ -13,6 +13,9 @@ public class RouteSolution implements Solution<RoutePoint> {
     private List<RoutePoint> variables;
     private List<Double> objectives;
     private Map<Object, Object> attributes;
+    public int counter = 0;
+
+    private double[] functionValues = {0.0, 0.0, 0.0};
 
     private org.example.model.Solution solution;
 
@@ -38,20 +41,23 @@ public class RouteSolution implements Solution<RoutePoint> {
 
     @Override
     public double[] objectives() {
-        Map<OptimizedFunction, Float> functionValues = solution.getFunctionValues();
+//        Map<OptimizedFunction, Float> functionValues = solution.getFunctionValues();
 
-        double timeNormalized = (functionValues.get(OptimizedFunction.TravelTime).doubleValue() - RouteSolution.minTime) / (RouteSolution.maxTime - RouteSolution.minTime);
-        double fuelNormalized = (functionValues.get(OptimizedFunction.FuelUsed).doubleValue() - RouteSolution.minFuel) / (RouteSolution.maxFuel - RouteSolution.minFuel);
-        double safetyNormalized = (functionValues.get(OptimizedFunction.Danger).doubleValue() - RouteSolution.minSafety) / (RouteSolution.maxSafety - RouteSolution.minSafety);
+//        double timeNormalized = (functionValues.get(OptimizedFunction.TravelTime).doubleValue() - RouteSolution.minTime) / (RouteSolution.maxTime - RouteSolution.minTime);
+//        double fuelNormalized = (functionValues.get(OptimizedFunction.FuelUsed).doubleValue() - RouteSolution.minFuel) / (RouteSolution.maxFuel - RouteSolution.minFuel);
+//        double safetyNormalized = (functionValues.get(OptimizedFunction.Danger).doubleValue() - RouteSolution.minSafety) / (RouteSolution.maxSafety - RouteSolution.minSafety);
 
+//        double[] res = {
+//                timeNormalized,
+//                fuelNormalized,
+//                safetyNormalized
+//        };
+//        return res;
+        return functionValues;
+    }
 
-        double[] res = {
-                timeNormalized,
-                fuelNormalized,
-                safetyNormalized
-        };
-//        System.out.println("TIME: " + res[0] + "\tFUEL: " + res[1] + "\tSAFETY: " + res[2]);
-        return res;
+    public void setObjective(int index, double value) {
+        functionValues[index] = value;
     }
 
     @Override
@@ -67,7 +73,9 @@ public class RouteSolution implements Solution<RoutePoint> {
     @Override
     public Solution copy() {
         org.example.model.Solution copiedSolution = new org.example.model.Solution(solution);
-        return new RouteSolution(copiedSolution, variables.size(), objectives.size());
+        RouteSolution newSolution = new RouteSolution(copiedSolution, variables.size(), objectives.size());
+        newSolution.functionValues = new double[]{functionValues[0], functionValues[1], functionValues[2]};
+        return newSolution;
     }
 
     public org.example.model.Solution getSolution() {

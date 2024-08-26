@@ -13,23 +13,57 @@ import static org.example.model.OptimizedFunction.*;
 import static org.example.model.OptimizedFunction.Danger;
 
 public class RouteDominanceComparator implements DominanceComparator<RouteSolution> {
-    private boolean epsilonDominance;
+    private final double epsilon;
 
-    public RouteDominanceComparator(boolean epsilonDominance) {
-        this.epsilonDominance = epsilonDominance;
+    public RouteDominanceComparator(double epsilon) {
+        this.epsilon = epsilon;
     }
 
     @Override
     public int compare(RouteSolution o1, RouteSolution o2) {
         Solution sol1 = o1.getSolution();
         Solution sol2 = o2.getSolution();
-        int res = sol1.checkDominatesEpsilon(sol2);//, epsilonDominance);
-        if (res == -1) {
-            return 1;
-        } else if (res == 1) {
-            return -1;
+//        int res = sol1.checkIfDominates(sol2, true);
+        return dominanceTest(o1, o2);
+    }
+
+    private int dominanceTest(RouteSolution solution1, RouteSolution solution2) {
+        boolean bestIsOne = false;
+        boolean bestIsTwo = false;
+        solution1.counter++;
+        solution2.counter++;
+
+        for(int i = 0; i < solution1.objectives().length; ++i) {
+            double value1 = Math.floor(solution1.objectives()[i] / this.epsilon);
+            double value2 = Math.floor(solution2.objectives()[i] / this.epsilon);
+            if (value1 < value2) {
+                bestIsOne = true;
+                if (bestIsTwo) {
+                    return 0;
+                }
+            } else if (value2 < value1) {
+                bestIsTwo = true;
+                if (bestIsOne) {
+                    return 0;
+                }
+            }
         }
-        return 0;
+
+        if (!bestIsOne && !bestIsTwo) {
+            double dist1 = 0.0;
+            double dist2 = 0.0;
+
+            for(int i = 0; i < solution1.objectives().length; ++i) {
+                double index1 = Math.floor(solution1.objectives()[i] / this.epsilon);
+                double index2 = Math.floor(solution2.objectives()[i] / this.epsilon);
+                dist1 += Math.pow(solution1.objectives()[i] - index1 * this.epsilon, 2.0);
+                dist2 += Math.pow(solution2.objectives()[i] - index2 * this.epsilon, 2.0);
+            }
+
+            return dist1 < dist2 ? -1 : 1;
+        } else {
+            return bestIsTwo ? 1 : -1;
+        }
     }
 
 //    private int checkIfDominates(RouteSolution r1, RouteSolution r2) {
