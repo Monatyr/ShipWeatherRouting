@@ -31,12 +31,12 @@ import java.util.stream.Collectors;
 public class Test {
     public static void main(String[] args) {
 
-        int evaluations = 100;
+        int evaluations = 50000;
         int populationSize = 100;
         int matingPoolSize = 100; // By default, matingPoolSize and offspringSize are to populationSize by the NSGAII-Builder
         int offspringSize = 100;
         double mutationProbability = SimulationData.getInstance().mutationProbability;
-        double epsilon = 0.01;
+        double epsilon = 0.025;
 
         CrossoverOperator<RouteSolution> crossoverOperator = new RouteCrossoverOperator();
         MutationOperator<RouteSolution> mutationOperator = new RouteMutationOperator(mutationProbability);

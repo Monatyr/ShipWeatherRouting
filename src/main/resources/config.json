@@ -34,7 +34,7 @@
     "shipSpeed": 10,
     "routeSwitches": 5,
     "similarityEpsilon": 0.90,
-    "paretoEpsilon": 0.02,
+    "paretoEpsilon": 0.01,
     "travelTimeEpsilon": 100,
     "fuelEpsilon": 5,
     "safetyEpsilon": 0.01
@@ -64,7 +64,7 @@
     "minLoad": 30,
     "maxLoad": 100,
     "optimalLoad": 80,
-    "minSpeed": 8,
+    "minSpeed": 10,
     "maxSpeed": 12
   },
   "conditions": {

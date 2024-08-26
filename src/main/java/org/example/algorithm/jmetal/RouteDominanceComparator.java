@@ -1,19 +1,13 @@
 package org.example.algorithm.jmetal;
 
-import org.example.model.OptimizedFunction;
 import org.example.model.Solution;
-import org.example.util.SimulationData;
 import org.uma.jmetal.util.comparator.dominanceComparator.DominanceComparator;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.example.model.OptimizedFunction.*;
-import static org.example.model.OptimizedFunction.Danger;
 
 public class RouteDominanceComparator implements DominanceComparator<RouteSolution> {
     private final double epsilon;
+    public static int totalCounter = 0;
+    public static int partCounter = 0;
 
     public RouteDominanceComparator(double epsilon) {
         this.epsilon = epsilon;
@@ -30,8 +24,7 @@ public class RouteDominanceComparator implements DominanceComparator<RouteSoluti
     private int dominanceTest(RouteSolution solution1, RouteSolution solution2) {
         boolean bestIsOne = false;
         boolean bestIsTwo = false;
-        solution1.counter++;
-        solution2.counter++;
+        totalCounter++;
 
         for(int i = 0; i < solution1.objectives().length; ++i) {
             double value1 = Math.floor(solution1.objectives()[i] / this.epsilon);
@@ -48,6 +41,9 @@ public class RouteDominanceComparator implements DominanceComparator<RouteSoluti
                 }
             }
         }
+
+        partCounter++;
+//        System.out.println(totalCounter + " " + partCounter);
 
         if (!bestIsOne && !bestIsTwo) {
             double dist1 = 0.0;
