@@ -32,6 +32,8 @@ public class EMASSolutionGenerator {
     private static final Random random = new Random();
     private static final Coordinates[][] grid = createMapGrid();
 
+    private static double minSpeed = Double.POSITIVE_INFINITY;
+
     public static Solution generateSolution(List<RoutePoint> routePoints) {
         if (routePoints != null) {
             return new Solution(routePoints);

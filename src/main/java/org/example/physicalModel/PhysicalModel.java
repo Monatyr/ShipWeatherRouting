@@ -372,6 +372,9 @@ public abstract class PhysicalModel {
         } else if (fractionalSafetyCoefficient > 1) {
             System.out.println("?????" + fractionalSafetyCoefficient);
         }
+        if (fractionalSafetyCoefficient == 1) {
+            System.out.println("SAFEEEEEEEE");
+        }
         return fractionalSafetyCoefficient > 0 ? fractionalSafetyCoefficient : 0;
     }
 

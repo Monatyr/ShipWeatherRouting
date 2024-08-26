@@ -1,16 +1,18 @@
 package org.example.model;
 
 import com.google.gson.annotations.Expose;
+import org.example.algorithm.jmetal.RouteSolution;
 import org.example.physicalModel.PhysicalModel;
 import org.example.util.Coordinates;
 import org.example.util.SimulationData;
 
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.*;
 
 import static org.example.model.OptimizedFunction.*;
 import static org.example.physicalModel.PhysicalModel.*;
@@ -114,69 +116,76 @@ public class Solution implements Comparable<Solution> {
         return 0;
     }
 
-//     copied from jMetal
-    public int checkIfEpsilonDominates(Solution other) {
+
+    public int checkDominatesEpsilon(Solution other) {
         boolean bestIsOne = false;
         boolean bestIsTwo = false;
-        List<OptimizedFunction> keys = functionValues.keySet().stream().toList();
-        double minTime = 400000;
-        double maxTime = 600000;
-        double minFuel = 450;
-        double maxFuel = 600;
-//        System.out.println();
-        for (int i = 0; i < this.functionValues.size(); i++) {
-            OptimizedFunction key = keys.get(i);
-            double epsilon = simulationData.epsilonMap.get(key);
-            double value1 = Math.floor(this.functionValues.get(key) / epsilon);
-            double value2 = Math.floor(other.functionValues.get(key) / epsilon);
-//            System.out.println(key + ": " + value1 + ", " + value2);
+
+        Map<OptimizedFunction, Float> normalizedValues = new HashMap<>(this.functionValues);
+        Map<OptimizedFunction, Float> otherNormalizedValues = new HashMap<>(other.functionValues);
+        Float travelTime = normalizedValues.get(TravelTime);
+        Float otherTravelTime = otherNormalizedValues.get(TravelTime);
+        Float fuelUsed = normalizedValues.get(FuelUsed);
+        Float otherFuelUsed = otherNormalizedValues.get(FuelUsed);
+        Float safety = normalizedValues.get(Danger);
+        Float otherSafety = otherNormalizedValues.get(Danger);
+        normalizedValues.put(TravelTime, (float) ((travelTime - RouteSolution.minTime) / (RouteSolution.maxTime - RouteSolution.minTime)));
+        otherNormalizedValues.put(TravelTime, (float) ((otherTravelTime - RouteSolution.minTime) / (RouteSolution.maxTime - RouteSolution.minTime)));
+        normalizedValues.put(FuelUsed, (float) ((fuelUsed - RouteSolution.minFuel) / (RouteSolution.maxFuel - RouteSolution.minFuel)));
+        otherNormalizedValues.put(FuelUsed, (float) ((otherFuelUsed - RouteSolution.minFuel) / (RouteSolution.maxFuel - RouteSolution.minFuel)));
+        normalizedValues.put(Danger, (float) ((safety - RouteSolution.minSafety) / (RouteSolution.maxSafety - RouteSolution.minSafety)));
+        otherNormalizedValues.put(Danger, (float) ((otherSafety - RouteSolution.minSafety) / (RouteSolution.maxSafety - RouteSolution.minSafety)));
+
+        double epsilon = SimulationData.getInstance().paretoEpsilon;
+
+        List<OptimizedFunction> keyList = normalizedValues.keySet().stream().toList();
+
+        for (int i = 0; i < normalizedValues.size(); i++) {
+            OptimizedFunction key = keyList.get(i);
+            double value1 = Math.floor(normalizedValues.get(key) / epsilon);
+            double value2 = Math.floor(otherNormalizedValues.get(key) / epsilon);
             if (value1 < value2) {
                 bestIsOne = true;
+
                 if (bestIsTwo) {
                     return 0;
                 }
             } else if (value2 < value1) {
                 bestIsTwo = true;
+
                 if (bestIsOne) {
-                    return 0 ;
+                    return 0;
                 }
             }
         }
-        // temporary workaround
         if (!bestIsOne && !bestIsTwo) {
-            return 0;
-        } else if (bestIsOne) {
-            return -1;
-        } else {
+            double dist1 = 0.0;
+            double dist2 = 0.0;
+
+            for (int i = 0; i < normalizedValues.size(); i++) {
+                OptimizedFunction key = keyList.get(i);
+
+                double index1 = Math.floor(normalizedValues.get(key) / epsilon);
+                double index2 = Math.floor(otherNormalizedValues.get(key) / epsilon);
+
+                dist1 += Math.pow(normalizedValues.get(key) - index1 * epsilon,
+                        2.0);
+                dist2 += Math.pow(otherNormalizedValues.get(key) - index2 * epsilon,
+                        2.0);
+            }
+
+            if (dist1 < dist2) {
+                return -1;
+            } else {
+                return 1;
+            }
+        } else if (bestIsTwo) {
             return 1;
+        } else {
+            return -1;
         }
-        // the objective values should probably be normalized. Otherwise travel time completely dominates the distance
-//        if (!bestIsOne && !bestIsTwo) {
-//            double dist1 = 0.0;
-//            double dist2 = 0.0;
-//
-//            for (int i = 0; i < this.functionValues.size(); i++) {
-//                OptimizedFunction key = keys.get(i);
-//                double epsilon = simulationData.epsilonMap.get(key);
-//                double index1 = Math.floor(this.functionValues.get(key) / epsilon);
-//                double index2 = Math.floor(other.functionValues.get(key) / epsilon);
-//
-//                dist1 += Math.pow(this.functionValues.get(key) - index1 * epsilon,
-//                        2.0);
-//                dist2 += Math.pow(other.functionValues.get(key) - index2 * epsilon,
-//                        2.0);
-//            }
-//            if (dist1 < dist2) {
-//                return -1;
-//            } else {
-//                return 1;
-//            }
-//        } else if (bestIsTwo) {
-//            return 1;
-//        } else {
-//            return -1;
-//        }
     }
+
 
     //TODO: Go through the RoutePoints and calculate their arrival time, set weather conditions and calculate function values
     public void calculateRouteValues() {
@@ -229,6 +238,9 @@ public class Solution implements Comparable<Solution> {
             }
             // calculate end speed again in case the engine cannot perform under previous conditions
             targetEndSpeed = getEndSpeed(calmWaterSpeed, shipHeadingAngle, windAngle, BN);
+            if (calmWaterSpeed < 8) {
+//                System.out.println("CALM WATER: " + calmWaterSpeed + "\tEND: " + targetEndSpeed);
+            }
 
             fullNodePower += totalPower;
             fullNodeSpeed += targetEndSpeed;

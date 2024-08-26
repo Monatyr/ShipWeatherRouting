@@ -27,7 +27,7 @@
     "mutationRate": 0.10,
     "eliteMutationRate": 0.05,
     "reproductionProbability": 0.99,
-    "neededPrestige": 500,
+    "neededPrestige": 200,
     "numberOfIslands": 4,
     "populationSize": 60,
     "startingTime": "2024-07-22T00:00Z",
