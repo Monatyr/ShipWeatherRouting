@@ -35,4 +35,4 @@ ax.set_zlabel('Danger')
 ax.set_title('Pareto Front for 3-Objective Optimization')
 
 plt.savefig(f'results/{args.resultFile}', bbox_inches='tight')
-# plt.show()
+plt.show()

@@ -1,10 +1,7 @@
 package org.example.algorithm.emas;
 
 import org.example.algorithm.Algorithm;
-import org.example.model.Agent;
-import org.example.model.Island;
-import org.example.model.RoutePoint;
-import org.example.model.Solution;
+import org.example.model.*;
 import org.example.util.UtilFunctions;
 
 import java.util.*;
@@ -61,6 +58,17 @@ public class EMAS extends Algorithm {
     }
 
     @Override
+    protected boolean checkStopCondition() {
+        boolean emptyAgentList = islands.stream()
+                .filter(i -> !i.isElite())
+                .map(Island::getAgents)
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet()).size() == 0;
+        boolean iterationsLimit = iterations > simulationData.maxIterations;
+        return iterationsLimit || emptyAgentList;
+    }
+
+    @Override
     protected void runIteration() throws Exception {
         for (Island island : islands) {
             Set<Agent> agentsToAdd = new HashSet<>();
@@ -87,6 +95,9 @@ public class EMAS extends Algorithm {
                 agent.setMadeAction(false);
             }
         }
+
+        updateCrowdingDistance();
+
         // Compare agents - energy distribution, prestige gains
         evaluateAgents();
         pruneDominatedEliteAgents();
@@ -105,9 +116,45 @@ public class EMAS extends Algorithm {
         simulationData.paretoEpsilon -= 0.000001;
     }
 
-    @Override
-    protected boolean checkStopCondition() {
-        return iterations >= simulationData.maxIterations;
+    private void updateCrowdingDistance() {
+        List<Agent> agents = islands.stream().filter(i -> !i.isElite()).map(Island::getAgents).flatMap(Set::stream).collect(Collectors.toList());
+        agents.forEach(agent -> agent.setCrowdingFactor(0));
+        List<Agent> timeSorted = sortByFunction(agents, OptimizedFunction.TravelTime);
+        List<Agent> fuelSorted = sortByFunction(agents, OptimizedFunction.FuelUsed);
+        List<Agent> safetySorted = sortByFunction(agents, OptimizedFunction.Danger);
+
+        if (agents.size() == 0) {
+            System.out.println("EMPTY");
+            return;
+        }
+        timeSorted.get(0).setCrowdingFactor(Double.POSITIVE_INFINITY);
+        timeSorted.get(agents.size() - 1).setCrowdingFactor(Double.POSITIVE_INFINITY);
+        fuelSorted.get(0).setCrowdingFactor(Double.POSITIVE_INFINITY);
+        fuelSorted.get(agents.size() - 1).setCrowdingFactor(Double.POSITIVE_INFINITY);
+        safetySorted.get(0).setCrowdingFactor(Double.POSITIVE_INFINITY);
+        safetySorted.get(agents.size() - 1).setCrowdingFactor(Double.POSITIVE_INFINITY);
+
+        calculateCrowdingDistanceByFunction(timeSorted, OptimizedFunction.TravelTime);
+        calculateCrowdingDistanceByFunction(fuelSorted, OptimizedFunction.FuelUsed);
+        calculateCrowdingDistanceByFunction(safetySorted, OptimizedFunction.Danger);
+    }
+
+    private List<Agent> sortByFunction(List<Agent> agents, OptimizedFunction function) {
+        return agents.stream().sorted(Comparator.comparing(a -> a.getSolution().getFunctionValues().get(function))).toList();
+    }
+
+    private void calculateCrowdingDistanceByFunction(List<Agent> agents, OptimizedFunction function) {
+        double minValue = agents.get(0).getSolution().getFunctionValues().get(function);
+        double maxValue = agents.get(agents.size() - 1).getSolution().getFunctionValues().get(function);
+
+        for (int i = 1; i < agents.size() - 1; i++) {
+            Agent currAgent = agents.get(i);
+            double currValue = currAgent.getSolution().getFunctionValues().get(function);
+            double nextValue = agents.get(i+1).getSolution().getFunctionValues().get(function);
+            double prevValue = agents.get(i-1).getSolution().getFunctionValues().get(function);
+            double crowdingFactorConstituent = (nextValue - prevValue) / (maxValue - minValue);
+            currAgent.setCrowdingFactor(currAgent.getCrowdingFactor() + crowdingFactorConstituent);
+        }
     }
 
     private Set<Agent> getNonDominatedAgents(Set<Agent> agents) {

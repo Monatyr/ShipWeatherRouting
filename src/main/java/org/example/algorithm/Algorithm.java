@@ -58,7 +58,7 @@ public abstract class Algorithm {
         return iterations > simulationData.maxIterations;
     }
 
-    protected Set<Solution> getNonDominatedSolutions(List<Solution> solutions) {
+    public static Set<Solution> getNonDominatedSolutions(List<Solution> solutions) {
         if (solutions == null) {
             solutions = population.stream().map(Agent::getSolution).toList();
         }

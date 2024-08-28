@@ -41,7 +41,7 @@ public class RouteSolution implements Solution<RoutePoint> {
 
     @Override
     public double[] objectives() {
-//        Map<OptimizedFunction, Float> functionValues = solution.getFunctionValues();
+        Map<OptimizedFunction, Float> functionValues = solution.getFunctionValues();
 
 //        double timeNormalized = (functionValues.get(OptimizedFunction.TravelTime).doubleValue() - RouteSolution.minTime) / (RouteSolution.maxTime - RouteSolution.minTime);
 //        double fuelNormalized = (functionValues.get(OptimizedFunction.FuelUsed).doubleValue() - RouteSolution.minFuel) / (RouteSolution.maxFuel - RouteSolution.minFuel);
@@ -53,7 +53,13 @@ public class RouteSolution implements Solution<RoutePoint> {
 //                safetyNormalized
 //        };
 //        return res;
-        return functionValues;
+        double[] res = {
+                functionValues.get(OptimizedFunction.TravelTime),
+                functionValues.get(OptimizedFunction.FuelUsed),
+                functionValues.get(OptimizedFunction.Danger)
+        };
+        return res;
+//        return functionValues;
     }
 
     public void setObjective(int index, double value) {
