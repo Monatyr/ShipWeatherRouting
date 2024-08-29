@@ -208,7 +208,12 @@ public final class SimulationData {
     public WeatherConditions getWeatherConditions(Coordinates coordinates, ZonedDateTime arrivalDateTime) {
         JSONObject timestampData  = weatherData.getJSONObject(coordinates.toString());
         arrivalDateTime = getNearestFullHour(arrivalDateTime);
-        JSONObject conditions = timestampData.getJSONObject(arrivalDateTime.toString().replace("Z", ""));
+        String arrivalDateTimeStr = arrivalDateTime.toString().replace("Z", "");
+        if (!timestampData.has(arrivalDateTimeStr)) {
+            System.out.println("missing");
+            arrivalDateTimeStr = "2024-08-01T23:00";
+        }
+        JSONObject conditions = timestampData.getJSONObject(arrivalDateTimeStr);
         return new WeatherConditions(
                 conditions.getDouble("wind_speed_10m") / 3.6, // from km/h to m/s // TODO: check is water. Use an external API (open-meteo cannot reliably tell)
                 conditions.getDouble("wind_direction_10m"),

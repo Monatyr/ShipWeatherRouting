@@ -20,12 +20,14 @@ public class Agent {
 
     private Solution solution;
     private double energy;
-    private double prestige;
+    private double prestige = 0;
     private Island island;
     private Island previousIsland;
     private boolean madeAction;
     private final Random random = new Random();
     private static final SimulationData simulationData = SimulationData.getInstance();
+    private int similarAgentsCounter = 0;
+    private final Map<Agent, Integer> otherAgentsCounters = new HashMap<>();
     private final Set<Agent> similarAgents = new HashSet<>(); // agents which solution is closer than epsilon
     private final Map<Agent, Integer> differentAgents = new HashMap<>(); // agents that are not similar and the number of agents in their surroundings
     private int meetings = 0;
@@ -128,17 +130,8 @@ public class Agent {
     public void compareTo(Agent other) {
         Solution otherSolution = other.getSolution();
         int dominationResult = solution.checkIfDominates(otherSolution, false);
-//        int dominationResult = solution.checkIfEpsilonDominates(otherSolution);
         double agentDominationFactor = meetings != 0 ? (double) dominatedTimes / meetings : 0;
         double otherDominationFactor = other.meetings != 0 ? (double) other.dominatedTimes / other.meetings : 0;
-
-        if (dominationResult == 0) {
-            if (agentDominationFactor != otherDominationFactor) {
-                different++;
-            } else {
-                same++;
-            }
-        }
 
         totalCounter++;
 
@@ -161,18 +154,28 @@ public class Agent {
                 transferResources(other, this, false);
             }
         }
-//        System.out.println(dominationFactorCounter + " " + crowdingCounter + " " + totalCounter);
-        // gathering information about the surroundings of different agents
-        double solutionSimilarity = solution.similarityBetweenSolutions(otherSolution);
-        if (solutionSimilarity >= simulationData.similarityEpsilon) {
-            similarAgents.add(other);
+
+        if (areSimilar(other)) {
+            this.otherAgentsCounters.put(other, other.similarAgentsCounter);
+            other.otherAgentsCounters.put(this, this.similarAgentsCounter);
+            this.similarAgentsCounter++;
+            other.similarAgentsCounter++;
         }
-        int otherSurroundings = other.similarAgents.size();
-        differentAgents.remove(other);
-        differentAgents.put(other, otherSurroundings);
 
         meetings++;
         other.meetings++;
+    }
+
+    private boolean areSimilar(Agent other) {
+        Map<OptimizedFunction, Float> otherFunctions = other.getSolution().getFunctionValues();
+        for (OptimizedFunction function : solution.getFunctionValues().keySet()) {
+            float value = solution.getFunctionValues().get(function);
+            float otherValue = otherFunctions.get(function);
+            if (Math.min(value, otherValue) / Math.max(value, otherValue) < simulationData.similarityEpsilon) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static void transferResources(Agent toAgent, Agent fromAgent, boolean dominated) {
@@ -185,9 +188,12 @@ public class Agent {
     }
 
     public boolean canMigrateToElite() {
-        double avgSurroundings = (double) differentAgents.values().stream().reduce(0, Integer::sum) / differentAgents.size();
-        System.out.println("Elite check: " + similarAgents.size() + " " + avgSurroundings);
-        return similarAgents.size() > avgSurroundings;
+        // TODO: REWRITE IT ACCORDING TO THE PAPER. THE DECISION MUST BE MADE BY THE AGENT AND ITS SURROUNDING ON THE PARETO FRONTIER
+//        double avgSurroundings = 0;
+
+        double avgSurroundings = (double) otherAgentsCounters.values().stream().reduce(0, Integer::sum) / otherAgentsCounters.size();
+        System.out.println("\nSimilar: " + similarAgentsCounter + "\t Surroundings: " + avgSurroundings + "\tPrestige: " + prestige + " " + otherAgentsCounters.size() + "\n");
+        return similarAgentsCounter > avgSurroundings;
     }
 
     public double getEnergy() {

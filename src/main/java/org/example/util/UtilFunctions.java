@@ -67,7 +67,6 @@ public abstract class UtilFunctions {
         double totalDanger = solList.stream().map(s -> s.getFunctionValues().get(OptimizedFunction.Danger)).reduce(Float::sum).get();
         System.out.println("Avg time: " + totalTime/solList.size() + "\tAvg fuel: " + totalFuel/solList.size() + "\tAvg danger: " + totalDanger/solList.size());
 
-        System.out.println("\n\nSame: " + Agent.same + "\tDifferent: " + Agent.different);
         return List.of(
                 solTime.getRoutePoints().toString(),
                 solFuel.getRoutePoints().toString(),

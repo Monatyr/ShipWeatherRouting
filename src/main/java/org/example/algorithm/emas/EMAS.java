@@ -49,11 +49,20 @@ public class EMAS extends Algorithm {
 
     private void dividePopulationBetweenIslandsWithoutElite() {
         List<Agent> allAgents = population.stream().toList();
-        for (int i = 0; i < allAgents.size(); i++) {
-            Island island = islands.get(i % (islandsNumber - 1) + 1);
-            Agent agent = allAgents.get(i);
-            island.addAgent(agent);
-            agent.setIsland(island);
+        int agentIndex = 0;
+        int batchSize = (int) ((double) population.size() / (islandsNumber - 1));
+        for (int i = 1; i < islandsNumber; i++) {
+            Island island = islands.get(i);
+            if (i == islandsNumber - 1) {
+                batchSize = population.size() - (i - 1) * batchSize;
+            }
+            for (int j = 0; j < batchSize; j++) {
+                Agent agent = allAgents.get(agentIndex);
+                island.addAgent(agent);
+                agent.setIsland(island);
+                agentIndex++;
+                System.out.println(agentIndex + " " + island);
+            }
         }
     }
 

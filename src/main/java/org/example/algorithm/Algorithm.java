@@ -35,7 +35,6 @@ public abstract class Algorithm {
             if (iterations % 500 == 0) {
                 long nonElitePopulationSize = population.stream().filter(agent -> !agent.getIsland().isElite()).count();
                 System.out.println("Iteration: " + iterations + (iterations < 10000 ? "\t" : "" ) + "\tNon-elite population: " + nonElitePopulationSize + "\t\tElite: " + population.stream().filter(o -> o.getIsland().isElite()).toList().size() + "\tEpsilon: " + simulationData.paretoEpsilon);
-                System.out.println("Below: " + Solution.below + "\tAbove: " + Solution.above);
                 System.out.println("Avg engine load: " + Solution.fullNodePower / Solution.nodeNumber / SimulationData.getInstance().maxOutput + "\tAvg speed: " + Solution.fullNodeSpeed / Solution.nodeNumber);
                 getBestPerCategory(population.stream().map(Agent::getSolution).collect(Collectors.toSet()));
             }
@@ -43,10 +42,9 @@ public abstract class Algorithm {
 
         saveToJson(averageFunctionValues, "results/averageValues.json");
         Set<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toSet());
-        System.out.println("\n\nSOLUTIONS: " + solutions.size());
         Set<Solution> nonDominatedSolutions = getNonDominatedSolutions(null);
         nonDominatedSolutions = lastSolutionImprovement(nonDominatedSolutions);
-        System.out.println("NONDOMINATED SOLUTIONS: " + nonDominatedSolutions.size());
+        System.out.println("\n\nSOLUTIONS: " + solutions.size());
         return nonDominatedSolutions;
     }
 
