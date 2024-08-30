@@ -232,7 +232,8 @@ public abstract class PhysicalModel {
         C_beta = getDirectionReductionCoefficient(shipHeadingAngle, windAngle, BN);
         C_U = getSpeedReductionCoefficient(C_B, calmWaterSpeed, "normal");
         C_Form = getShipFormCoefficient(BN);
-        return calmWaterSpeed - C_beta * C_U * C_Form * calmWaterSpeed / 100;
+        double res = calmWaterSpeed - C_beta * C_U * C_Form * calmWaterSpeed / 100;
+        return res;
     }
 
     /** CALM WATER SPEED AND RESISTANCE BASED ON TARGET END SPEED */
@@ -328,7 +329,6 @@ public abstract class PhysicalModel {
     public static double getFuelUsed(double brakePower, double journeyTimeInHours) {
         double engineLoad = brakePower / (simulationData.maxOutput); // fraction from <0, 1>
         if (engineLoad > maxRecordedEngineLoad) {
-            System.out.println("New max engine load (should be <0, 1>) " + engineLoad);
             maxRecordedEngineLoad = engineLoad;
         }
         // below formula is taken from the paper (described in the fuel usage Story)
