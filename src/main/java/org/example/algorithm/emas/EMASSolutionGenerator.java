@@ -283,6 +283,8 @@ public class EMASSolutionGenerator {
             pointsWithIndex.size()
         );
 
+//        System.out.println((int) ((simulationData.mapWidth - 2) * mutationRate));
+
         for (int i = 0; i < cellsToMutate; i++) {
             RoutePoint currRoutePoint = pointsWithIndex.get(i).routePoint();
             int pointIndex = pointsWithIndex.get(i).index();

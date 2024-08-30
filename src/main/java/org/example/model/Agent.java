@@ -27,6 +27,7 @@ public class Agent {
     private final Random random = new Random();
     private static final SimulationData simulationData = SimulationData.getInstance();
     private int similarAgentsCounter = 0;
+    private LinkedList<Pair<Boolean, Integer>> recentCrowdingData = new LinkedList<>();
     private final Map<Agent, Integer> otherAgentsCounters = new HashMap<>();
     private final Set<Agent> similarAgents = new HashSet<>(); // agents which solution is closer than epsilon
     private final Map<Agent, Integer> differentAgents = new HashMap<>(); // agents that are not similar and the number of agents in their surroundings
@@ -36,6 +37,9 @@ public class Agent {
     public static int different = 0;
     public static int same = 0;
     public int id;
+
+    private final Map<Agent, Integer> recentlyMetAgentsData = new HashMap<>();
+    private final Queue<Agent> recentlyMetAgentsQueue = new LinkedList<>();
 
     public Agent(Solution solution, double energy, double prestige, Island island, boolean madeAction) {
         this.solution = solution;
@@ -155,23 +159,54 @@ public class Agent {
             }
         }
 
-        if (areSimilar(other)) {
-            this.otherAgentsCounters.put(other, other.similarAgentsCounter);
-            other.otherAgentsCounters.put(this, this.similarAgentsCounter);
-            this.similarAgentsCounter++;
-            other.similarAgentsCounter++;
+        boolean similar = areSimilar(other, simulationData.similarityEpsilon);
+        if (similar) {
+//            this.similarAgentsCounter = otherAgentsCounters.containsKey(other) ? similarAgentsCounter + 1 : similarAgentsCounter;
+//            other.similarAgentsCounter = other.otherAgentsCounters.containsKey(this) ? other.similarAgentsCounter + 1 : other.similarAgentsCounter;
         }
+
+//        int windowSize = (int) Double.POSITIVE_INFINITY;
+        int windowSize = 20;
+//        updateCrowdingEstimate(windowSize, other.similarAgentsCounter, similar);
+//        other.updateCrowdingEstimate(windowSize, this.similarAgentsCounter, similar);
+        updateCrowdingEstimate(other, windowSize);
+        other.updateCrowdingEstimate(this, windowSize);
+
+//        this.otherAgentsCounters.put(other, other.similarAgentsCounter);
+//        other.otherAgentsCounters.put(this, this.similarAgentsCounter);
 
         meetings++;
         other.meetings++;
     }
 
-    private boolean areSimilar(Agent other) {
+    private void updateCrowdingEstimate(Agent other, int windowSize) {
+        if (recentlyMetAgentsData.containsKey(other)) {
+            recentlyMetAgentsData.remove(other);
+            recentlyMetAgentsQueue.remove(other);
+            if (areSimilar(other, simulationData.similarityEpsilon)) {
+                similarAgentsCounter--;
+            }
+        }
+        if (recentlyMetAgentsQueue.size() >= windowSize) {
+            Agent oldestAgent = recentlyMetAgentsQueue.remove();
+            recentlyMetAgentsData.remove(oldestAgent);
+            if (areSimilar(oldestAgent, simulationData.similarityEpsilon)) {
+                similarAgentsCounter--;
+            }
+        }
+        recentlyMetAgentsData.put(other, other.similarAgentsCounter);
+        recentlyMetAgentsQueue.add(other);
+        if (areSimilar(other, simulationData.similarityEpsilon)) {
+            similarAgentsCounter++;
+        }
+    }
+
+    private boolean areSimilar(Agent other, double epsilon) {
         Map<OptimizedFunction, Float> otherFunctions = other.getSolution().getFunctionValues();
         for (OptimizedFunction function : solution.getFunctionValues().keySet()) {
             float value = solution.getFunctionValues().get(function);
             float otherValue = otherFunctions.get(function);
-            if (Math.min(value, otherValue) / Math.max(value, otherValue) < simulationData.similarityEpsilon) {
+            if (Math.min(value, otherValue) / Math.max(value, otherValue) < epsilon) {
                 return false;
             }
         }
@@ -187,13 +222,20 @@ public class Agent {
         fromAgent.energy -= Math.min(fromAgent.energy, simulationData.energyTaken);
     }
 
-    public boolean canMigrateToElite() {
-        // TODO: REWRITE IT ACCORDING TO THE PAPER. THE DECISION MUST BE MADE BY THE AGENT AND ITS SURROUNDING ON THE PARETO FRONTIER
-//        double avgSurroundings = 0;
+//    public boolean canMigrateToElite() {
+//        // TODO: REWRITE IT ACCORDING TO THE PAPER. THE DECISION MUST BE MADE BY THE AGENT AND ITS SURROUNDING ON THE PARETO FRONTIER
+////        double avgSurroundings = 0;
+//
+//        int nonZeroValues = otherAgentsCounters.values().stream().filter(v -> v != 0).collect(Collectors.toSet()).size();
+//        double avgSurroundings = (double) otherAgentsCounters.values().stream().reduce(0, Integer::sum) / nonZeroValues;
+//        System.out.println("\nSimilar: " + similarAgentsCounter + "\t Surroundings: " + avgSurroundings + "\tPrestige: " + prestige + " " + nonZeroValues + " (" + otherAgentsCounters.size() + ")\n");
+//        return similarAgentsCounter > avgSurroundings;
+//    }
 
-        double avgSurroundings = (double) otherAgentsCounters.values().stream().reduce(0, Integer::sum) / otherAgentsCounters.size();
-        System.out.println("\nSimilar: " + similarAgentsCounter + "\t Surroundings: " + avgSurroundings + "\tPrestige: " + prestige + " " + otherAgentsCounters.size() + "\n");
-        return similarAgentsCounter > avgSurroundings;
+    public boolean canMigrateToElite() {
+        System.out.println(similarAgentsCounter + " " + crowdingFactor + " " + energy);
+//        return true;
+        return similarAgentsCounter > crowdingFactor;
     }
 
     public double getEnergy() {

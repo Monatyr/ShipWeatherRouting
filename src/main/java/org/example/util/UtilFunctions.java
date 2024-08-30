@@ -65,7 +65,7 @@ public abstract class UtilFunctions {
         double totalTime = solList.stream().map(s -> s.getFunctionValues().get(OptimizedFunction.TravelTime)).reduce(Float::sum).get();
         double totalFuel = solList.stream().map(s -> s.getFunctionValues().get(OptimizedFunction.FuelUsed)).reduce(Float::sum).get();
         double totalDanger = solList.stream().map(s -> s.getFunctionValues().get(OptimizedFunction.Danger)).reduce(Float::sum).get();
-        System.out.println("Avg time: " + totalTime/solList.size() + "\tAvg fuel: " + totalFuel/solList.size() + "\tAvg danger: " + totalDanger/solList.size());
+        System.out.println("Avg time: " + totalTime/solList.size() + "\tAvg fuel: " + totalFuel/solList.size() + "\tAvg danger: " + totalDanger/solList.size() + "\n");
 
         return List.of(
                 solTime.getRoutePoints().toString(),

@@ -32,7 +32,7 @@ public abstract class Algorithm {
             averageFunctionValues.add(calculateAverageFunctionValues());
             if (iterations % 500 == 0) {
                 long nonElitePopulationSize = population.stream().filter(agent -> !agent.getIsland().isElite()).count();
-                System.out.println("Iteration: " + iterations + (iterations < 10000 ? "\t" : "" ) + "\tNon-elite population: " + nonElitePopulationSize + "\t\tElite: " + population.stream().filter(o -> o.getIsland().isElite()).toList().size() + "\tEpsilon: " + simulationData.paretoEpsilon);
+                System.out.println("\nIteration: " + iterations + (iterations < 10000 ? "\t" : "" ) + "\tNon-elite population: " + nonElitePopulationSize + "\t\tElite: " + population.stream().filter(o -> o.getIsland().isElite()).toList().size() + "\tEpsilon: " + simulationData.paretoEpsilon);
                 System.out.println("Avg engine load: " + Solution.fullNodePower / Solution.nodeNumber / SimulationData.getInstance().maxOutput + "\tAvg speed: " + Solution.fullNodeSpeed / Solution.nodeNumber);
                 getBestPerCategory(population.stream().map(Agent::getSolution).collect(Collectors.toSet()));
             }
