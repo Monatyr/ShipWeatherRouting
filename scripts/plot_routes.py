@@ -12,6 +12,7 @@ parser.add_argument('--routes', type=str)
 args = parser.parse_args()
 
 routes = []
+compariosn_routes = []
 
 with open(args.routes) as file:
     for line in file.readlines():

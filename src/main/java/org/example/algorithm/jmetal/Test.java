@@ -39,7 +39,7 @@ import static org.example.util.UtilFunctions.saveToJson;
 public class Test {
     public static void main(String[] args) {
 
-        int evaluations = 50000;
+        int evaluations = 100000;
         int populationSize = 100;
         int matingPoolSize = 100; // By default, matingPoolSize and offspringSize are to populationSize by the NSGAII-Builder
         int offspringSize = 100;
@@ -78,8 +78,8 @@ public class Test {
 
         Set<Solution> resultSolutions = Algorithm.getNonDominatedSolutions(population.stream().map(RouteSolution::getSolution).toList());
         System.out.println(resultSolutions.size());
-        saveToJson(resultSolutions, "results/resultSolutions.json");
-        runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/resultSolutions.json", "--resultFile", "pareto_front.png"));
+        saveToJson(resultSolutions, "results/comparisonSolutions.json");
+        runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/comparisonSolutions.json", "--resultFile", "pareto_front.png"));
 //         List<Coordinates> route = population.get(0).getSolution().getRoutePoints().stream().map(RoutePoint::getCoordinates).toList();
 //         route.forEach(p -> System.out.println(p.longitude() + ", " + p.latitude()));
     }

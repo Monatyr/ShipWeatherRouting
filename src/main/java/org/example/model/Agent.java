@@ -5,6 +5,7 @@ import org.apache.commons.math3.util.Pair;
 import org.example.algorithm.emas.EMASSolutionGenerator;
 import org.example.model.action.Action;
 import org.example.model.action.ActionFactory;
+import org.example.model.action.ActionType;
 import org.example.util.GridPoint;
 import org.example.util.SimulationData;
 
@@ -77,6 +78,7 @@ public class Agent {
     public void performAction(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) throws Exception {
         Action action = ActionFactory.getAction(this);
         if (action == null) {
+            Action.actionCount.put(ActionType.Idle, Action.actionCount.get(ActionType.Idle) + 1);
             return;
         }
         action.perform(agentsToAdd, agentsToRemove);
