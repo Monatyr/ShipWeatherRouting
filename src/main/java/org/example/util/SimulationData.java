@@ -39,7 +39,8 @@ public final class SimulationData {
     public double initialEnergy;
     public double reproductionEnergyBound;
     public double reproductionEnergy;
-    public double migrationEnergy;
+    public double migrationEnergyBound;
+    public double migrationEnergyTaken;
     public double deathEnergyBound;
     public double initialMutationRate;
     public double mutationRate;
@@ -126,7 +127,8 @@ public final class SimulationData {
             initialEnergy = simulationObject.getDouble("initialEnergy");
             reproductionEnergyBound = simulationObject.getDouble("reproductionEnergyBound");
             reproductionEnergy = simulationObject.getDouble("reproductionEnergy");
-            migrationEnergy = simulationObject.getDouble("migrationEnergy");
+            migrationEnergyBound = simulationObject.getDouble("migrationEnergyBound");
+            migrationEnergyTaken = simulationObject.getDouble("migrationEnergyTaken");
             energyTaken = simulationObject.getDouble("energyTaken");
             deathEnergyBound = simulationObject.getDouble("deathEnergyBound");
             startingTime = ZonedDateTime.parse(simulationObject.getString("startingTime"));

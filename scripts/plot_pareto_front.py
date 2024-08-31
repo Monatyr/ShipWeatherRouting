@@ -15,6 +15,7 @@ with open("results/comparisonSolutions.json") as file:
 
 time_array, fuel_array, safety_array = [], [], []
 comp_time_array, comp_fuel_array, comp_safety_array = [], [], []
+dominated_time_array, dominated_fuel_array, dominated_safety_array = [], [], []
 
 for sol in data:
     values = sol["functionValues"]
@@ -29,6 +30,7 @@ for comp_sol in comparison_data:
     comp_safety_array.append(comp_values["Danger"])
 
 
+# Prune solutions from NSGA-II that are dominated by EMAS
 dominated = []
 for i in range(len(comp_time_array)):
     for j in range(len(time_array)):
@@ -42,12 +44,22 @@ for index in dominated:
     comp_safety_array.pop(index)
 
 
+# Change color of solutions from EMAS that are dominated by NSGA-II
 comp_dominated = []
 for i in range(len(time_array)):
     for j in range(len(comp_time_array)):
         if comp_time_array[j] < time_array[i] and comp_fuel_array[j] < fuel_array[i] and comp_safety_array[j] < safety_array[i]:
             comp_dominated.insert(0, i)
+            dominated_time_array.append(time_array[i])
+            dominated_fuel_array.append(fuel_array[i])
+            dominated_safety_array.append(safety_array[i])
             break
+
+for index in comp_dominated:
+    print(index, len(comp_dominated))
+    time_array.pop(index)
+    fuel_array.pop(index)
+    safety_array.pop(index)
 
 
 # Create a 3D scatter plot to visualize the Pareto front
@@ -56,7 +68,8 @@ fig.set_size_inches(15, 15)
 ax = fig.add_subplot(111, projection='3d')
 
 # Plot the Pareto front
-ax.scatter(time_array, fuel_array, safety_array, c='r', marker='o', label=f'EMAS: {len(time_array)} ({len(time_array) - len(comp_dominated)})')
+ax.scatter(time_array, fuel_array, safety_array, c='r', marker='o', label=f'EMAS: {len(time_array)}')
+ax.scatter(dominated_time_array, dominated_fuel_array, dominated_safety_array, c='green', marker='o', label=f'Dominated EMAS: {len(dominated_time_array)}')
 ax.scatter(comp_time_array, comp_fuel_array, comp_safety_array, c='b', marker='o', label=f'NSGA-II: {len(comparison_data)} ({len(comp_time_array)})')
 
 # Set axis labels

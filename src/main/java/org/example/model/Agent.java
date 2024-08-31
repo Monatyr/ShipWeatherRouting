@@ -31,12 +31,13 @@ public class Agent {
     private LinkedList<Pair<Boolean, Integer>> recentCrowdingData = new LinkedList<>();
     private final Map<Agent, Integer> otherAgentsCounters = new HashMap<>();
     private final Set<Agent> similarAgents = new HashSet<>(); // agents which solution is closer than epsilon
+    private final Set<Agent> allMetAgents = new HashSet<>(); // all met agents (similar and not)
     private final Map<Agent, Integer> differentAgents = new HashMap<>(); // agents that are not similar and the number of agents in their surroundings
+    private int similarMeetings = 0;
     private int meetings = 0;
     private int dominatedTimes = 0;
     private double crowdingFactor = 0;
-    public static int different = 0;
-    public static int same = 0;
+    private int age = 0;
     public int id;
 
     private final Map<Agent, Integer> recentlyMetAgentsData = new HashMap<>();
@@ -152,27 +153,60 @@ public class Agent {
             } else if (otherDominationFactor < agentDominationFactor) {
                 dominationFactorCounter++;
                 transferResources(other, this, false);
-            } else if (this.crowdingFactor > other.crowdingFactor) {
-                crowdingCounter++;
-                transferResources(this, other, false);
-            } else if (other.crowdingFactor > this.crowdingFactor) {
-                crowdingCounter++;
-                transferResources(other, this, false);
+//            } else if (this.crowdingFactor > other.crowdingFactor) {
+//                crowdingCounter++;
+//                transferResources(this, other, false);
+//            } else if (other.crowdingFactor > this.crowdingFactor) {
+//                crowdingCounter++;
+//                transferResources(other, this, false);
+//            }
+            } else if (areSimilar(other, simulationData.similarityEpsilon)) {
+                int index = random.nextInt(2);
+                if (index == 0) {
+                    transferResources(this, other, false);
+                } else {
+                    transferResources(other, this, false);
+                }
             }
+//            } else if (areSimilar(other)) {
+//                int index = random.nextInt(2);
+//                if (index == 0) {
+//                    transferResources(this, other, false);
+//                } else {
+//                    transferResources(other, this, false);
+//                }
+//            }
+//            } else {
+//                double similarRatio = allMetAgents.size() != 0 ? (double) similarAgents.size() / allMetAgents.size() : 0;
+//                double otherSimilarRatio = other.allMetAgents.size() != 0 ? (double) other.similarAgents.size() / other.allMetAgents.size() : 0;
+////                double similarRatio = meetings != 0 ? (double) similarMeetings / meetings : 0;
+////                double otherSimilarRatio = other.meetings != 0 ? (double) other.similarMeetings / other.meetings : 0;
+//
+//                if (similarRatio < otherSimilarRatio) {
+//                    transferResources(this, other, false);
+//                } else if (similarRatio > otherSimilarRatio) {
+//                    transferResources(other, this, false);
+//                }
+//            }
         }
 
-        boolean similar = areSimilar(other, simulationData.similarityEpsilon);
-        if (similar) {
-//            this.similarAgentsCounter = otherAgentsCounters.containsKey(other) ? similarAgentsCounter + 1 : similarAgentsCounter;
-//            other.similarAgentsCounter = other.otherAgentsCounters.containsKey(this) ? other.similarAgentsCounter + 1 : other.similarAgentsCounter;
+        if (areSimilar(other, simulationData.similarityEpsilon)) {
+            similarAgents.add(other);
+            other.similarAgents.add(this);
+//            similarMeetings++;
+//            other.similarMeetings++;
         }
+
+        allMetAgents.add(other);
+        other.allMetAgents.add(this);
+
 
 //        int windowSize = (int) Double.POSITIVE_INFINITY;
         int windowSize = 20;
 //        updateCrowdingEstimate(windowSize, other.similarAgentsCounter, similar);
 //        other.updateCrowdingEstimate(windowSize, this.similarAgentsCounter, similar);
-        updateCrowdingEstimate(other, windowSize);
-        other.updateCrowdingEstimate(this, windowSize);
+        updateSimilarAgents(other, windowSize);
+        other.updateSimilarAgents(this, windowSize);
 
 //        this.otherAgentsCounters.put(other, other.similarAgentsCounter);
 //        other.otherAgentsCounters.put(this, this.similarAgentsCounter);
@@ -181,7 +215,7 @@ public class Agent {
         other.meetings++;
     }
 
-    private void updateCrowdingEstimate(Agent other, int windowSize) {
+    private void updateSimilarAgents(Agent other, int windowSize) {
         if (recentlyMetAgentsData.containsKey(other)) {
             recentlyMetAgentsData.remove(other);
             recentlyMetAgentsQueue.remove(other);
@@ -209,6 +243,22 @@ public class Agent {
             float value = solution.getFunctionValues().get(function);
             float otherValue = otherFunctions.get(function);
             if (Math.min(value, otherValue) / Math.max(value, otherValue) < epsilon) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // testing the crowding factor used in EMAS papers
+    private boolean areSimilar(Agent other) {
+        Map<OptimizedFunction, Float> otherFunctions = other.getSolution().getFunctionValues();
+        for (OptimizedFunction function : solution.getFunctionValues().keySet()) {
+            double maxDiff = simulationData.crowdingFactorMap.get(function);
+            float value = solution.getFunctionValues().get(function);
+            float otherValue = otherFunctions.get(function);
+//            System.out.println(function.toString() + ": " + abs(value - otherValue));
+            if (abs(value - otherValue) > maxDiff) {
+//                System.out.println(function.toString());
                 return false;
             }
         }
@@ -264,6 +314,10 @@ public class Agent {
         return crowdingFactor;
     }
 
+    public int getAge() {
+        return age;
+    }
+
     public void setEnergy(double energy) {
         this.energy = energy;
     }
@@ -292,4 +346,7 @@ public class Agent {
         this.previousIsland = previousIsland;
     }
 
+    public void setAge(int age) {
+        this.age = age;
+    }
 }

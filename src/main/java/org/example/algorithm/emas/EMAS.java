@@ -97,6 +97,7 @@ public class EMAS extends Algorithm {
                 /* If agent did not make an action this iteration (e.g. took part in
                 reproduction or migrated to a subsequent island */
                 if (!agent.getMadeAction()) {
+                    agent.setAge(agent.getAge() + 1);
                     agent.performAction(agentsToAdd, agentsToRemove);
                 }
             }

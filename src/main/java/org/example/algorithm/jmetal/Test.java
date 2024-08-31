@@ -39,7 +39,7 @@ import static org.example.util.UtilFunctions.saveToJson;
 public class Test {
     public static void main(String[] args) {
 
-        int evaluations = 100000;
+        int evaluations = 50000;
         int populationSize = 100;
         int matingPoolSize = 100; // By default, matingPoolSize and offspringSize are to populationSize by the NSGAII-Builder
         int offspringSize = 100;

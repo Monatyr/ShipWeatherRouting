@@ -41,8 +41,10 @@ public abstract class Algorithm {
         saveToJson(averageFunctionValues, "results/averageValues.json");
         Set<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toSet());
         Set<Solution> nonDominatedSolutions = getNonDominatedSolutions(null);
-        nonDominatedSolutions = lastSolutionImprovement(nonDominatedSolutions);
+//        nonDominatedSolutions = lastSolutionImprovement(nonDominatedSolutions);
         System.out.println("\n\nSOLUTIONS: " + solutions.size());
+        System.out.println("Max age: " + population.stream().map(Agent::getAge).max(Integer::compare).get());
+
         return nonDominatedSolutions;
     }
 

@@ -52,7 +52,7 @@ public abstract class ActionFactory {
             case Migration -> {
                 // TODO: implement migrations to the elite island and the behavior of elite agents
                 Island targetIsland;
-                if (agent.getEnergy() < simulationData.migrationEnergy || agent.getIsland().isElite()) {
+                if (agent.getEnergy() < simulationData.migrationEnergyBound || agent.getIsland().isElite()) {
                     break;
                 }
                 if (agent.getPrestige() > SimulationData.getInstance().neededPrestige
