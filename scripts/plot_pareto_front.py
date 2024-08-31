@@ -41,14 +41,23 @@ for index in dominated:
     comp_fuel_array.pop(index)
     comp_safety_array.pop(index)
 
+
+comp_dominated = []
+for i in range(len(time_array)):
+    for j in range(len(comp_time_array)):
+        if comp_time_array[j] < time_array[i] and comp_fuel_array[j] < fuel_array[i] and comp_safety_array[j] < safety_array[i]:
+            comp_dominated.insert(0, i)
+            break
+
+
 # Create a 3D scatter plot to visualize the Pareto front
 fig = plt.figure()
 fig.set_size_inches(15, 15)
 ax = fig.add_subplot(111, projection='3d')
 
 # Plot the Pareto front
-ax.scatter(time_array, fuel_array, safety_array, c='r', marker='o', label=f'EMAS: {len(time_array)}')
-ax.scatter(comp_time_array, comp_fuel_array, comp_safety_array, c='b', marker='o', label=f'NSGA-II: {len(comp_time_array)}')
+ax.scatter(time_array, fuel_array, safety_array, c='r', marker='o', label=f'EMAS: {len(time_array)} ({len(time_array) - len(comp_dominated)})')
+ax.scatter(comp_time_array, comp_fuel_array, comp_safety_array, c='b', marker='o', label=f'NSGA-II: {len(comparison_data)} ({len(comp_time_array)})')
 
 # Set axis labels
 ax.set_xlabel('Travel time')

@@ -53,6 +53,7 @@ public final class SimulationData {
     public double similarityEpsilon;
     public double paretoEpsilon;
     public Map<OptimizedFunction, Double> epsilonMap = new HashMap<>();
+    public Map<OptimizedFunction, Double> crowdingFactorMap = new HashMap<>();
     // ship
     public double L;
     public double L_pp;
@@ -136,6 +137,10 @@ public final class SimulationData {
             epsilonMap.put(OptimizedFunction.TravelTime, simulationObject.getDouble("travelTimeEpsilon"));
             epsilonMap.put(OptimizedFunction.FuelUsed, simulationObject.getDouble("fuelEpsilon"));
             epsilonMap.put(OptimizedFunction.Danger, simulationObject.getDouble("safetyEpsilon"));
+
+            crowdingFactorMap.put(OptimizedFunction.TravelTime, simulationObject.getDouble("timeCrowdingFactor"));
+            crowdingFactorMap.put(OptimizedFunction.FuelUsed, simulationObject.getDouble("fuelCrowdingFactor"));
+            crowdingFactorMap.put(OptimizedFunction.Danger, simulationObject.getDouble("safetyCrowdingFactor"));
 
             JSONObject shipObject = dataObject.getJSONObject("ship");
             L = shipObject.getDouble("L");

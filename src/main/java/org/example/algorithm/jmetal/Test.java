@@ -47,11 +47,7 @@ public class Test {
         double epsilon = 0.0;
 
         CrossoverOperator<RouteSolution> crossoverOperator = new RouteCrossoverOperator();
-        MutationOperator<RouteSolution> mutationOperator = new RouteMutationOperator(mutationProbability);
-        SelectionOperator<List<RouteSolution>, RouteSolution> selectionOperator = new BinaryTournamentSelection<>();
-        SolutionListEvaluator<RouteSolution> listEvaluator = new SequentialSolutionListEvaluator<>();
-        DominanceComparator<RouteSolution> dominanceComparator = new RouteDominanceComparator(epsilon);
-        EpsilonDominanceComparator<RouteSolution> epsilonDominanceComparator = new EpsilonDominanceComparator<>(epsilon);
+        MutationOperator<RouteSolution> mutationOperator = new RouteMutationOperator();
         RouteProblem routeProblem = new RouteProblem();
 
         NSGAII<RouteSolution> algorithm = new NSGAIIBuilder<>(routeProblem, crossoverOperator, mutationOperator, populationSize)
@@ -59,10 +55,6 @@ public class Test {
                 .setMatingPoolSize(matingPoolSize)
                 .setOffspringPopulationSize(offspringSize)
                 .build();
-
-//        CustomNSGA<RouteSolution> algorithm = new CustomNSGA<>(routeProblem, evaluations, populationSize, matingPoolSize, offspringSize,
-//                crossoverOperator, mutationOperator, selectionOperator, listEvaluator, dominanceComparator
-//        );
 
         // Run
         AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
