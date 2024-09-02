@@ -16,9 +16,9 @@
   "simulation": {
     "maxIterations": 5000,
     "maxPopulation": 200,
-    "populationSize": 75,
+    "populationSize": 100,
     "maxVerticalDistance": 2,
-    "initialEnergy": 100,
+    "initialEnergy": 60,
     "reproductionEnergyBound": 70,
     "reproductionEnergy": 30,
     "migrationEnergyBound": 50,
@@ -28,6 +28,9 @@
     "initialMutationRate": 0.4,
     "mutationRate": 0.05,
     "eliteMutationRate": 0.05,
+    "mutationProbability": 0.1,
+    "initialMutationProbability": 0.3,
+    "mutationEta": 1,
     "reproductionProbability": 0.95,
     "neededPrestige": 300,
     "numberOfIslands": 4,
@@ -69,7 +72,7 @@
     "minLoad": 30,
     "maxLoad": 100,
     "optimalLoad": 80,
-    "minSpeed": 10,
+    "minSpeed": 8,
     "maxSpeed": 12
   },
   "conditions": {
@@ -78,7 +81,8 @@
     "description": "Both speeds are in knots!"
   },
   "jmetal": {
-    "crossoverProbability": 0.9,
-    "mutationProbability": 0.3
+    "jmetalCrossoverProbability": 0.9,
+    "jmetalMutationProbability": 0.3,
+    "jmetalMutationEta": 20
   }
 }

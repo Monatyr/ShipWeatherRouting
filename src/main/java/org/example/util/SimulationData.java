@@ -45,6 +45,9 @@ public final class SimulationData {
     public double initialMutationRate;
     public double mutationRate;
     public double eliteMutationRate;
+    public double mutationProbability;
+    public double initialMutationProbability;
+    public double mutationEta;
     public double reproductionProbability;
     public double migrationProbability;
     public int neededPrestige;
@@ -85,8 +88,9 @@ public final class SimulationData {
     public double thresholdWindSpeed;
     public double thresholdWindSpeedMargin;
     // jmetal lib algorithms
-    public double crossoverProbability;
-    public double mutationProbability;
+    public double jmetalCrossoverProbability;
+    public double jmetalMutationProbability;
+    public double jmetalMutationEta;
 
     private int id;
 
@@ -121,6 +125,9 @@ public final class SimulationData {
             initialMutationRate = simulationObject.getDouble("initialMutationRate");
             mutationRate = simulationObject.getDouble("mutationRate");
             eliteMutationRate = simulationObject.getDouble("eliteMutationRate");
+            mutationProbability = simulationObject.getDouble("mutationProbability");
+            initialMutationProbability = simulationObject.getDouble("initialMutationProbability");
+            mutationEta = simulationObject.getDouble("mutationEta");
             reproductionProbability = simulationObject.getDouble("reproductionProbability");
             migrationProbability = Math.round((1.0 - reproductionProbability) * 100) / 100.0;
             neededPrestige = simulationObject.getInt("neededPrestige");
@@ -176,8 +183,9 @@ public final class SimulationData {
             thresholdWindSpeedMargin = conditionsObject.getDouble("thresholdWindSpeedMargin");
 
             JSONObject jmetalObject = dataObject.getJSONObject("jmetal");
-            crossoverProbability = jmetalObject.getDouble("crossoverProbability");
-            mutationProbability = jmetalObject.getDouble("mutationProbability");
+            jmetalCrossoverProbability = jmetalObject.getDouble("jmetalCrossoverProbability");
+            jmetalMutationProbability = jmetalObject.getDouble("jmetalMutationProbability");
+            jmetalMutationEta = jmetalObject.getDouble("jmetalMutationEta");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

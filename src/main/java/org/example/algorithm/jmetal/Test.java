@@ -43,7 +43,6 @@ public class Test {
         int populationSize = 100;
         int matingPoolSize = 100; // By default, matingPoolSize and offspringSize are to populationSize by the NSGAII-Builder
         int offspringSize = 100;
-        double mutationProbability = SimulationData.getInstance().mutationProbability;
         double epsilon = 0.0;
 
         CrossoverOperator<RouteSolution> crossoverOperator = new RouteCrossoverOperator();

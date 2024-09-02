@@ -91,7 +91,10 @@ public abstract class Algorithm {
             if (counter != 0) {
                 System.out.println("Initial population too dangerous: " + counter);
             }
-            solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.initialMutationRate);
+            if (random.nextDouble() <= simulationData.initialMutationProbability) {
+//                solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.initialMutationRate);
+                solution = EMASSolutionGenerator.mutateSolutionEta(solution, simulationData.mutationEta);
+            }
             solution.calculateRouteValues();
             counter++;
         } while (solution.isTooDangerous());
