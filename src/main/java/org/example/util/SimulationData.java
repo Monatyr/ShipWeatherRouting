@@ -39,11 +39,15 @@ public final class SimulationData {
     public double initialEnergy;
     public double reproductionEnergyBound;
     public double reproductionEnergy;
-    public double migrationEnergy;
+    public double migrationEnergyBound;
+    public double migrationEnergyTaken;
     public double deathEnergyBound;
     public double initialMutationRate;
     public double mutationRate;
     public double eliteMutationRate;
+    public double mutationProbability;
+    public double initialMutationProbability;
+    public double mutationEta;
     public double reproductionProbability;
     public double migrationProbability;
     public int neededPrestige;
@@ -53,6 +57,7 @@ public final class SimulationData {
     public double similarityEpsilon;
     public double paretoEpsilon;
     public Map<OptimizedFunction, Double> epsilonMap = new HashMap<>();
+    public Map<OptimizedFunction, Double> crowdingFactorMap = new HashMap<>();
     // ship
     public double L;
     public double L_pp;
@@ -83,8 +88,9 @@ public final class SimulationData {
     public double thresholdWindSpeed;
     public double thresholdWindSpeedMargin;
     // jmetal lib algorithms
-    public double crossoverProbability;
-    public double mutationProbability;
+    public double jmetalCrossoverProbability;
+    public double jmetalMutationProbability;
+    public double jmetalMutationEta;
 
     private int id;
 
@@ -119,13 +125,17 @@ public final class SimulationData {
             initialMutationRate = simulationObject.getDouble("initialMutationRate");
             mutationRate = simulationObject.getDouble("mutationRate");
             eliteMutationRate = simulationObject.getDouble("eliteMutationRate");
+            mutationProbability = simulationObject.getDouble("mutationProbability");
+            initialMutationProbability = simulationObject.getDouble("initialMutationProbability");
+            mutationEta = simulationObject.getDouble("mutationEta");
             reproductionProbability = simulationObject.getDouble("reproductionProbability");
             migrationProbability = Math.round((1.0 - reproductionProbability) * 100) / 100.0;
             neededPrestige = simulationObject.getInt("neededPrestige");
             initialEnergy = simulationObject.getDouble("initialEnergy");
             reproductionEnergyBound = simulationObject.getDouble("reproductionEnergyBound");
             reproductionEnergy = simulationObject.getDouble("reproductionEnergy");
-            migrationEnergy = simulationObject.getDouble("migrationEnergy");
+            migrationEnergyBound = simulationObject.getDouble("migrationEnergyBound");
+            migrationEnergyTaken = simulationObject.getDouble("migrationEnergyTaken");
             energyTaken = simulationObject.getDouble("energyTaken");
             deathEnergyBound = simulationObject.getDouble("deathEnergyBound");
             startingTime = ZonedDateTime.parse(simulationObject.getString("startingTime"));
@@ -136,6 +146,10 @@ public final class SimulationData {
             epsilonMap.put(OptimizedFunction.TravelTime, simulationObject.getDouble("travelTimeEpsilon"));
             epsilonMap.put(OptimizedFunction.FuelUsed, simulationObject.getDouble("fuelEpsilon"));
             epsilonMap.put(OptimizedFunction.Danger, simulationObject.getDouble("safetyEpsilon"));
+
+            crowdingFactorMap.put(OptimizedFunction.TravelTime, simulationObject.getDouble("timeCrowdingFactor"));
+            crowdingFactorMap.put(OptimizedFunction.FuelUsed, simulationObject.getDouble("fuelCrowdingFactor"));
+            crowdingFactorMap.put(OptimizedFunction.Danger, simulationObject.getDouble("safetyCrowdingFactor"));
 
             JSONObject shipObject = dataObject.getJSONObject("ship");
             L = shipObject.getDouble("L");
@@ -169,8 +183,9 @@ public final class SimulationData {
             thresholdWindSpeedMargin = conditionsObject.getDouble("thresholdWindSpeedMargin");
 
             JSONObject jmetalObject = dataObject.getJSONObject("jmetal");
-            crossoverProbability = jmetalObject.getDouble("crossoverProbability");
-            mutationProbability = jmetalObject.getDouble("mutationProbability");
+            jmetalCrossoverProbability = jmetalObject.getDouble("jmetalCrossoverProbability");
+            jmetalMutationProbability = jmetalObject.getDouble("jmetalMutationProbability");
+            jmetalMutationEta = jmetalObject.getDouble("jmetalMutationEta");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -208,7 +223,12 @@ public final class SimulationData {
     public WeatherConditions getWeatherConditions(Coordinates coordinates, ZonedDateTime arrivalDateTime) {
         JSONObject timestampData  = weatherData.getJSONObject(coordinates.toString());
         arrivalDateTime = getNearestFullHour(arrivalDateTime);
-        JSONObject conditions = timestampData.getJSONObject(arrivalDateTime.toString().replace("Z", ""));
+        String arrivalDateTimeStr = arrivalDateTime.toString().replace("Z", "");
+        if (!timestampData.has(arrivalDateTimeStr)) {
+            System.out.println("missing");
+            arrivalDateTimeStr = "2024-08-01T23:00";
+        }
+        JSONObject conditions = timestampData.getJSONObject(arrivalDateTimeStr);
         return new WeatherConditions(
                 conditions.getDouble("wind_speed_10m") / 3.6, // from km/h to m/s // TODO: check is water. Use an external API (open-meteo cannot reliably tell)
                 conditions.getDouble("wind_direction_10m"),

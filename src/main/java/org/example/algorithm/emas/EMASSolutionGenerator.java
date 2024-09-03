@@ -49,7 +49,10 @@ public class EMASSolutionGenerator {
                 System.out.println("DANGEROUS: " + counter);
             }
             newSolution = crossoverSolutions(sol1, sol2, commonGridPoints, simulationData.routeSwitches);
-            newSolution = mutateSolution(newSolution, simulationData.mutationRate);
+            if (random.nextDouble() <= simulationData.mutationProbability) {
+//                newSolution = mutateSolution(newSolution, simulationData.mutationRate);
+                newSolution = mutateSolutionEta(newSolution, simulationData.mutationEta);
+            }
             newSolution.calculateRouteValues();
             counter++;
         } while (newSolution.isTooDangerous());// && counter < 10);
@@ -306,8 +309,7 @@ public class EMASSolutionGenerator {
                     continue;
                 }
                 if (abs(minY - potentialHeight) <= simulationData.maxVerticalDistance &&
-                        abs(maxY - potentialHeight) <= simulationData.maxVerticalDistance// &&
-//                        potentialHeight != currY
+                        abs(maxY - potentialHeight) <= simulationData.maxVerticalDistance
                 ) {
                     availableHeights.add(potentialHeight);
                 }
@@ -334,6 +336,74 @@ public class EMASSolutionGenerator {
         mutatedSolution.calculateRouteValues();
         mutatedSolution.calculateFunctionValues();
         return mutatedSolution;
+    }
+
+    public static Solution mutateSolutionEta(Solution sol, double eta) {
+        Solution mutatedSolution = new Solution(sol);
+        List<RoutePoint> newPoints = mutatedSolution.getRoutePoints();
+        for (int i = 1; i < newPoints.size() - 1; i++) {
+            RoutePoint currRoutePoint = newPoints.get(i);
+            RoutePoint previousNeighbour = newPoints.get(i - 1);
+            RoutePoint nextNeighbour = newPoints.get(i + 1);
+            int minY = min(previousNeighbour.getGridCoordinates().y(), nextNeighbour.getGridCoordinates().y());
+            int maxY = max(previousNeighbour.getGridCoordinates().y(), nextNeighbour.getGridCoordinates().y());
+            int currY = currRoutePoint.getGridCoordinates().y();
+            int minBound = (int) Double.POSITIVE_INFINITY;
+            int maxBound = (int) Double.NEGATIVE_INFINITY;
+            boolean canMovePoint = false;
+            for (int j = -simulationData.maxVerticalDistance; j <= simulationData.maxVerticalDistance; j++) {
+                int potentialHeight = currY + j;
+                if (potentialHeight < 0 || potentialHeight >= simulationData.mapHeight || !simulationData.checkIfWater(currRoutePoint.getCoordinates())) {
+                    continue;
+                }
+                if (abs(minY - potentialHeight) <= simulationData.maxVerticalDistance && abs(maxY - potentialHeight) <= simulationData.maxVerticalDistance) {
+                    canMovePoint = true;
+                    if (j < minBound) {
+                        minBound = j;
+                    }
+                    if (j > maxBound) {
+                        maxBound = j;
+                    }
+                }
+            }
+            int newY = currY;
+            if (canMovePoint) {
+                minBound += currY;
+                maxBound += currY;
+                double delta = getDelta(eta);
+                double yChange = delta * (maxBound - minBound);
+                newY += yChange;
+                if (newY > maxBound) {
+                    newY = maxBound;
+                }
+                if (newY < minBound) {
+                    newY = minBound;
+                }
+            }
+            GridPoint newGridCoordinates = new GridPoint(newY, currRoutePoint.getGridCoordinates().x());
+            RoutePoint newRoutePoint = new RoutePoint(newGridCoordinates, calculateCoordinates(newGridCoordinates));
+
+
+            double deltaSpeed = getDelta(eta);
+            double mutatedSpeed = currRoutePoint.getShipSpeed() + deltaSpeed * (simulationData.maxSpeed - simulationData.minSpeed);
+            mutatedSpeed = Math.min(Math.max(mutatedSpeed, simulationData.minSpeed), simulationData.maxSpeed);
+            newRoutePoint.setShipSpeed(mutatedSpeed);
+            mutatedSolution.getRoutePoints().set(i, newRoutePoint);
+        }
+        mutatedSolution.calculateRouteValues();
+        mutatedSolution.calculateFunctionValues();
+        return mutatedSolution;
+    }
+
+    private static double getDelta(double eta) {
+        double r = random.nextDouble();
+        double delta;
+        if (r < 0.5) {
+            delta = Math.pow(2 * r, 1.0 / (eta + 1)) - 1;
+        } else {
+            delta = 1 - Math.pow(2 * (1 - r), 1.0 / (eta + 1));
+        }
+        return delta;
     }
 
     public static void main(String[] args) {

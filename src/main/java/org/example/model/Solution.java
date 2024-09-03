@@ -238,14 +238,10 @@ public class Solution implements Comparable<Solution> {
             }
             // calculate end speed again in case the engine cannot perform under previous conditions
             targetEndSpeed = getEndSpeed(calmWaterSpeed, shipHeadingAngle, windAngle, BN);
-            if (calmWaterSpeed < 8) {
-//                System.out.println("CALM WATER: " + calmWaterSpeed + "\tEND: " + targetEndSpeed);
-            }
 
             fullNodePower += totalPower;
             fullNodeSpeed += targetEndSpeed;
             nodeNumber++;
-
 
             double distance = Coordinates.realDistance(currPoint.getCoordinates(), prevPoint.getCoordinates()); // [km]
             int travelTimeSeconds = (int) (distance * 1000 / targetEndSpeed);

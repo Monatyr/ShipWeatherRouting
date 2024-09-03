@@ -15,7 +15,7 @@ public class EliteMutation extends Action {
     public void perform(Set<Agent> agentsToAdd, Set<Agent> agentsToRemove) {
         Solution newSolution = EMASSolutionGenerator.mutateSolution(agent.getSolution(), simulationData.eliteMutationRate);
         if (newSolution.checkIfDominates(agent.getSolution(), false) > 0 && !newSolution.isTooDangerous()) {
-            System.out.println("Elite agent found better solution!");
+//            System.out.println("Elite agent found better solution!");
             agent.setSolution(newSolution);
         }
     }

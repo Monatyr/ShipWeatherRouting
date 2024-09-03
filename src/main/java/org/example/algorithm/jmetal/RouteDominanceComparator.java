@@ -17,8 +17,8 @@ public class RouteDominanceComparator implements DominanceComparator<RouteSoluti
     public int compare(RouteSolution o1, RouteSolution o2) {
         Solution sol1 = o1.getSolution();
         Solution sol2 = o2.getSolution();
-//        int res = sol1.checkIfDominates(sol2, true);
-        return dominanceTest(o1, o2);
+        return -1 * sol1.checkIfDominates(sol2, false);
+//        return dominanceTest(o1, o2);
     }
 
     private int dominanceTest(RouteSolution solution1, RouteSolution solution2) {

@@ -7,11 +7,9 @@ import org.example.model.RoutePoint;
 import org.example.model.Solution;
 import org.example.util.SimulationData;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.example.util.UtilFunctions.getBestPerCategory;
 import static org.example.util.UtilFunctions.saveToJson;
@@ -34,8 +32,7 @@ public abstract class Algorithm {
             averageFunctionValues.add(calculateAverageFunctionValues());
             if (iterations % 500 == 0) {
                 long nonElitePopulationSize = population.stream().filter(agent -> !agent.getIsland().isElite()).count();
-                System.out.println("Iteration: " + iterations + (iterations < 10000 ? "\t" : "" ) + "\tNon-elite population: " + nonElitePopulationSize + "\t\tElite: " + population.stream().filter(o -> o.getIsland().isElite()).toList().size() + "\tEpsilon: " + simulationData.paretoEpsilon);
-                System.out.println("Below: " + Solution.below + "\tAbove: " + Solution.above);
+                System.out.println("\nIteration: " + iterations + (iterations < 10000 ? "\t" : "" ) + "\tNon-elite population: " + nonElitePopulationSize + "\t\tElite: " + population.stream().filter(o -> o.getIsland().isElite()).toList().size() + "\tEpsilon: " + simulationData.paretoEpsilon);
                 System.out.println("Avg engine load: " + Solution.fullNodePower / Solution.nodeNumber / SimulationData.getInstance().maxOutput + "\tAvg speed: " + Solution.fullNodeSpeed / Solution.nodeNumber);
                 getBestPerCategory(population.stream().map(Agent::getSolution).collect(Collectors.toSet()));
             }
@@ -43,10 +40,11 @@ public abstract class Algorithm {
 
         saveToJson(averageFunctionValues, "results/averageValues.json");
         Set<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toSet());
-        System.out.println("\n\nSOLUTIONS: " + solutions.size());
         Set<Solution> nonDominatedSolutions = getNonDominatedSolutions(null);
-        nonDominatedSolutions = lastSolutionImprovement(nonDominatedSolutions);
-        System.out.println("NONDOMINATED SOLUTIONS: " + nonDominatedSolutions.size());
+//        nonDominatedSolutions = lastSolutionImprovement(nonDominatedSolutions);
+        System.out.println("\n\nSOLUTIONS: " + solutions.size());
+        System.out.println("Max age: " + population.stream().map(Agent::getAge).max(Integer::compare).get());
+
         return nonDominatedSolutions;
     }
 
@@ -58,7 +56,7 @@ public abstract class Algorithm {
         return iterations > simulationData.maxIterations;
     }
 
-    protected Set<Solution> getNonDominatedSolutions(List<Solution> solutions) {
+    public static Set<Solution> getNonDominatedSolutions(List<Solution> solutions) {
         if (solutions == null) {
             solutions = population.stream().map(Agent::getSolution).toList();
         }
@@ -83,10 +81,9 @@ public abstract class Algorithm {
         return nonDominatedSolutions;
     }
 
-    public static Solution generateInitialSolution(List<RoutePoint> route) {
-        double routeTargetSpeed = random.nextDouble(simulationData.minSpeed, simulationData.maxSpeed);
+    public static Solution generateInitialSolution(List<RoutePoint> route, double targetSpeed) {
         for (RoutePoint routePoint : route) {
-            routePoint.setShipSpeed(routeTargetSpeed);
+            routePoint.setShipSpeed(targetSpeed);
         }
         Solution solution = EMASSolutionGenerator.generateSolution(route);
         int counter = 0;
@@ -94,7 +91,10 @@ public abstract class Algorithm {
             if (counter != 0) {
                 System.out.println("Initial population too dangerous: " + counter);
             }
-            solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.initialMutationRate);
+            if (random.nextDouble() <= simulationData.initialMutationProbability) {
+//                solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.initialMutationRate);
+                solution = EMASSolutionGenerator.mutateSolutionEta(solution, simulationData.mutationEta);
+            }
             solution.calculateRouteValues();
             counter++;
         } while (solution.isTooDangerous());
@@ -106,6 +106,8 @@ public abstract class Algorithm {
         double[] factors = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
         int routesPerType = simulationData.populationSize / (factors.length + 2);
         List<RoutePoint> gcr = EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/great_circle_route.txt");
+        List<Double> speedList = createSpeedList(simulationData.minSpeed, simulationData.maxSpeed, routesPerType);
+
         for (double factor : factors) {
             for (int i = 0; i < routesPerType; i++) {
                 startingRoutes.add(EMASSolutionGenerator.flattenRoute(gcr, factor));
@@ -118,12 +120,22 @@ public abstract class Algorithm {
                 startingRoutes.add(EMASSolutionGenerator.getRouteFromFile("src/main/resources/initial-routes/rhumb_line_route.txt"));
             }
         }
-        for (List<RoutePoint> route : startingRoutes) {
-            Solution solution = generateInitialSolution(route);
+        for (int i = 0; i < startingRoutes.size(); i++) {
+            List<RoutePoint> route = startingRoutes.get(i);
+            Solution solution = generateInitialSolution(route, speedList.get(i % speedList.size()));
             solution.calculateFunctionValues();
             population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));
         }
         System.out.println("\nSTARTING ROUTES: " + startingRoutes.size());
+    }
+
+    private static List<Double> createSpeedList(double minValue, double maxValue, double elements) {
+        List<Double> res = new ArrayList<>();
+        double step = (maxValue - minValue) / elements;
+        for (int i = 0; i < elements; i++) {
+            res.add(minValue + i * step);
+        }
+        return res;
     }
 
     private Set<Solution> lastSolutionImprovement(Set<Solution> solutions) {

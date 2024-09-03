@@ -40,6 +40,7 @@ public class Main {
                 "--routes", "src/main/resources/visualisation-solutions/initial-solutions.txt"
         );
         runPythonScript("scripts/plot_routes.py", arguments);
+        runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/initialSolutions.json", "--resultFile", "initial_pareto_front.png"));
 
         Set<Solution> solutions = emas.run();
 
@@ -47,6 +48,9 @@ public class Main {
         allRoutes = solutions.stream().map(s -> s.getRoutePoints().toString()).toList();
         topRoutes = getBestPerCategory(solutions);
 //        topRoutes = getSortedByObjective(solutions, OptimizedFunction.FuelUsed);
+
+        System.out.println("\n--- NON-DOMINATED SOLUTIONS: " + solutions.size() + " ---");
+
         writeSolutionsToFile(allRoutes, "src/main/resources/visualisation-solutions/resulting-solutions.txt");
         getIslandsInfo(emas);
         System.out.println(Action.actionCount);

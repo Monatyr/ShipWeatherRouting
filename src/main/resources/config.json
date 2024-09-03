@@ -15,29 +15,37 @@
   },
   "simulation": {
     "maxIterations": 5000,
-    "maxPopulation": 100,
+    "maxPopulation": 200,
+    "populationSize": 100,
     "maxVerticalDistance": 2,
-    "initialEnergy": 100,
-    "reproductionEnergyBound": 90,
+    "initialEnergy": 60,
+    "reproductionEnergyBound": 70,
     "reproductionEnergy": 30,
-    "migrationEnergy": 50,
+    "migrationEnergyBound": 50,
+    "migrationEnergyTaken": 20,
     "deathEnergyBound": 0,
-    "energyTaken": 30,
+    "energyTaken": 10,
     "initialMutationRate": 0.4,
-    "mutationRate": 0.10,
+    "mutationRate": 0.05,
     "eliteMutationRate": 0.05,
-    "reproductionProbability": 0.99,
-    "neededPrestige": 200,
+    "mutationProbability": 0.1,
+    "initialMutationProbability": 0.3,
+    "mutationEta": 1,
+    "reproductionProbability": 0.95,
+    "neededPrestige": 300,
     "numberOfIslands": 4,
-    "populationSize": 60,
     "startingTime": "2024-07-22T00:00Z",
     "shipSpeed": 10,
-    "routeSwitches": 3,
-    "similarityEpsilon": 0.90,
-    "paretoEpsilon": 0.01,
+    "routeSwitches": 5,
+    "similarityEpsilon": 0.97,
+    "paretoEpsilon": 0.005,
     "travelTimeEpsilon": 100,
     "fuelEpsilon": 5,
-    "safetyEpsilon": 0.01
+    "safetyEpsilon": 0.01,
+
+    "timeCrowdingFactor": 6000,
+    "fuelCrowdingFactor": 2,
+    "safetyCrowdingFactor": 0.015
   },
   "ship": {
     "L": 205.0,
@@ -64,7 +72,7 @@
     "minLoad": 30,
     "maxLoad": 100,
     "optimalLoad": 80,
-    "minSpeed": 10,
+    "minSpeed": 8,
     "maxSpeed": 12
   },
   "conditions": {
@@ -73,7 +81,8 @@
     "description": "Both speeds are in knots!"
   },
   "jmetal": {
-    "crossoverProbability": 0.9,
-    "mutationProbability": 0.3
+    "jmetalCrossoverProbability": 0.9,
+    "jmetalMutationProbability": 0.3,
+    "jmetalMutationEta": 20
   }
 }
