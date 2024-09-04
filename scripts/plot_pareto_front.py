@@ -16,6 +16,7 @@ with open("results/comparisonSolutions.json") as file:
 time_array, fuel_array, safety_array = [], [], []
 comp_time_array, comp_fuel_array, comp_safety_array = [], [], []
 dominated_time_array, dominated_fuel_array, dominated_safety_array = [], [], []
+dominated_comp_time_array, dominated_comp_fuel_array, dominated_comp_safety_array = [], [], []
 
 for sol in data:
     values = sol["functionValues"]
@@ -35,6 +36,9 @@ dominated = []
 for i in range(len(comp_time_array)):
     for j in range(len(time_array)):
         if time_array[j] < comp_time_array[i] and fuel_array[j] < comp_fuel_array[i] and safety_array[j] < comp_safety_array[i]:
+            dominated_comp_time_array.append(comp_time_array[i])
+            dominated_comp_fuel_array.append(comp_fuel_array[i])
+            dominated_comp_safety_array.append(comp_safety_array[i])
             dominated.insert(0, i)
             break
 
@@ -69,8 +73,9 @@ ax = fig.add_subplot(111, projection='3d')
 
 # Plot the Pareto front
 ax.scatter(time_array, fuel_array, safety_array, c='r', marker='o', label=f'EMAS: {len(time_array)}')
-ax.scatter(dominated_time_array, dominated_fuel_array, dominated_safety_array, c='green', marker='o', label=f'Dominated EMAS: {len(dominated_time_array)}')
-ax.scatter(comp_time_array, comp_fuel_array, comp_safety_array, c='b', marker='o', label=f'NSGA-II: {len(comparison_data)} ({len(comp_time_array)})')
+ax.scatter(dominated_time_array, dominated_fuel_array, dominated_safety_array, c='#f79a05', marker='o', label=f'Dominated EMAS: {len(dominated_time_array)}')
+ax.scatter(comp_time_array, comp_fuel_array, comp_safety_array, c='#7e1682', marker='o', label=f'NSGA-II: {len(comp_time_array)}')
+ax.scatter(dominated_comp_time_array, dominated_comp_fuel_array, dominated_comp_safety_array, c='#57acde', label=f'Dominated NSGA-II: {len(dominated_comp_time_array)}')
 
 # Set axis labels
 ax.set_xlabel('Travel time')
