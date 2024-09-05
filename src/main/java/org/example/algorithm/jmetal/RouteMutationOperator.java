@@ -11,8 +11,8 @@ public class RouteMutationOperator implements MutationOperator<RouteSolution> {
         Solution solution;
         int counter = 0;
         do {
-//            solution = EMASSolutionGenerator.mutateSolution(routeSolution.getSolution(), SimulationData.getInstance().mutationRate);
-            solution = EMASSolutionGenerator.mutateSolutionEta(routeSolution.getSolution(), SimulationData.getInstance().jmetalMutationEta);
+            solution = EMASSolutionGenerator.mutateSolution(routeSolution.getSolution(), SimulationData.getInstance().mutationRate);
+//            solution = EMASSolutionGenerator.mutateSolutionEta(routeSolution.getSolution(), SimulationData.getInstance().jmetalMutationEta);
             solution.calculateRouteValues();
             counter++;
         } while (solution.isTooDangerous() && counter < 10);
