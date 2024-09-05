@@ -112,7 +112,7 @@ public class EMAS extends Algorithm {
             }
         }
 
-        updateCrowdingDistance();
+//        updateCrowdingDistance();
 
         // Compare agents - energy distribution, prestige gains
         evaluateAgents();
@@ -153,6 +153,8 @@ public class EMAS extends Algorithm {
         calculateCrowdingDistanceByFunction(timeSorted, OptimizedFunction.TravelTime);
         calculateCrowdingDistanceByFunction(fuelSorted, OptimizedFunction.FuelUsed);
         calculateCrowdingDistanceByFunction(safetySorted, OptimizedFunction.Danger);
+
+//        System.out.println(agents.get(0).getCrowdingFactor());
     }
 
     private List<Agent> sortByFunction(List<Agent> agents, OptimizedFunction function) {

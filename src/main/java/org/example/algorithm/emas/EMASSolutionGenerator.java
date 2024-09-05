@@ -45,13 +45,13 @@ public class EMASSolutionGenerator {
         Solution newSolution;
         int counter = 0;
         do {
-            if (counter != 0) {
+            if (counter > 10) {
                 System.out.println("DANGEROUS: " + counter);
             }
             newSolution = crossoverSolutions(sol1, sol2, commonGridPoints, simulationData.routeSwitches);
             if (random.nextDouble() <= simulationData.mutationProbability) {
-//                newSolution = mutateSolution(newSolution, simulationData.mutationRate);
-                newSolution = mutateSolutionEta(newSolution, simulationData.mutationEta);
+                newSolution = mutateSolution(newSolution, simulationData.mutationRate);
+//                newSolution = mutateSolutionEta(newSolution, simulationData.mutationEta);
             }
             newSolution.calculateRouteValues();
             counter++;

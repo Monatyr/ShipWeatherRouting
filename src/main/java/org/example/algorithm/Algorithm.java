@@ -38,10 +38,15 @@ public abstract class Algorithm {
             }
         }
 
+        System.out.println("AVG ENERGY: " + population.stream().map(Agent::getEnergy).reduce(Double::sum).get() / population.size());
+        for (Agent agent : population) {
+            System.out.println("ENERGY: " + agent.getEnergy());
+        }
+
         saveToJson(averageFunctionValues, "results/averageValues.json");
         Set<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toSet());
         Set<Solution> nonDominatedSolutions = getNonDominatedSolutions(null);
-//        nonDominatedSolutions = lastSolutionImprovement(nonDominatedSolutions);
+        nonDominatedSolutions = lastSolutionImprovement(nonDominatedSolutions);
         System.out.println("\n\nSOLUTIONS: " + solutions.size());
         System.out.println("Max age: " + population.stream().map(Agent::getAge).max(Integer::compare).get());
 
@@ -92,8 +97,8 @@ public abstract class Algorithm {
                 System.out.println("Initial population too dangerous: " + counter);
             }
             if (random.nextDouble() <= simulationData.initialMutationProbability) {
-//                solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.initialMutationRate);
-                solution = EMASSolutionGenerator.mutateSolutionEta(solution, simulationData.mutationEta);
+                solution = EMASSolutionGenerator.mutateSolution(solution, simulationData.initialMutationRate);
+//                solution = EMASSolutionGenerator.mutateSolutionEta(solution, simulationData.mutationEta);
             }
             solution.calculateRouteValues();
             counter++;
@@ -138,7 +143,7 @@ public abstract class Algorithm {
         return res;
     }
 
-    private Set<Solution> lastSolutionImprovement(Set<Solution> solutions) {
+    public static Set<Solution> lastSolutionImprovement(Set<Solution> solutions) {
         int counter = 0;
         List<Solution> nonDominatedSolutionsList = new ArrayList<>(solutions.stream().toList());
         for (int i = 0; i < nonDominatedSolutionsList.size(); i++) {

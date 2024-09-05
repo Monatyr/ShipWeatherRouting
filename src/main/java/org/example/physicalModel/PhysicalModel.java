@@ -367,8 +367,8 @@ public abstract class PhysicalModel {
         double maxWindSpeed = thresholdWindSpeed - shapeCoefficient * thresholdWindSpeedMargin;
         double fractionalSafetyCoefficient = (maxWindSpeed - windSpeed) / maxWindSpeed;
         if (fractionalSafetyCoefficient <= 0) {
-            System.out.println("Max wind speed (kn): " + maxWindSpeed + "\tCurrent wind speed (kn): " + windSpeed);
-            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//            System.out.println("Max wind speed (kn): " + maxWindSpeed + "\tCurrent wind speed (kn): " + windSpeed);
+//            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         } else if (fractionalSafetyCoefficient > 1) {
             System.out.println("?????" + fractionalSafetyCoefficient);
         }

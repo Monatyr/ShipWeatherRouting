@@ -147,27 +147,38 @@ public class Agent {
         } else if (dominationResult == -1) { // other dominates agent
             transferResources(other, this, true);
         } else { // neither of the 2 dominated the other
-            if (agentDominationFactor < otherDominationFactor) {
+//            if (agentDominationFactor < otherDominationFactor) {
+//                transferResources(this, other, false);
+//                dominationFactorCounter++;
+//            } else if (otherDominationFactor < agentDominationFactor) {
+//                dominationFactorCounter++;
+//                transferResources(other, this, false);
+            //} else
+            int similarNeighbors = (int) getIsland().getAgents().stream().filter(a -> !a.equals(this)).filter(a -> a.areSimilar(this, simulationData.similarityEpsilon)).count();
+            int otherSimilarNeighbors = (int) other.getIsland().getAgents().stream().filter(a -> !a.equals(other)).filter(a -> a.areSimilar(other, simulationData.similarityEpsilon)).count();
+//            System.out.println(similarNeighbors + " " + otherSimilarNeighbors + " " + getIsland().getAgents().size());
+            if (similarNeighbors < otherSimilarNeighbors) {
                 transferResources(this, other, false);
-                dominationFactorCounter++;
-            } else if (otherDominationFactor < agentDominationFactor) {
-                dominationFactorCounter++;
+            } else if (similarNeighbors > otherSimilarNeighbors) {
                 transferResources(other, this, false);
-//            } else if (this.crowdingFactor > other.crowdingFactor) {
+            }
+
+//            else if (this.crowdingFactor > other.crowdingFactor) {
 //                crowdingCounter++;
 //                transferResources(this, other, false);
 //            } else if (other.crowdingFactor > this.crowdingFactor) {
 //                crowdingCounter++;
 //                transferResources(other, this, false);
 //            }
-            } else if (areSimilar(other, simulationData.similarityEpsilon)) {
-                int index = random.nextInt(2);
-                if (index == 0) {
-                    transferResources(this, other, false);
-                } else {
-                    transferResources(other, this, false);
-                }
-            }
+//            System.out.println(crowdingFactor + " " + other.crowdingFactor);
+//             else if (areSimilar(other, simulationData.similarityEpsilon)) {
+//                int index = random.nextInt(2);
+//                if (index == 0) {
+//                    transferResources(this, other, false);
+//                } else {
+//                    transferResources(other, this, false);
+//                }
+//            }
 //            } else if (areSimilar(other)) {
 //                int index = random.nextInt(2);
 //                if (index == 0) {

@@ -40,9 +40,9 @@ public class Test {
     public static void main(String[] args) {
 
         int evaluations = 50000;
-        int populationSize = 100;
-        int matingPoolSize = 100; // By default, matingPoolSize and offspringSize are to populationSize by the NSGAII-Builder
-        int offspringSize = 100;
+        int populationSize = 200;
+        int matingPoolSize = 200; // By default, matingPoolSize and offspringSize are to populationSize by the NSGAII-Builder
+        int offspringSize = 200;
         double epsilon = 0.0;
 
         CrossoverOperator<RouteSolution> crossoverOperator = new RouteCrossoverOperator();
@@ -68,6 +68,8 @@ public class Test {
 
 
         Set<Solution> resultSolutions = Algorithm.getNonDominatedSolutions(population.stream().map(RouteSolution::getSolution).toList());
+        resultSolutions = Algorithm.lastSolutionImprovement(resultSolutions);
+
         System.out.println(resultSolutions.size());
         saveToJson(resultSolutions, "results/comparisonSolutions.json");
         runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/comparisonSolutions.json", "--resultFile", "pareto_front.png"));

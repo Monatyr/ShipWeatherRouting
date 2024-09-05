@@ -60,7 +60,6 @@ for i in range(len(time_array)):
             break
 
 for index in comp_dominated:
-    print(index, len(comp_dominated))
     time_array.pop(index)
     fuel_array.pop(index)
     safety_array.pop(index)

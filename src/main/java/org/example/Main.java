@@ -51,7 +51,7 @@ public class Main {
 
         System.out.println("\n--- NON-DOMINATED SOLUTIONS: " + solutions.size() + " ---");
 
-        writeSolutionsToFile(allRoutes, "src/main/resources/visualisation-solutions/resulting-solutions.txt");
+        writeSolutionsToFile(topRoutes, "src/main/resources/visualisation-solutions/resulting-solutions.txt");
         getIslandsInfo(emas);
         System.out.println(Action.actionCount);
         arguments = List.of(
