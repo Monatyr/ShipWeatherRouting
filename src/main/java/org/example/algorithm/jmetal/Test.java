@@ -72,6 +72,12 @@ public class Test {
 
         System.out.println(resultSolutions.size());
         saveToJson(resultSolutions, "results/comparisonSolutions.json");
+        List<String> arguments = List.of(
+                "--resultFile", "top3_jmetal.png",
+                "--weatherFile", SimulationData.getInstance().weatherPath,
+                "--routes", "src/main/resources/visualisation-solutions/jmetal-resulting-solutions.txt"
+        );
+        runPythonScript("scripts/plot_routes.py", arguments);
         runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/comparisonSolutions.json", "--resultFile", "pareto_front.png"));
 //         List<Coordinates> route = population.get(0).getSolution().getRoutePoints().stream().map(RoutePoint::getCoordinates).toList();
 //         route.forEach(p -> System.out.println(p.longitude() + ", " + p.latitude()));

@@ -83,6 +83,6 @@
   "jmetal": {
     "jmetalCrossoverProbability": 0.9,
     "jmetalMutationProbability": 0.3,
-    "jmetalMutationEta": 20
+    "jmetalMutationEta": 1
   }
 }
