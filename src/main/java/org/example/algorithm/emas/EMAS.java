@@ -7,7 +7,9 @@ import org.example.util.UtilFunctions;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.example.Main.runPythonScript;
 import static org.example.util.UtilFunctions.redistributeEnergyLeft;
+import static org.example.util.UtilFunctions.saveToJson;
 
 /**
  * Exemplary ships:
@@ -111,7 +113,6 @@ public class EMAS extends Algorithm {
                 agent.setMadeAction(false);
             }
         }
-
 //        updateCrowdingDistance();
 
         // Compare agents - energy distribution, prestige gains

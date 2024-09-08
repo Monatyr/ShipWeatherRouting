@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import argparse
@@ -14,9 +15,10 @@ args = parser.parse_args()
 routes = []
 compariosn_routes = []
 
-with open(args.routes) as file:
-    for line in file.readlines():
-        routes.append(ast.literal_eval(line))
+if (args.routes):
+    with open(args.routes) as file:
+        for line in file.readlines():
+            routes.append(ast.literal_eval(line))
 
 # Create a figure with a specific size
 fig = plt.figure(figsize=(20, 15))
@@ -41,6 +43,8 @@ for i, route in enumerate(routes):
 # Extend the image with invisible points
 ax.plot([-70, -10], [50, 30], alpha=0)
 
+min_norm = 10
+
 dangerous_lats, dangerous_longs, danger = [], [], []
 with open(args.weatherFile) as file:
     weather_data = json.loads(file.read())
@@ -52,14 +56,18 @@ with open(args.weatherFile) as file:
             if timestamp == "is_water":
                 continue
             # if windspeed in m/s above 17 (8 Beaufort Scale)
-            # if timestamp_value.get('wind_speed_10m') / 3.6 > 17:
-            dangerous_lats.append(latitude)
-            dangerous_longs.append(longitude)
-            danger.append(float(timestamp_value.get('wind_speed_10m')) / 3.6)
-            break
+            if timestamp_value.get('wind_speed_10m') / 3.6 > min_norm:
+                dangerous_lats.append(latitude)
+                dangerous_longs.append(longitude)
+                danger.append(float(timestamp_value.get('wind_speed_10m')) / 3.6)
+                break
 
-# cmap = plt.cm.oranges
-scatter = ax.scatter(dangerous_longs, dangerous_lats, c=danger, cmap='Oranges', marker='.', s=5, alpha=1)
+
+max_norm = max(danger)
+cmap = plt.get_cmap("Oranges")
+norm = mcolors.Normalize(vmin=min_norm, vmax=max_norm)
+
+scatter = ax.scatter(dangerous_longs, dangerous_lats, c=danger, cmap='Oranges', marker='.', s=10, alpha=1, norm=norm)
 
 cbar = plt.colorbar(scatter, orientation='horizontal', pad=0.01)
 cbar.set_label('Wind Speed (m/s)')
@@ -75,4 +83,4 @@ if len(routes) <= 3:
 
 # Display the plot
 plt.savefig(f'results/{args.resultFile}', bbox_inches='tight')
-# plt.show()
+plt.show()

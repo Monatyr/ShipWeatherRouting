@@ -34,6 +34,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.example.Main.runPythonScript;
+import static org.example.Main.writeSolutionsToFile;
+import static org.example.util.UtilFunctions.getBestPerCategory;
 import static org.example.util.UtilFunctions.saveToJson;
 
 public class Test {
@@ -72,6 +74,10 @@ public class Test {
 
         System.out.println(resultSolutions.size());
         saveToJson(resultSolutions, "results/comparisonSolutions.json");
+
+        List<String> topRoutes = getBestPerCategory(resultSolutions);
+        writeSolutionsToFile(topRoutes, "src/main/resources/visualisation-solutions/jmetal-resulting-solutions.txt");
+
         List<String> arguments = List.of(
                 "--resultFile", "top3_jmetal.png",
                 "--weatherFile", SimulationData.getInstance().weatherPath,

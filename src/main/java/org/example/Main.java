@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.min;
+import static org.example.algorithm.Algorithm.lastSolutionImprovement;
 import static org.example.util.UtilFunctions.*;
 
 
@@ -43,6 +44,7 @@ public class Main {
         runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/initialSolutions.json", "--resultFile", "initial_pareto_front.png"));
 
         Set<Solution> solutions = emas.run();
+        solutions = lastSolutionImprovement(solutions); // improved solutions
 
         generalInfo(solutions);
         allRoutes = solutions.stream().map(s -> s.getRoutePoints().toString()).toList();

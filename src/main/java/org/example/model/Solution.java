@@ -253,6 +253,7 @@ public class Solution implements Comparable<Solution> {
                     windAngle
             );
             if (danger == 0) {
+//                System.out.println(danger + " " + simulationData.thresholdWindSpeed + " " + simulationData.thresholdWindSpeedMargin);
                 tooDangerous = true; // if a solution has a segment that is too dangerous mark it as dangerous and delete it
             }
             currTime = currTime.plusSeconds(travelTimeSeconds);

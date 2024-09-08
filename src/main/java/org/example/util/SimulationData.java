@@ -16,7 +16,7 @@ import java.util.*;
 public final class SimulationData {
     private static SimulationData instance;
     private final String configPath = "src/main/resources/config.json";
-    public final String weatherPath = "src/main/resources/weather-data-final.json";
+    public final String weatherPath = "src/main/resources/weather-data-rough-3.json";
 
     private JSONObject weatherData;
     @Expose
@@ -225,7 +225,7 @@ public final class SimulationData {
         arrivalDateTime = getNearestFullHour(arrivalDateTime);
         String arrivalDateTimeStr = arrivalDateTime.toString().replace("Z", "");
         if (!timestampData.has(arrivalDateTimeStr)) {
-            System.out.println("missing");
+//            System.out.println("missing");
             arrivalDateTimeStr = "2024-08-01T23:00";
         }
         JSONObject conditions = timestampData.getJSONObject(arrivalDateTimeStr);

@@ -80,11 +80,17 @@ public class RouteProblem implements Problem<RouteSolution> {
         } else {
             route =  EMASSolutionGenerator.flattenRoute(this.gcr, factors[creatorIndex]);
         }
-        double routeTargetSpeed = random.nextDouble(simulationData.minSpeed, simulationData.maxSpeed);
-        Solution solution = Algorithm.generateInitialSolution(route, routeTargetSpeed);
+        Solution solution = null;
+        while (solution == null) {
+            double routeTargetSpeed = random.nextDouble(simulationData.minSpeed, simulationData.maxSpeed);
+            solution = Algorithm.generateInitialSolution(route, routeTargetSpeed);
+            creatorIndex++;
+            creatorIndex = creatorIndex % (factors.length + 2);
+            if (solution == null) {
+                System.out.println("DANGEROUS");
+            }
+        }
         initialSolutions.add(solution);
-        creatorIndex++;
-        creatorIndex = creatorIndex % (factors.length + 2);
         return new RouteSolution(solution, 1, 3);
     }
 
