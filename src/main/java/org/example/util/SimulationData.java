@@ -129,7 +129,8 @@ public final class SimulationData {
             initialMutationProbability = simulationObject.getDouble("initialMutationProbability");
             mutationEta = simulationObject.getDouble("mutationEta");
             reproductionProbability = simulationObject.getDouble("reproductionProbability");
-            migrationProbability = Math.round((1.0 - reproductionProbability) * 100) / 100.0;
+            migrationProbability = Math.round((1.0 - reproductionProbability) * 1000) / 1000.0;
+            System.out.println("MIGrATION: " + migrationProbability);
             neededPrestige = simulationObject.getInt("neededPrestige");
             initialEnergy = simulationObject.getDouble("initialEnergy");
             reproductionEnergyBound = simulationObject.getDouble("reproductionEnergyBound");

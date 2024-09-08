@@ -1,30 +1,35 @@
-import numpy as np
-
-def generate_storm(x_center, y_center, r, delta_w, grid_shape):
-    """Generate storm wind speed increase for a grid."""
-    X, Y = np.meshgrid(np.arange(grid_shape[1]), np.arange(grid_shape[0]))
-    distances = (X - x_center)**2 + (Y - y_center)**2
-    storm_increase = delta_w * np.exp(-distances / (r**2))
-    return storm_increase
-
-# Parameters for the storm: center, radius, wind speed increase
-storm_a = generate_storm(40, 30, r=2, delta_w=30, grid_shape=(100, 100))
-
-print(storm_a)
-
-storm_b = generate_storm(60, 10, r=4, delta_w=15, grid_shape=(100, 100))
-storm_c = generate_storm(20, 40, r=5, delta_w=25, grid_shape=(100, 100))
-
-# Base wind field
-base_wind = np.full((100, 100), 10)
-
-# Add storms to the base wind field
-wind_field = base_wind + storm_a + storm_b + storm_c
-
-
 import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+from matplotlib.patches import Rectangle
 
-plt.imshow(wind_field, cmap='coolwarm', interpolation='nearest')
-plt.colorbar(label='Wind Speed (knots)')
-plt.title('Simulated Wind Field with Fake Storms')
+# Create a plot with Cartopy
+fig, ax = plt.subplots(figsize=(10, 10), subplot_kw={'projection': ccrs.PlateCarree()})
+
+# Set the extent (optional)
+ax.set_extent([-130, -60, 20, 60])  # Example for part of the North Atlantic
+
+# Add land and coastlines to the map
+land = cfeature.NaturalEarthFeature('physical', 'land', '50m', facecolor='lightgray')
+ax.add_feature(land)
+ax.coastlines(resolution='50m')
+
+# Define the rectangles (regions) to cover islands
+# Example: Covering a region with a rectangle, defined by its bottom-left corner and width/height
+
+# Example rectangle coordinates (lon_min, lat_min, width, height)
+rectangles = [
+    (-80, 18, 2, 2),  # Caribbean island example
+    (-78, 22, 3, 1.5),  # Another island
+]
+
+# Plot the rectangles AFTER plotting the coastlines to ensure they are on top
+for rect in rectangles:
+    ax.add_patch(Rectangle((rect[0], rect[1]), rect[2], rect[3], 
+                           linewidth=0, edgecolor='none', facecolor='lightgray', transform=ccrs.PlateCarree()))
+
+# Add other features such as gridlines or borders if needed
+ax.gridlines(draw_labels=True)
+
+# Show the plot
 plt.show()

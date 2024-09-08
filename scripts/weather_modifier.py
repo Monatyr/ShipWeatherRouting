@@ -172,7 +172,7 @@ if __name__ == "__main__":
     with open(input_file) as file:
         data = json.loads(file.read())
 
-    stormy_data = generate_storm(40, -30, 500, 20, data)
+    stormy_data = generate_storm(40.5, -30, 500, 20, data)
     stormy_data = generate_storm(43, -50, 500, 10, stormy_data)
     stormy_data = generate_storm(45, -40, 400, 10, stormy_data)
     stormy_data = generate_storm(38, -55, 500, 10, stormy_data)

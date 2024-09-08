@@ -147,21 +147,27 @@ public class Agent {
         } else if (dominationResult == -1) { // other dominates agent
             transferResources(other, this, true);
         } else { // neither of the 2 dominated the other
-//            if (agentDominationFactor < otherDominationFactor) {
-//                transferResources(this, other, false);
-//                dominationFactorCounter++;
-//            } else if (otherDominationFactor < agentDominationFactor) {
-//                dominationFactorCounter++;
-//                transferResources(other, this, false);
+            if (agentDominationFactor < otherDominationFactor) {
+                transferResources(this, other, false);
+                dominationFactorCounter++;
+            } else if (otherDominationFactor < agentDominationFactor) {
+                dominationFactorCounter++;
+                transferResources(other, this, false);
+            } else {
+//                Set<Agent> allAgents = getIsland().getNeighbouringIslands().stream().map(Island::getAgents).flatMap(Set::stream).collect(Collectors.toSet());
+//                allAgents.addAll(getIsland().getAgents());
+//                int similarNeighbors = (int) allAgents.stream().filter(a -> !a.equals(this)).filter(a -> a.areSimilar(this, simulationData.similarityEpsilon)).count();
+//                int otherSimilarNeighbors = (int) allAgents.stream().filter(a -> !a.equals(other)).filter(a -> a.areSimilar(other, simulationData.similarityEpsilon)).count();
                 int similarNeighbors = (int) getIsland().getAgents().stream().filter(a -> !a.equals(this)).filter(a -> a.areSimilar(this, simulationData.similarityEpsilon)).count();
                 int otherSimilarNeighbors = (int) other.getIsland().getAgents().stream().filter(a -> !a.equals(other)).filter(a -> a.areSimilar(other, simulationData.similarityEpsilon)).count();
-//            System.out.println(similarNeighbors + " " + otherSimilarNeighbors + " " + getIsland().getAgents().size());
+//                System.out.println(similarNeighbors + " " + otherSimilarNeighbors + " " + getIsland().getAgents().size());
                 if (similarNeighbors < otherSimilarNeighbors) {
                     transferResources(this, other, false);
                 } else if (similarNeighbors > otherSimilarNeighbors) {
                     transferResources(other, this, false);
                 }
             }
+        }
 
 //            else if (this.crowdingFactor > other.crowdingFactor) {
 //                crowdingCounter++;
@@ -200,24 +206,24 @@ public class Agent {
 //                }
 //            }
 
-
-        if (areSimilar(other, simulationData.similarityEpsilon)) {
-            similarAgents.add(other);
-            other.similarAgents.add(this);
-//            similarMeetings++;
-//            other.similarMeetings++;
-        }
-
-        allMetAgents.add(other);
-        other.allMetAgents.add(this);
-
-
-//        int windowSize = (int) Double.POSITIVE_INFINITY;
-        int windowSize = 20;
-//        updateCrowdingEstimate(windowSize, other.similarAgentsCounter, similar);
-//        other.updateCrowdingEstimate(windowSize, this.similarAgentsCounter, similar);
-        updateSimilarAgents(other, windowSize);
-        other.updateSimilarAgents(this, windowSize);
+//
+//        if (areSimilar(other, simulationData.similarityEpsilon)) {
+//            similarAgents.add(other);
+//            other.similarAgents.add(this);
+////            similarMeetings++;
+////            other.similarMeetings++;
+//        }
+//
+//        allMetAgents.add(other);
+//        other.allMetAgents.add(this);
+//
+//
+////        int windowSize = (int) Double.POSITIVE_INFINITY;
+//        int windowSize = 20;
+////        updateCrowdingEstimate(windowSize, other.similarAgentsCounter, similar);
+////        other.updateCrowdingEstimate(windowSize, this.similarAgentsCounter, similar);
+//        updateSimilarAgents(other, windowSize);
+//        other.updateSimilarAgents(this, windowSize);
 
 //        this.otherAgentsCounters.put(other, other.similarAgentsCounter);
 //        other.otherAgentsCounters.put(this, this.similarAgentsCounter);

@@ -1,12 +1,20 @@
 package org.example.algorithm;
 
+import com.google.gson.*;
 import org.example.algorithm.emas.EMASSolutionGenerator;
 import org.example.model.Agent;
 import org.example.model.OptimizedFunction;
 import org.example.model.RoutePoint;
 import org.example.model.Solution;
+import org.example.util.Coordinates;
+import org.example.util.GridPoint;
 import org.example.util.SimulationData;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -27,13 +35,15 @@ public abstract class Algorithm {
             generateInitialPopulation();
         }
 
+        long startTime = System.nanoTime();
+
         while (validState() && !checkStopCondition()) {
-            if (iterations % 250 == 0 && iterations != 0) {
-                Set<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toSet());
-                solutions = getNonDominatedSolutions(solutions.stream().toList());
-                saveToJson(solutions, String.format("results/resultSolutions%d.json", iterations));
-//                runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", String.format("results/resultSolutions%d.json", iterations), "--resultFile", "pareto_front.png"));
-            }
+//            if (iterations % 250 == 0 && iterations != 0) {
+//                Set<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toSet());
+//                solutions = getNonDominatedSolutions(solutions.stream().toList());
+//                saveToJson(solutions, String.format("results/resultSolutions%d.json", iterations));
+////                runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", String.format("results/resultSolutions%d.json", iterations), "--resultFile", "pareto_front.png"));
+//            }
             runIteration();
             iterations++;
             averageFunctionValues.add(calculateAverageFunctionValues());
@@ -45,10 +55,8 @@ public abstract class Algorithm {
             }
         }
 
-        System.out.println("AVG ENERGY: " + population.stream().map(Agent::getEnergy).reduce(Double::sum).get() / population.size());
-        for (Agent agent : population) {
-            System.out.println("ENERGY: " + agent.getEnergy());
-        }
+        long stopTime = System.nanoTime();
+        System.out.println("Execution time: " + (double) (stopTime - startTime) / 1000000000.0);
 
         saveToJson(averageFunctionValues, "results/averageValues.json");
         Set<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toSet());
@@ -114,6 +122,70 @@ public abstract class Algorithm {
             return null;
         }
         return solution;
+    }
+
+    protected static void loadInitialPopulation() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/initial-routes/initialSolutions.json"))) {
+            // Read the entire content of the file into a string
+            StringBuilder jsonString = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonString.append(line);
+            }
+
+            JSONArray solutionsArray = new JSONArray(jsonString.toString());
+
+            for (int i = 0; i < solutionsArray.length(); i++) {
+                JSONObject solutionJson = solutionsArray.getJSONObject(i);
+                JSONArray routePoints = solutionJson.getJSONArray("routePoints");
+                List<RoutePoint> solutionRoutePoints = new ArrayList<>();
+
+                for (int j = 0; j < routePoints.length(); j++) {
+                    JSONObject pointJson = routePoints.getJSONObject(j);
+                    JSONObject gridCoordinatesJson = pointJson.getJSONObject("gridCoordinates");
+                    JSONObject coordinatesJson = pointJson.getJSONObject("coordinates");
+                    int y = gridCoordinatesJson.getInt("y");
+                    int x = gridCoordinatesJson.getInt("x");
+                    double latitude = coordinatesJson.getDouble("latitude");
+                    double longitude = coordinatesJson.getDouble("longitude");
+                    double shipSpeed = pointJson.getDouble("shipSpeed");
+
+                    GridPoint gridPoint = new GridPoint(y, x);
+                    Coordinates coordinates = new Coordinates(latitude, longitude);
+                    RoutePoint newPoint =  new RoutePoint(gridPoint, coordinates);
+                    newPoint.setShipSpeed(shipSpeed);
+                    solutionRoutePoints.add(newPoint);
+                }
+                Solution newSolution = new Solution(solutionRoutePoints);
+                newSolution.calculateRouteValues();
+                newSolution.calculateFunctionValues();
+                population.add(new Agent(newSolution, simulationData.initialEnergy, 0, null, false));
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+//        try (FileReader reader = new FileReader("src/main/resources/initial-routes/initialSolutions.json")) {
+//            JsonArray solutionsArray = JsonParser.parseReader(reader).getAsJsonArray();
+//
+//            for (int i = 0; i < solutionsArray.size(); i++) {
+//                JSONObject jsonObject = solutionsArray.get(i);
+//
+//
+//            for (JsonObject solutionJson : jsonObject) {
+//                solutionJson.getAsJsonObject().getAsJsonArray();
+//            }
+////            for (Object solution : solutions) {
+////                Solution solutionObj = (Solution) solution;
+////                solutionObj.calculateRouteValues();
+////                solutionObj.calculateFunctionValues();
+////                population.add(new Agent(solutionObj, simulationData.initialEnergy, 0, null, false));
+////            }
+//        } catch (JsonSyntaxException e) {
+//            System.err.println("JsonSyntaxException: " + e.getMessage());
+//        } catch (IOException e) {
+//            System.err.println("IOException: " + e.getMessage());
+//        }
     }
 
     protected static void generateInitialPopulation() {

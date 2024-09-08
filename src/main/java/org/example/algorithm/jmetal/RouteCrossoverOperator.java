@@ -16,7 +16,8 @@ public class RouteCrossoverOperator implements CrossoverOperator<RouteSolution> 
 
     @Override
     public double crossoverProbability() {
-        return simulationData.reproductionProbability;
+        return 0.5;
+//        return simulationData.reproductionProbability;
     }
 
     @Override

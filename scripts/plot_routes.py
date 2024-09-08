@@ -2,9 +2,11 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
+from matplotlib.patches import Rectangle
 import argparse
 import ast
 import json
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--resultFile', type=str)
@@ -30,6 +32,10 @@ ax = plt.axes(projection=ccrs.PlateCarree())
 ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.OCEAN)
 ax.add_feature(cfeature.COASTLINE)
+
+#98b4e4
+# ax.add_patch(Rectangle((-32, 30), 10, 20, linewidth=0, edgecolor='none', facecolor='gray', transform=ccrs.PlateCarree(), alpha=1))
+
 
 colors = ['blue', 'red', 'green']
 labels = ["Time", "Fuel", "Safety"]

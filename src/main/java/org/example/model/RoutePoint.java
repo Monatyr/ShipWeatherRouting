@@ -6,6 +6,7 @@ import org.example.util.Coordinates;
 import org.example.util.GridPoint;
 import org.example.util.SimulationData;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Random;
@@ -20,7 +21,7 @@ import static org.example.model.OptimizedFunction.*;
  * - a set of weather conditions at the specific time at the point's location (wind, waves, unusual conditions)
  * - a set of optimized metrics and their values in the previous leg of the journey (fuel consumption, ship speed, danger)
  */
-public class RoutePoint {
+public class RoutePoint implements Serializable {
     @Expose
     private GridPoint gridCoordinates;
     @Expose

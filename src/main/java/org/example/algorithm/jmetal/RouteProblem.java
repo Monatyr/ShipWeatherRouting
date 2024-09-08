@@ -21,6 +21,14 @@ public class RouteProblem implements Problem<RouteSolution> {
             "src/main/resources/initial-routes/rhumb_line_route.txt"
     };
     private Set<Solution> initialSolutions = new HashSet<>();
+    private int populationSize;
+    private int createdSolutions = 0;
+    public long startTime;
+    public long initPopulationEndTime;
+
+    public RouteProblem(int populationSize) {
+        this.populationSize = populationSize;
+    }
 
     // Getters
     @Override
@@ -73,6 +81,9 @@ public class RouteProblem implements Problem<RouteSolution> {
 
     @Override
     public RouteSolution createSolution() {
+        if (createdSolutions == 0) {
+            startTime = System.nanoTime();
+        }
         double[] factors = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
         List<RoutePoint> route;
         if (creatorIndex >= factors.length) {
@@ -89,6 +100,10 @@ public class RouteProblem implements Problem<RouteSolution> {
             if (solution == null) {
                 System.out.println("DANGEROUS");
             }
+        }
+        createdSolutions++;
+        if (createdSolutions == populationSize) {
+            initPopulationEndTime = System.nanoTime();
         }
         initialSolutions.add(solution);
         return new RouteSolution(solution, 1, 3);
