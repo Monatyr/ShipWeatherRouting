@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.example.Main.runPythonScript;
 import static org.example.util.UtilFunctions.getBestPerCategory;
 import static org.example.util.UtilFunctions.saveToJson;
 
@@ -27,6 +28,12 @@ public abstract class Algorithm {
         }
 
         while (validState() && !checkStopCondition()) {
+            if (iterations % 250 == 0 && iterations != 0) {
+                Set<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toSet());
+                solutions = getNonDominatedSolutions(solutions.stream().toList());
+                saveToJson(solutions, String.format("results/resultSolutions%d.json", iterations));
+//                runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", String.format("results/resultSolutions%d.json", iterations), "--resultFile", "pareto_front.png"));
+            }
             runIteration();
             iterations++;
             averageFunctionValues.add(calculateAverageFunctionValues());
@@ -46,7 +53,6 @@ public abstract class Algorithm {
         saveToJson(averageFunctionValues, "results/averageValues.json");
         Set<Solution> solutions = population.stream().map(Agent::getSolution).collect(Collectors.toSet());
         Set<Solution> nonDominatedSolutions = getNonDominatedSolutions(null);
-        nonDominatedSolutions = lastSolutionImprovement(nonDominatedSolutions);
         System.out.println("\n\nSOLUTIONS: " + solutions.size());
         System.out.println("Max age: " + population.stream().map(Agent::getAge).max(Integer::compare).get());
 
@@ -87,6 +93,7 @@ public abstract class Algorithm {
     }
 
     public static Solution generateInitialSolution(List<RoutePoint> route, double targetSpeed) {
+        int maxTries = 50;
         for (RoutePoint routePoint : route) {
             routePoint.setShipSpeed(targetSpeed);
         }
@@ -102,7 +109,10 @@ public abstract class Algorithm {
             }
             solution.calculateRouteValues();
             counter++;
-        } while (solution.isTooDangerous());
+        } while (solution.isTooDangerous() && counter < maxTries);
+        if (counter == maxTries) {
+            return null;
+        }
         return solution;
     }
 
@@ -128,8 +138,18 @@ public abstract class Algorithm {
         for (int i = 0; i < startingRoutes.size(); i++) {
             List<RoutePoint> route = startingRoutes.get(i);
             Solution solution = generateInitialSolution(route, speedList.get(i % speedList.size()));
-            solution.calculateFunctionValues();
-            population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));
+            if (solution != null) {
+                solution.calculateFunctionValues();
+                population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));
+            }
+        }
+        while (population.size() != startingRoutes.size()) {
+            List<RoutePoint> route = startingRoutes.get(random.nextInt(startingRoutes.size()));
+            Solution solution = generateInitialSolution(route, speedList.get(random.nextInt(speedList.size())));
+            if (solution != null) {
+                solution.calculateFunctionValues();
+                population.add(new Agent(solution, simulationData.initialEnergy, 0, null, false));
+            }
         }
         System.out.println("\nSTARTING ROUTES: " + startingRoutes.size());
     }

@@ -153,14 +153,14 @@ public class Agent {
 //            } else if (otherDominationFactor < agentDominationFactor) {
 //                dominationFactorCounter++;
 //                transferResources(other, this, false);
-            //} else
-            int similarNeighbors = (int) getIsland().getAgents().stream().filter(a -> !a.equals(this)).filter(a -> a.areSimilar(this, simulationData.similarityEpsilon)).count();
-            int otherSimilarNeighbors = (int) other.getIsland().getAgents().stream().filter(a -> !a.equals(other)).filter(a -> a.areSimilar(other, simulationData.similarityEpsilon)).count();
+                int similarNeighbors = (int) getIsland().getAgents().stream().filter(a -> !a.equals(this)).filter(a -> a.areSimilar(this, simulationData.similarityEpsilon)).count();
+                int otherSimilarNeighbors = (int) other.getIsland().getAgents().stream().filter(a -> !a.equals(other)).filter(a -> a.areSimilar(other, simulationData.similarityEpsilon)).count();
 //            System.out.println(similarNeighbors + " " + otherSimilarNeighbors + " " + getIsland().getAgents().size());
-            if (similarNeighbors < otherSimilarNeighbors) {
-                transferResources(this, other, false);
-            } else if (similarNeighbors > otherSimilarNeighbors) {
-                transferResources(other, this, false);
+                if (similarNeighbors < otherSimilarNeighbors) {
+                    transferResources(this, other, false);
+                } else if (similarNeighbors > otherSimilarNeighbors) {
+                    transferResources(other, this, false);
+                }
             }
 
 //            else if (this.crowdingFactor > other.crowdingFactor) {
@@ -199,7 +199,7 @@ public class Agent {
 //                    transferResources(other, this, false);
 //                }
 //            }
-        }
+
 
         if (areSimilar(other, simulationData.similarityEpsilon)) {
             similarAgents.add(other);
@@ -257,6 +257,12 @@ public class Agent {
                 return false;
             }
         }
+
+//        for (OptimizedFunction function : solution.getFunctionValues().keySet()) {
+//            float value = solution.getFunctionValues().get(function);
+//            float otherValue = otherFunctions.get(function);
+//            System.out.println(function + " " +  (Math.min(value, otherValue) / Math.max(value, otherValue)));
+//        }
         return true;
     }
 
