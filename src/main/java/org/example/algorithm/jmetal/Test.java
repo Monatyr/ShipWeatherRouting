@@ -68,6 +68,7 @@ public class Test {
         Set<Solution> initialSolutions = routeProblem.getInitialSolutions();
         UtilFunctions.getBestPerCategory(initialSolutions);
 
+        // Save initial population to file, so that other algorithms can base their workings on the same solutions
         saveToJson(initialSolutions, "src/main/resources/initial-routes/initialSolutions.json");
 
         // Result population
@@ -80,6 +81,7 @@ public class Test {
 
         System.out.println(resultSolutions.size());
         saveToJson(resultSolutions, "results/comparisonSolutions.json");
+        saveToJson(resultSolutions, String.format("results/experiments/jmetal%d.json", SimulationData.getInstance().experimentNumber));
 
         List<String> topRoutes = getBestPerCategory(resultSolutions);
         writeSolutionsToFile(topRoutes, "src/main/resources/visualisation-solutions/jmetal-resulting-solutions.txt");

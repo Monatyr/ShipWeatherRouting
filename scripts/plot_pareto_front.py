@@ -5,13 +5,25 @@ import json
 parser = argparse.ArgumentParser()
 parser.add_argument('--routes', type=str)
 parser.add_argument('--resultFile', type=str)
+parser.add_argument('--experiments', action='store_true')
 args = parser.parse_args()
 
-with open(args.routes) as file:
-    data = json.loads(file.read())
+data, comparison_data = [], []
 
-with open("results/comparisonSolutions.json") as file:
-    comparison_data = json.loads(file.read())
+if args.experiments:
+    for i in range(1, 4):
+        with open(f"results/experiments/emas{i}.json") as file:
+            new_data = json.loads(file.read())
+            data.extend(new_data)
+        with open(f"results/experiments/jmetal{i}.json") as file:
+            new_comparison_data = json.loads(file.read())
+            comparison_data.extend(new_comparison_data)
+    print(len(data))
+else:
+    with open(args.routes) as file:
+        data = json.loads(file.read())
+    with open("results/comparisonSolutions.json") as file:
+        comparison_data = json.loads(file.read())
 
 time_array, fuel_array, safety_array = [], [], []
 comp_time_array, comp_fuel_array, comp_safety_array = [], [], []

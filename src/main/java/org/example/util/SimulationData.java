@@ -16,7 +16,7 @@ import java.util.*;
 public final class SimulationData {
     private static SimulationData instance;
     private final String configPath = "src/main/resources/config.json";
-    public final String weatherPath = "src/main/resources/weather-data-rough-3.json";
+    public final String weatherPath = "src/main/resources/weather-data-final.json";
 
     private JSONObject weatherData;
     @Expose
@@ -92,6 +92,8 @@ public final class SimulationData {
     public double jmetalMutationProbability;
     public double jmetalMutationEta;
 
+    public int experimentNumber;
+
     private int id;
 
 
@@ -147,6 +149,7 @@ public final class SimulationData {
             epsilonMap.put(OptimizedFunction.TravelTime, simulationObject.getDouble("travelTimeEpsilon"));
             epsilonMap.put(OptimizedFunction.FuelUsed, simulationObject.getDouble("fuelEpsilon"));
             epsilonMap.put(OptimizedFunction.Danger, simulationObject.getDouble("safetyEpsilon"));
+            experimentNumber = simulationObject.getInt("experimentNumber");
 
             crowdingFactorMap.put(OptimizedFunction.TravelTime, simulationObject.getDouble("timeCrowdingFactor"));
             crowdingFactorMap.put(OptimizedFunction.FuelUsed, simulationObject.getDouble("fuelCrowdingFactor"));
@@ -187,6 +190,8 @@ public final class SimulationData {
             jmetalCrossoverProbability = jmetalObject.getDouble("jmetalCrossoverProbability");
             jmetalMutationProbability = jmetalObject.getDouble("jmetalMutationProbability");
             jmetalMutationEta = jmetalObject.getDouble("jmetalMutationEta");
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
