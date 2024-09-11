@@ -77,7 +77,7 @@ public class Test {
 
 
         Set<Solution> resultSolutions = Algorithm.getNonDominatedSolutions(population.stream().map(RouteSolution::getSolution).toList());
-        resultSolutions = Algorithm.lastSolutionImprovement(resultSolutions);
+//        resultSolutions = Algorithm.lastSolutionImprovement(resultSolutions);
 
         System.out.println(resultSolutions.size());
         saveToJson(resultSolutions, "results/comparisonSolutions.json");

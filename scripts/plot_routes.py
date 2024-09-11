@@ -15,7 +15,6 @@ parser.add_argument('--routes', type=str)
 args = parser.parse_args()
 
 routes = []
-compariosn_routes = []
 
 if (args.routes):
     with open(args.routes) as file:
@@ -32,6 +31,8 @@ ax = plt.axes(projection=ccrs.PlateCarree())
 ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.OCEAN)
 ax.add_feature(cfeature.COASTLINE)
+
+cid = fig.canvas.mpl_connect('button_press_event', lambda e: print(e.xdata, e.ydata))
 
 #98b4e4
 # ax.add_patch(Rectangle((-32, 30), 10, 20, linewidth=0, edgecolor='none', facecolor='gray', transform=ccrs.PlateCarree(), alpha=1))

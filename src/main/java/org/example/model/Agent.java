@@ -147,13 +147,14 @@ public class Agent {
         } else if (dominationResult == -1) { // other dominates agent
             transferResources(other, this, true);
         } else { // neither of the 2 dominated the other
-            if (agentDominationFactor < otherDominationFactor) {
-                transferResources(this, other, false);
-                dominationFactorCounter++;
-            } else if (otherDominationFactor < agentDominationFactor) {
-                dominationFactorCounter++;
-                transferResources(other, this, false);
-            } else {
+//            if (agentDominationFactor < otherDominationFactor) {
+//                transferResources(this, other, false);
+//                dominationFactorCounter++;
+//            } else if (otherDominationFactor < agentDominationFactor) {
+//                dominationFactorCounter++;
+//                transferResources(other, this, false);
+//            } else {
+            {
 //                Set<Agent> allAgents = getIsland().getNeighbouringIslands().stream().map(Island::getAgents).flatMap(Set::stream).collect(Collectors.toSet());
 //                allAgents.addAll(getIsland().getAgents());
 //                int similarNeighbors = (int) allAgents.stream().filter(a -> !a.equals(this)).filter(a -> a.areSimilar(this, simulationData.similarityEpsilon)).count();

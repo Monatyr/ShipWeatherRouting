@@ -162,6 +162,34 @@ public abstract class Algorithm {
                 population.add(new Agent(newSolution, simulationData.initialEnergy, 0, null, false));
             }
 
+//            Set<Agent> additionalAgents = new HashSet<>();
+//
+//            for (int i = 0; i < population.size() - 1; i++) {
+//                Solution currSolution = population.stream().toList().get(i).getSolution();
+//                for (int j = i + 1; j < population.size(); j++) {
+//                    Solution otherSolution = population.stream().toList().get(j).getSolution();
+//
+//                    List<GridPoint> commonGridPoints = new ArrayList<>();
+//
+//                    for (int k = 0; k < currSolution.getRoutePoints().size(); k++) {
+//                        GridPoint currRoutePoint = currSolution.getRoutePoints().get(k).getGridCoordinates();
+//                        GridPoint currPartnerRoutePoint = otherSolution.getRoutePoints().get(k).getGridCoordinates();
+//                        if (currRoutePoint.equals(currPartnerRoutePoint)) {
+//                            commonGridPoints.add(currRoutePoint);
+//                        }
+//                    }
+//                    Solution newSolution = EMASSolutionGenerator.crossoverSolutions(currSolution, otherSolution, commonGridPoints, 1);
+//                    newSolution = EMASSolutionGenerator.mutateSolution(newSolution, 0.4);
+//                    newSolution.calculateRouteValues();
+//                    newSolution.calculateFunctionValues();
+//                    additionalAgents.add(new Agent(newSolution, simulationData.initialEnergy, 0, null, false));
+//                }
+//            }
+//
+//            additionalAgents.addAll(population);
+//            List<Agent> populationList = new ArrayList<>(additionalAgents.stream().toList());
+//            Collections.shuffle(populationList);
+//            population = new HashSet<>(populationList.subList(0, population.size()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

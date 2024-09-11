@@ -17,7 +17,7 @@ import math
 # 11: 102.6 - 117.36 km/h
 # 12: ≥ 117.72 km/h
 
-MAX_WIND_MS = 18
+MAX_WIND_MS = 16
 MAX_WIND_KM = MAX_WIND_MS * 3.6
 
 
@@ -89,15 +89,11 @@ def increase_weather_conditions(
         start_point: tuple[float, float],
         end_point: tuple[float, float],
         wind_speed_increase_ms: float,
-        input_file: str,
-        output_file: str
-
+        data,
 ):
     max_speed = 0
     max_wave_height = 0
     wind_speed_increase_km = 3.6 * wind_speed_increase_ms
-    with open(input_file) as file:
-        data = json.loads(file.read())
     min_lat, max_lat = min(start_point[0], end_point[0]), max(start_point[0], end_point[0])
     min_lon, max_lon = min(start_point[1], end_point[1]), max(start_point[1], end_point[1])
     for point_k, point_v in data.items():
@@ -106,7 +102,7 @@ def increase_weather_conditions(
             for timestamp_k, timestamp_v in point_v.items():
                 if timestamp_k == 'is_water':
                     continue
-                timestamp_v['wind_speed_10m'] = timestamp_v['wind_speed_10m'] + wind_speed_increase_km
+                timestamp_v['wind_speed_10m'] = min(timestamp_v['wind_speed_10m'] + wind_speed_increase_km, MAX_WIND_KM)
                 if timestamp_v['wave_height'] != None:
                     wind_speed_ms = timestamp_v['wind_speed_10m'] / 3.6
                     max_speed = max(max_speed, wind_speed_ms)
@@ -115,8 +111,7 @@ def increase_weather_conditions(
                     timestamp_v['wave_height'] = wave_height
     print("Max wind speed (m/s): ", max_speed)
     print("Max wave height (m):  ", max_wave_height)
-    with open(output_file, 'w') as file:
-        json.dump(data, file)
+    return data
 
 
 def generate_storm(x_center, y_center, r, delta_w, grid_shape):
@@ -167,18 +162,27 @@ if __name__ == "__main__":
     #     'src/main/resources/weather-data-rough-2.json'
     # )
     input_file = "src/main/resources/weather-data-final.json"
-    output_file = "src/main/resources/weather-data-rough-3.json"
+    output_file = "src/main/resources/weather-data-path.json"
 
     with open(input_file) as file:
         data = json.loads(file.read())
 
-    stormy_data = generate_storm(40.5, -30, 500, 20, data)
-    stormy_data = generate_storm(43, -50, 500, 10, stormy_data)
-    stormy_data = generate_storm(45, -40, 400, 10, stormy_data)
-    stormy_data = generate_storm(38, -55, 500, 10, stormy_data)
-    stormy_data = generate_storm(38, -40, 500, 10, stormy_data)
-    stormy_data = generate_storm(40, -20, 500, 12, stormy_data)
-    stormy_data = generate_storm(43, -47, 500, 12, stormy_data)
+    # path_data = increase_weather_conditions(
+    #     (46, -55),
+    #     (41, -24),
+    #     20,
+    #     data
+    # )
+
+    # with open(output_file, 'w') as file:
+    #     json.dump(path_data, file)
+
+    stormy_data = generate_storm(43, -50, 500, 10, data)
+    stormy_data = generate_storm(42, -45, 400, 10, stormy_data)
+    stormy_data = generate_storm(42, -40, 500, 10, stormy_data)
+    stormy_data = generate_storm(43, -35, 500, 10, stormy_data)
+    stormy_data = generate_storm(44, -30, 500, 12, stormy_data)
+    stormy_data = generate_storm(43, -25, 500, 12, stormy_data)
     
     
     with open(output_file, 'w') as file:

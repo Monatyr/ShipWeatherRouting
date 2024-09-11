@@ -12,10 +12,10 @@ data, comparison_data = [], []
 
 if args.experiments:
     for i in range(1, 4):
-        with open(f"results/experiments/emas{i}.json") as file:
+        with open(f"results/experiments/calmWater/emas{i}.json") as file:
             new_data = json.loads(file.read())
             data.extend(new_data)
-        with open(f"results/experiments/jmetal{i}.json") as file:
+        with open(f"results/experiments/calmWater/jmetal{i}.json") as file:
             new_comparison_data = json.loads(file.read())
             comparison_data.extend(new_comparison_data)
     print(len(data))

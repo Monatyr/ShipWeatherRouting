@@ -24,7 +24,7 @@
     "migrationEnergyBound": 50,
     "migrationEnergyTaken": 20,
     "deathEnergyBound": 0,
-    "energyTaken": 10,
+    "energyTaken": 5,
     "initialMutationRate": 0.3,
     "mutationRate": 0.1,
     "eliteMutationRate": 0.05,
@@ -33,7 +33,7 @@
     "mutationEta": 1,
     "reproductionProbability": 0.995,
     "neededPrestige": 100,
-    "numberOfIslands": 6,
+    "numberOfIslands": 8,
     "startingTime": "2024-07-22T00:00Z",
     "shipSpeed": 10,
     "routeSwitches": 1,
@@ -42,8 +42,7 @@
     "travelTimeEpsilon": 100,
     "fuelEpsilon": 5,
     "safetyEpsilon": 0.01,
-    "experimentNumber": 4,
-
+    "experimentNumber": 2,
     "timeCrowdingFactor": 6000,
     "fuelCrowdingFactor": 2,
     "safetyCrowdingFactor": 0.015
