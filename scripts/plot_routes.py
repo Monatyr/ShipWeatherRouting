@@ -6,23 +6,52 @@ from matplotlib.patches import Rectangle
 import argparse
 import ast
 import json
+import random
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--resultFile', type=str)
 parser.add_argument('--weatherFile',type=str)
 parser.add_argument('--routes', type=str)
+parser.add_argument('--top', action='store_true')
 args = parser.parse_args()
 
 routes = []
+data = []
 
 if (args.routes):
-    with open(args.routes) as file:
-        for line in file.readlines():
-            routes.append(ast.literal_eval(line))
+    if ".txt" in args.routes:
+        with open(args.routes) as file:
+            for line in file.readlines():
+                routes.append(ast.literal_eval(line))
+    else: # must be passed as a directory    
+        for i in range(1, 4):
+            with open(args.routes + f"/jmetal{i}.json") as file:
+                new_data = json.loads(file.read())
+                data.extend(new_data)
+
+
+time_sorted_data = sorted(data, key=lambda x: x["functionValues"]["TravelTime"], reverse=False)
+fuel_sorted_data = sorted(data, key=lambda x: x["functionValues"]["FuelUsed"], reverse=False)
+danger_sorted_data = sorted(data, key=lambda x: x["functionValues"]["Danger"], reverse=False)
+
+show_number = 20
+
+if not '.txt' in args.routes:
+    if args.top:
+        data = [time_sorted_data[0], fuel_sorted_data[0], danger_sorted_data[0]]
+    else:
+        random.shuffle(data)
+        data = data[:show_number]
+    for el in data:
+        new_route = []
+        for point in el['routePoints']:
+            coords = point['coordinates']
+            new_route.append(tuple(coords.values()))
+        routes.append(new_route)
 
 # Create a figure with a specific size
-fig = plt.figure(figsize=(20, 15))
+fig = plt.figure(figsize=(20, 10))
 
 # Define the projection, in this case, a Plate Carrée projection
 ax = plt.axes(projection=ccrs.PlateCarree())
@@ -50,7 +79,7 @@ for i, route in enumerate(routes):
 # Extend the image with invisible points
 ax.plot([-70, -10], [50, 30], alpha=0)
 
-min_norm = 10
+min_norm = 8
 
 dangerous_lats, dangerous_longs, danger = [], [], []
 with open(args.weatherFile) as file:
@@ -62,7 +91,6 @@ with open(args.weatherFile) as file:
         for timestamp, timestamp_value in coords_value.items():
             if timestamp == "is_water":
                 continue
-            # if windspeed in m/s above 17 (8 Beaufort Scale)
             if timestamp_value.get('wind_speed_10m') / 3.6 > min_norm:
                 dangerous_lats.append(latitude)
                 dangerous_longs.append(longitude)
@@ -76,17 +104,19 @@ norm = mcolors.Normalize(vmin=min_norm, vmax=max_norm)
 
 scatter = ax.scatter(dangerous_longs, dangerous_lats, c=danger, cmap='Oranges', marker='.', s=10, alpha=1, norm=norm)
 
-cbar = plt.colorbar(scatter, orientation='horizontal', pad=0.01)
-cbar.set_label('Wind Speed (m/s)')
+cbar = plt.colorbar(scatter, orientation='horizontal', pad=0.01, shrink=1, aspect=50)
+cbar.set_label('Wind Speed (m/s)', fontsize=15)
+cbar.ax.tick_params(labelsize=15)  # Set the font size for the colorbar ticks
+
 
 # Add titles and labels
-plt.title('Multiple Routes through the Atlantic Ocean')
+plt.title("Top route per objective function" if args.top else f"{show_number} resulting non-dominated routes", fontsize=20)
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
 
 # Add a legend
 if len(routes) <= 3:
-    plt.legend()
+    plt.legend(fontsize=15)
 
 # Display the plot
 plt.savefig(f'results/{args.resultFile}', bbox_inches='tight')

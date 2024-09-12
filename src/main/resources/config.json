@@ -42,7 +42,7 @@
     "travelTimeEpsilon": 100,
     "fuelEpsilon": 5,
     "safetyEpsilon": 0.01,
-    "experimentNumber": 2,
+    "experimentNumber": 3,
     "timeCrowdingFactor": 6000,
     "fuelCrowdingFactor": 2,
     "safetyCrowdingFactor": 0.015

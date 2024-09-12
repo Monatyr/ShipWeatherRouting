@@ -1,35 +1,20 @@
-import matplotlib.pyplot as plt
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-from matplotlib.patches import Rectangle
+import json
 
-# Create a plot with Cartopy
-fig, ax = plt.subplots(figsize=(10, 10), subplot_kw={'projection': ccrs.PlateCarree()})
+with open('src/main/resources/weather-data-final.json') as file:
+    data = json.loads(file.read())
 
-# Set the extent (optional)
-ax.set_extent([-130, -60, 20, 60])  # Example for part of the North Atlantic
+max_wind = 0
+wind_sum = 0
+total_len = 0
 
-# Add land and coastlines to the map
-land = cfeature.NaturalEarthFeature('physical', 'land', '50m', facecolor='lightgray')
-ax.add_feature(land)
-ax.coastlines(resolution='50m')
+for point_k, point_v in data.items():
+    for time_k, time_v in point_v.items():
+        if time_k == "is_water":
+            continue
+        wind_sum += time_v['wind_speed_10m']
+        total_len += 1
+        if time_v['wind_speed_10m'] > max_wind:
+            max_wind = time_v['wind_speed_10m']
 
-# Define the rectangles (regions) to cover islands
-# Example: Covering a region with a rectangle, defined by its bottom-left corner and width/height
-
-# Example rectangle coordinates (lon_min, lat_min, width, height)
-rectangles = [
-    (-80, 18, 2, 2),  # Caribbean island example
-    (-78, 22, 3, 1.5),  # Another island
-]
-
-# Plot the rectangles AFTER plotting the coastlines to ensure they are on top
-for rect in rectangles:
-    ax.add_patch(Rectangle((rect[0], rect[1]), rect[2], rect[3], 
-                           linewidth=0, edgecolor='none', facecolor='lightgray', transform=ccrs.PlateCarree()))
-
-# Add other features such as gridlines or borders if needed
-ax.gridlines(draw_labels=True)
-
-# Show the plot
-plt.show()
+print(wind_sum / 3.6 / total_len)
+print(max_wind / 3.6)

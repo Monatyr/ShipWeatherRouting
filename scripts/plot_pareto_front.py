@@ -6,6 +6,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--routes', type=str)
 parser.add_argument('--resultFile', type=str)
 parser.add_argument('--experiments', action='store_true')
+parser.add_argument('--compare', action='store_true')
 args = parser.parse_args()
 
 data, comparison_data = [], []
@@ -71,31 +72,37 @@ for i in range(len(time_array)):
             dominated_safety_array.append(safety_array[i])
             break
 
-for index in comp_dominated:
-    time_array.pop(index)
-    fuel_array.pop(index)
-    safety_array.pop(index)
+if args.compare:
+    for index in comp_dominated:
+        time_array.pop(index)
+        fuel_array.pop(index)
+        safety_array.pop(index)
 
 
 # Create a 3D scatter plot to visualize the Pareto front
 fig = plt.figure()
-fig.set_size_inches(15, 15)
+fig.set_size_inches(20, 15)
 ax = fig.add_subplot(111, projection='3d')
 
 # Plot the Pareto front
 ax.scatter(time_array, fuel_array, safety_array, c='r', marker='o', label=f'EMAS: {len(time_array)}')
-ax.scatter(dominated_time_array, dominated_fuel_array, dominated_safety_array, c='#f79a05', marker='o', label=f'Dominated EMAS: {len(dominated_time_array)}')
-ax.scatter(comp_time_array, comp_fuel_array, comp_safety_array, c='#7e1682', marker='o', label=f'NSGA-II: {len(comp_time_array)}')
-ax.scatter(dominated_comp_time_array, dominated_comp_fuel_array, dominated_comp_safety_array, c='#57acde', label=f'Dominated NSGA-II: {len(dominated_comp_time_array)}')
+if args.compare:
+    ax.scatter(comp_time_array, comp_fuel_array, comp_safety_array, c='#7e1682', marker='o', label=f'NSGA-II: {len(comp_time_array)}')
+    ax.scatter(dominated_time_array, dominated_fuel_array, dominated_safety_array, c='#f79a05', marker='o', label=f'Dominated EMAS: {len(dominated_time_array)}')
+    ax.scatter(dominated_comp_time_array, dominated_comp_fuel_array, dominated_comp_safety_array, c='#57acde', label=f'Dominated NSGA-II: {len(dominated_comp_time_array)}')
 
 # Set axis labels
-ax.set_xlabel('Travel time')
-ax.set_ylabel('Fuel used')
-ax.set_zlabel('Danger')
+ax.set_xlabel('Travel time', fontsize=13, labelpad=20)
+ax.set_ylabel('Fuel used', fontsize=13, labelpad=20)
+ax.set_zlabel('Danger', fontsize=13, labelpad=20)
+
+ax.tick_params(axis='both', which='major', labelsize=12)  # Set size for major ticks
+ax.tick_params(axis='both', which='minor', labelsize=10)  # Set size for minor ticks (if you have them)
+
 
 # Set the title
-ax.set_title('Pareto Front for 3-Objective Optimization')
+ax.set_title('Pareto Front for 3-Objective Optimization', fontsize=17, pad=0)
+legend = ax.legend(loc='upper center', bbox_to_anchor=(1.0, 0.7), ncol=1, fontsize=14)
 
-plt.legend()
 plt.savefig(f'results/{args.resultFile}', bbox_inches='tight')
 plt.show()

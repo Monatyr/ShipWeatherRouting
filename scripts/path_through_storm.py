@@ -88,7 +88,7 @@ def change_data(data, points: list[tuple[float, float]], new_wind_speed_ms):
 
 if __name__ == "__main__":
     input_file = "src/main/resources/weather-data-path.json"
-    output_file = "src/main/resources/weather-data-path-created.json"
+    output_file = "src/main/resources/weather-data-path-created-2.json"
 
     with open(input_file) as file:
         data = json.loads(file.read())
@@ -200,7 +200,7 @@ if __name__ == "__main__":
         (41.339129316658074, -25.74080225806452)
     ]
 
-    path_data = change_data(data, points_4, 5)
+    path_data = change_data(data, points_4, 10)
 
     with open(output_file, 'w') as file:
         json.dump(path_data, file)
