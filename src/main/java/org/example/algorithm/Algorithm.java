@@ -263,11 +263,11 @@ public abstract class Algorithm {
         return res;
     }
 
-    public static Set<Solution> lastSolutionImprovement(Set<Solution> solutions) {
+    public static Set<Solution> lastSolutionImprovement(Set<Solution> solutions, int improvements) {
         int counter = 0;
         List<Solution> nonDominatedSolutionsList = new ArrayList<>(solutions.stream().toList());
         for (int i = 0; i < nonDominatedSolutionsList.size(); i++) {
-            for (int j = 0; j < 400; j++) {
+            for (int j = 0; j < improvements; j++) {
                 Solution sol = nonDominatedSolutionsList.get(i);
                 Solution newSolution = EMASSolutionGenerator.mutateSolution(sol, simulationData.eliteMutationRate);
                 if (newSolution.checkIfDominates(sol, false) > 0 && !newSolution.isTooDangerous()) {

@@ -1,6 +1,6 @@
 import json
 
-with open('src/main/resources/weather-data-final.json') as file:
+with open('src/main/resources/weather-data-rough-3.json') as file:
     data = json.loads(file.read())
 
 max_wind = 0

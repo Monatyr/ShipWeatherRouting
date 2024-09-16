@@ -12,11 +12,11 @@ args = parser.parse_args()
 data, comparison_data = [], []
 
 if args.experiments:
-    for i in range(1, 4):
-        with open(f"results/experiments/calmWater/emas{i}.json") as file:
+    for i in range(1, 3):
+        with open(f"results/experiments/singlePath3/emas{i}.json") as file:
             new_data = json.loads(file.read())
             data.extend(new_data)
-        with open(f"results/experiments/calmWater/jmetal{i}.json") as file:
+        with open(f"results/experiments/singlePath3/jmetal{i}.json") as file:
             new_comparison_data = json.loads(file.read())
             comparison_data.extend(new_comparison_data)
     print(len(data))

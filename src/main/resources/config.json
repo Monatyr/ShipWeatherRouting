@@ -37,7 +37,7 @@
     "startingTime": "2024-07-22T00:00Z",
     "shipSpeed": 10,
     "routeSwitches": 1,
-    "similarityEpsilon": 0.99,
+    "similarityEpsilon": 0.95,
     "paretoEpsilon": 0.02,
     "travelTimeEpsilon": 100,
     "fuelEpsilon": 5,

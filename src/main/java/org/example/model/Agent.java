@@ -39,6 +39,7 @@ public class Agent {
     private double crowdingFactor = 0;
     private int age = 0;
     public int id;
+    public static int domCounter = 0;
 
     private final Map<Agent, Integer> recentlyMetAgentsData = new HashMap<>();
     private final Queue<Agent> recentlyMetAgentsQueue = new LinkedList<>();
@@ -141,6 +142,10 @@ public class Agent {
         double otherDominationFactor = other.meetings != 0 ? (double) other.dominatedTimes / other.meetings : 0;
 
         totalCounter++;
+
+        if (dominationResult != 0) {
+            domCounter++;
+        }
 
         if (dominationResult == 1) { // agent dominates other
             transferResources(this, other, true);
@@ -255,7 +260,7 @@ public class Agent {
         }
     }
 
-    private boolean areSimilar(Agent other, double epsilon) {
+    public boolean areSimilar(Agent other, double epsilon) {
         Map<OptimizedFunction, Float> otherFunctions = other.getSolution().getFunctionValues();
         for (OptimizedFunction function : solution.getFunctionValues().keySet()) {
             float value = solution.getFunctionValues().get(function);

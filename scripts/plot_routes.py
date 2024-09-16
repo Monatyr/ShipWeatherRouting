@@ -25,8 +25,8 @@ if (args.routes):
             for line in file.readlines():
                 routes.append(ast.literal_eval(line))
     else: # must be passed as a directory    
-        for i in range(1, 4):
-            with open(args.routes + f"/jmetal{i}.json") as file:
+        for i in range(3, 4):
+            with open(args.routes + f"/emas{i}.json") as file:
                 new_data = json.loads(file.read())
                 data.extend(new_data)
 
@@ -61,7 +61,13 @@ ax.add_feature(cfeature.LAND)
 ax.add_feature(cfeature.OCEAN)
 ax.add_feature(cfeature.COASTLINE)
 
-cid = fig.canvas.mpl_connect('button_press_event', lambda e: print(e.xdata, e.ydata))
+distance = float('inf')
+
+def on_click(event):
+    print(event.xdata, event.ydata)
+
+
+cid = fig.canvas.mpl_connect('button_press_event', on_click)
 
 #98b4e4
 # ax.add_patch(Rectangle((-32, 30), 10, 20, linewidth=0, edgecolor='none', facecolor='gray', transform=ccrs.PlateCarree(), alpha=1))
@@ -70,8 +76,19 @@ cid = fig.canvas.mpl_connect('button_press_event', lambda e: print(e.xdata, e.yd
 colors = ['blue', 'red', 'green']
 labels = ["Time", "Fuel", "Safety"]
 
+# 38.864, -28.656
+# 38.864, -27.629
+# 38.043, -25.566
+# 37.645, -26.601
+
 # Plot each route with a different color
 for i, route in enumerate(routes):
+    # if i == 1:
+    #     route[41] = (38.864, -28.656)
+    #     route[42] = (38.864, -27.629)
+    # if i == 2:
+    #     route[43] = (37.645, -26.601)
+    #     route[44] = (38.043, -25.566)
     lats, lons = zip(*route)
     color = colors[i % len(colors)]  # Cycle through the list of colors
     ax.plot(lons, lats, linewidth=1, marker='o', transform=ccrs.PlateCarree(), label=f'{labels[i % len(labels)]} route')
@@ -79,7 +96,7 @@ for i, route in enumerate(routes):
 # Extend the image with invisible points
 ax.plot([-70, -10], [50, 30], alpha=0)
 
-min_norm = 8
+min_norm = 10
 
 dangerous_lats, dangerous_longs, danger = [], [], []
 with open(args.weatherFile) as file:

@@ -44,7 +44,10 @@ public class Main {
 //        runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/initialSolutions.json", "--resultFile", "initial_pareto_front.png"));
 
         Set<Solution> solutions = emas.run();
-        solutions = lastSolutionImprovement(solutions); // improved solutions
+
+        System.out.println("Dominations: " + Agent.domCounter);
+
+        solutions = lastSolutionImprovement(solutions, 400); // improved solutions
 
         generalInfo(solutions);
         allRoutes = solutions.stream().map(s -> s.getRoutePoints().toString()).toList();
@@ -53,7 +56,7 @@ public class Main {
 
         System.out.println("\n--- NON-DOMINATED SOLUTIONS: " + solutions.size() + " ---");
 
-        writeSolutionsToFile(allRoutes, "src/main/resources/visualisation-solutions/resulting-solutions.txt");
+        writeSolutionsToFile(topRoutes, "src/main/resources/visualisation-solutions/resulting-solutions.txt");
         getIslandsInfo(emas);
         System.out.println(Action.actionCount);
         arguments = List.of(
@@ -65,7 +68,7 @@ public class Main {
         saveToJson(solutions, String.format("results/experiments/emas%d.json", SimulationData.getInstance().experimentNumber));
         runPythonScript("scripts/plot_routes.py", arguments);
         runPythonScript("scripts/plot_average_values.py", List.of("--resultFile", "average_function_values.png"));
-        runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/resultSolutions.json", "--resultFile", "pareto_front.png"));
+        runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/resultSolutions.json", "--resultFile", "pareto_front.png", "--compare"));
     }
 
     public static void runPythonScript(String scriptPath, @Nullable List<String> args) {
