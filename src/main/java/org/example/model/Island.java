@@ -39,16 +39,21 @@ public class Island {
 
     public void evaluateAgents() {
         for (Agent agent: agents) {
-            List<Agent> neighbours = getAgents().stream()
+            List<Agent> neighbours = new java.util.ArrayList<>(getAgents().stream()
                     .filter(a -> !a.equals(agent))
                     .filter(a -> a.getEnergy() > 0)
-                    .filter(a -> agent.areSimilar(a, 0.8))
-                    .toList();
+                    .toList());
             if (neighbours.size() == 0) {
                 return;
             }
-            int index = random.nextInt(neighbours.size());
-            agent.compareTo(neighbours.get(index));
+            while (!neighbours.isEmpty()) {
+                int index = random.nextInt(neighbours.size());
+                boolean res = agent.compareTo(neighbours.get(index));
+                if (res) {
+                    break;
+                }
+                neighbours.remove(index);
+            }
         }
     }
 

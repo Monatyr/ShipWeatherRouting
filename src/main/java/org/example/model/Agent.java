@@ -135,11 +135,22 @@ public class Agent {
         return null;
     }
 
-    public void compareTo(Agent other) {
+    public boolean compareTo(Agent other) {
+        meetings++;
+        other.meetings++;
+        if (!areSimilar(other, simulationData.similarityEpsilon)) {
+            return false;
+        }
+
+        similarAgentsCounter++;
+        other.similarAgentsCounter++;
+
         Solution otherSolution = other.getSolution();
         int dominationResult = solution.checkIfDominates(otherSolution, false);
         double agentDominationFactor = meetings != 0 ? (double) dominatedTimes / meetings : 0;
         double otherDominationFactor = other.meetings != 0 ? (double) other.dominatedTimes / other.meetings : 0;
+        double agentCrowdingFactor = meetings != 0 ? (double) similarAgentsCounter / meetings : 0;
+        double otherCrowdingFactor = other.meetings != 0 ? (double) other.similarAgentsCounter / other.meetings : 0;
 
         totalCounter++;
 
@@ -152,115 +163,25 @@ public class Agent {
         } else if (dominationResult == -1) { // other dominates agent
             transferResources(other, this, true);
         } else { // neither of the 2 dominated the other
-//            if (agentDominationFactor < otherDominationFactor) {
-//                transferResources(this, other, false);
-//                dominationFactorCounter++;
-//            } else if (otherDominationFactor < agentDominationFactor) {
-//                dominationFactorCounter++;
-//                transferResources(other, this, false);
-//            } else {
-            {
-//                Set<Agent> allAgents = getIsland().getNeighbouringIslands().stream().map(Island::getAgents).flatMap(Set::stream).collect(Collectors.toSet());
-//                allAgents.addAll(getIsland().getAgents());
-//                int similarNeighbors = (int) allAgents.stream().filter(a -> !a.equals(this)).filter(a -> a.areSimilar(this, simulationData.similarityEpsilon)).count();
-//                int otherSimilarNeighbors = (int) allAgents.stream().filter(a -> !a.equals(other)).filter(a -> a.areSimilar(other, simulationData.similarityEpsilon)).count();
-                int similarNeighbors = (int) getIsland().getAgents().stream().filter(a -> !a.equals(this)).filter(a -> a.areSimilar(this, simulationData.similarityEpsilon)).count();
-                int otherSimilarNeighbors = (int) other.getIsland().getAgents().stream().filter(a -> !a.equals(other)).filter(a -> a.areSimilar(other, simulationData.similarityEpsilon)).count();
-//                System.out.println(similarNeighbors + " " + otherSimilarNeighbors + " " + getIsland().getAgents().size());
-                if (similarNeighbors < otherSimilarNeighbors) {
+            if (agentDominationFactor < otherDominationFactor) {
+                transferResources(this, other, false);
+                dominationFactorCounter++;
+            } else if (otherDominationFactor < agentDominationFactor) {
+                dominationFactorCounter++;
+                transferResources(other, this, false);
+            } else {
+                if (agentCrowdingFactor < otherCrowdingFactor) {
                     transferResources(this, other, false);
-                } else if (similarNeighbors > otherSimilarNeighbors) {
+                } else if (otherCrowdingFactor < agentCrowdingFactor) {
                     transferResources(other, this, false);
                 }
             }
         }
 
-//            else if (this.crowdingFactor > other.crowdingFactor) {
-//                crowdingCounter++;
-//                transferResources(this, other, false);
-//            } else if (other.crowdingFactor > this.crowdingFactor) {
-//                crowdingCounter++;
-//                transferResources(other, this, false);
-//            }
-//            System.out.println(crowdingFactor + " " + other.crowdingFactor);
-//             else if (areSimilar(other, simulationData.similarityEpsilon)) {
-//                int index = random.nextInt(2);
-//                if (index == 0) {
-//                    transferResources(this, other, false);
-//                } else {
-//                    transferResources(other, this, false);
-//                }
-//            }
-//            } else if (areSimilar(other)) {
-//                int index = random.nextInt(2);
-//                if (index == 0) {
-//                    transferResources(this, other, false);
-//                } else {
-//                    transferResources(other, this, false);
-//                }
-//            }
-//            } else {
-//                double similarRatio = allMetAgents.size() != 0 ? (double) similarAgents.size() / allMetAgents.size() : 0;
-//                double otherSimilarRatio = other.allMetAgents.size() != 0 ? (double) other.similarAgents.size() / other.allMetAgents.size() : 0;
-////                double similarRatio = meetings != 0 ? (double) similarMeetings / meetings : 0;
-////                double otherSimilarRatio = other.meetings != 0 ? (double) other.similarMeetings / other.meetings : 0;
-//
-//                if (similarRatio < otherSimilarRatio) {
-//                    transferResources(this, other, false);
-//                } else if (similarRatio > otherSimilarRatio) {
-//                    transferResources(other, this, false);
-//                }
-//            }
-
-//
-//        if (areSimilar(other, simulationData.similarityEpsilon)) {
-//            similarAgents.add(other);
-//            other.similarAgents.add(this);
-////            similarMeetings++;
-////            other.similarMeetings++;
-//        }
-//
-//        allMetAgents.add(other);
-//        other.allMetAgents.add(this);
-//
-//
-////        int windowSize = (int) Double.POSITIVE_INFINITY;
-//        int windowSize = 20;
-////        updateCrowdingEstimate(windowSize, other.similarAgentsCounter, similar);
-////        other.updateCrowdingEstimate(windowSize, this.similarAgentsCounter, similar);
-//        updateSimilarAgents(other, windowSize);
-//        other.updateSimilarAgents(this, windowSize);
-
-//        this.otherAgentsCounters.put(other, other.similarAgentsCounter);
-//        other.otherAgentsCounters.put(this, this.similarAgentsCounter);
-
-        meetings++;
-        other.meetings++;
+        return true;
     }
 
-    private void updateSimilarAgents(Agent other, int windowSize) {
-        if (recentlyMetAgentsData.containsKey(other)) {
-            recentlyMetAgentsData.remove(other);
-            recentlyMetAgentsQueue.remove(other);
-            if (areSimilar(other, simulationData.similarityEpsilon)) {
-                similarAgentsCounter--;
-            }
-        }
-        if (recentlyMetAgentsQueue.size() >= windowSize) {
-            Agent oldestAgent = recentlyMetAgentsQueue.remove();
-            recentlyMetAgentsData.remove(oldestAgent);
-            if (areSimilar(oldestAgent, simulationData.similarityEpsilon)) {
-                similarAgentsCounter--;
-            }
-        }
-        recentlyMetAgentsData.put(other, other.similarAgentsCounter);
-        recentlyMetAgentsQueue.add(other);
-        if (areSimilar(other, simulationData.similarityEpsilon)) {
-            similarAgentsCounter++;
-        }
-    }
-
-    public boolean areSimilar(Agent other, double epsilon) {
+        public boolean areSimilar(Agent other, double epsilon) {
         Map<OptimizedFunction, Float> otherFunctions = other.getSolution().getFunctionValues();
         for (OptimizedFunction function : solution.getFunctionValues().keySet()) {
             float value = solution.getFunctionValues().get(function);
@@ -315,8 +236,9 @@ public class Agent {
 
     public boolean canMigrateToElite() {
         System.out.println(similarAgentsCounter + " " + crowdingFactor + " " + energy);
+        return false;
 //        return true;
-        return similarAgentsCounter > crowdingFactor;
+//        return similarAgentsCounter > crowdingFactor;
     }
 
     public double getEnergy() {
