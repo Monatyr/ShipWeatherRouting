@@ -92,6 +92,8 @@ public final class SimulationData {
     public double jmetalMutationProbability;
     public double jmetalMutationEta;
 
+    public int experimentNumber;
+
     private int id;
 
 
@@ -129,7 +131,8 @@ public final class SimulationData {
             initialMutationProbability = simulationObject.getDouble("initialMutationProbability");
             mutationEta = simulationObject.getDouble("mutationEta");
             reproductionProbability = simulationObject.getDouble("reproductionProbability");
-            migrationProbability = Math.round((1.0 - reproductionProbability) * 100) / 100.0;
+            migrationProbability = Math.round((1.0 - reproductionProbability) * 1000) / 1000.0;
+            System.out.println("MIGrATION: " + migrationProbability);
             neededPrestige = simulationObject.getInt("neededPrestige");
             initialEnergy = simulationObject.getDouble("initialEnergy");
             reproductionEnergyBound = simulationObject.getDouble("reproductionEnergyBound");
@@ -146,6 +149,7 @@ public final class SimulationData {
             epsilonMap.put(OptimizedFunction.TravelTime, simulationObject.getDouble("travelTimeEpsilon"));
             epsilonMap.put(OptimizedFunction.FuelUsed, simulationObject.getDouble("fuelEpsilon"));
             epsilonMap.put(OptimizedFunction.Danger, simulationObject.getDouble("safetyEpsilon"));
+            experimentNumber = simulationObject.getInt("experimentNumber");
 
             crowdingFactorMap.put(OptimizedFunction.TravelTime, simulationObject.getDouble("timeCrowdingFactor"));
             crowdingFactorMap.put(OptimizedFunction.FuelUsed, simulationObject.getDouble("fuelCrowdingFactor"));
@@ -186,6 +190,8 @@ public final class SimulationData {
             jmetalCrossoverProbability = jmetalObject.getDouble("jmetalCrossoverProbability");
             jmetalMutationProbability = jmetalObject.getDouble("jmetalMutationProbability");
             jmetalMutationEta = jmetalObject.getDouble("jmetalMutationEta");
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

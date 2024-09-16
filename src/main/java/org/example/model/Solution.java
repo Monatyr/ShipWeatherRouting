@@ -6,6 +6,7 @@ import org.example.physicalModel.PhysicalModel;
 import org.example.util.Coordinates;
 import org.example.util.SimulationData;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import java.util.*;
 import static org.example.model.OptimizedFunction.*;
 import static org.example.physicalModel.PhysicalModel.*;
 
-public class Solution implements Comparable<Solution> {
+public class Solution implements Comparable<Solution>, Serializable {
     @Expose
     private List<RoutePoint> routePoints = new ArrayList<>();
     @Expose
@@ -198,9 +199,9 @@ public class Solution implements Comparable<Solution> {
             // From the previous point all the weather data will be collected and used to calculate the speed and resistances.
             // Based on the travel time data for the current point will be found out.
             double shipHeadingAngle = getShipHeadingAngle(prevPoint.getCoordinates(), currPoint.getCoordinates());
-            double windAngle = prevPoint.getWeatherConditions().windAngle(); // TODO: make sure the wind angle is the angle FROM which the wind is blowing
-            double waveHeight = prevPoint.getWeatherConditions().waveHeight();
-            double windSpeed = prevPoint.getWeatherConditions().windSpeed();
+            double windAngle = prevPoint.getWeatherConditions().windAngle; // TODO: make sure the wind angle is the angle FROM which the wind is blowing
+            double waveHeight = prevPoint.getWeatherConditions().waveHeight;
+            double windSpeed = prevPoint.getWeatherConditions().windSpeed;
             int BN = PhysicalModel.convertWindSpeedToBeaufort(windSpeed);
 
             // speed in each leg of the journey should also be a variable in the optimization process // TODO: don't read it from the config file but actually adapt the value
@@ -247,7 +248,7 @@ public class Solution implements Comparable<Solution> {
             int travelTimeSeconds = (int) (distance * 1000 / targetEndSpeed);
             double fuelUsed = getFuelUsed(totalPower, (double) travelTimeSeconds / 3600); // TODO: is fuel calculated correctly?
             double danger = getFractionalSafetyCoefficient( // TODO: MUST BE THE SAME UNIT. IN THE PAPER IT'S IN KNOTS!
-                    prevPoint.getWeatherConditions().windSpeed(),
+                    prevPoint.getWeatherConditions().windSpeed,
                     simulationData.thresholdWindSpeed,
                     simulationData.thresholdWindSpeedMargin,
                     windAngle

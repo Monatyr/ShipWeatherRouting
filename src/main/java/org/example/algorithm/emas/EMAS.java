@@ -25,7 +25,8 @@ public class EMAS extends Algorithm {
 
     public EMAS() {
         createIslands(); // create empty islands
-        generateInitialPopulation(); // create the initial population of agents without islands assigned
+        loadInitialPopulation();
+//        generateInitialPopulation(); // create the initial population of agents without islands assigned
         dividePopulationBetweenIslandsWithoutElite(); // assign agent to islands
     }
 
@@ -130,6 +131,9 @@ public class EMAS extends Algorithm {
             String err = "\nITER: " + iterations + "\nSIM-DATA-POP: " + simulationData.populationSize + "\nPOP: " + nonElitePopulationSize;
             throw new Exception(err);
         }
+//        simulationData.similarityEpsilon += 0.000005;
+//        simulationData.similarityEpsilon = Math.min(0.999, simulationData.similarityEpsilon);
+//        System.out.println(simulationData.similarityEpsilon);
         simulationData.paretoEpsilon -= 0.000001;
     }
 

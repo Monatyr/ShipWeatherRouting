@@ -28,6 +28,9 @@ import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +52,7 @@ public class Test {
 
         CrossoverOperator<RouteSolution> crossoverOperator = new RouteCrossoverOperator();
         MutationOperator<RouteSolution> mutationOperator = new RouteMutationOperator();
-        RouteProblem routeProblem = new RouteProblem();
+        RouteProblem routeProblem = new RouteProblem(populationSize);
 
         NSGAII<RouteSolution> algorithm = new NSGAIIBuilder<>(routeProblem, crossoverOperator, mutationOperator, populationSize)
                 .setMaxEvaluations(evaluations)
@@ -59,10 +62,14 @@ public class Test {
 
         // Run
         AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
-        System.out.println("Computing time: " + (double) algorithmRunner.getComputingTime() / 1000 + "s");
+        System.out.println("\nComputing time: " + ((double) algorithmRunner.getComputingTime() / 1000 - (double)(routeProblem.initPopulationEndTime - routeProblem.startTime) / 1000000000) + "s");
 
         // Initial population
-        UtilFunctions.getBestPerCategory(routeProblem.getInitialSolutions());
+        Set<Solution> initialSolutions = routeProblem.getInitialSolutions();
+        UtilFunctions.getBestPerCategory(initialSolutions);
+
+        // Save initial population to file, so that other algorithms can base their workings on the same solutions
+        saveToJson(initialSolutions, "src/main/resources/initial-routes/initialSolutions.json");
 
         // Result population
         List<RouteSolution> population = algorithm.result();
@@ -70,10 +77,11 @@ public class Test {
 
 
         Set<Solution> resultSolutions = Algorithm.getNonDominatedSolutions(population.stream().map(RouteSolution::getSolution).toList());
-        resultSolutions = Algorithm.lastSolutionImprovement(resultSolutions);
+        resultSolutions = Algorithm.lastSolutionImprovement(resultSolutions, 200);
 
         System.out.println(resultSolutions.size());
         saveToJson(resultSolutions, "results/comparisonSolutions.json");
+        saveToJson(resultSolutions, String.format("results/experiments/jmetal%d.json", SimulationData.getInstance().experimentNumber));
 
         List<String> topRoutes = getBestPerCategory(resultSolutions);
         writeSolutionsToFile(topRoutes, "src/main/resources/visualisation-solutions/jmetal-resulting-solutions.txt");

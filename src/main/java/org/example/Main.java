@@ -34,17 +34,20 @@ public class Main {
 
         List<String> allRoutes = population.stream().map(Agent::getSolution).map(s -> s.getRoutePoints().toString()).toList();
         List<String> topRoutes = getBestPerCategory(population.stream().map(Agent::getSolution).collect(Collectors.toSet()));
-        writeSolutionsToFile(allRoutes, "src/main/resources/visualisation-solutions/initial-solutions.txt");
+        writeSolutionsToFile(allRoutes.subList(0, 30), "src/main/resources/visualisation-solutions/initial-solutions.txt");
         List<String> arguments = List.of(
                 "--resultFile", "initial_routes.png",
                 "--weatherFile", SimulationData.getInstance().weatherPath,
                 "--routes", "src/main/resources/visualisation-solutions/initial-solutions.txt"
         );
         runPythonScript("scripts/plot_routes.py", arguments);
-        runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/initialSolutions.json", "--resultFile", "initial_pareto_front.png"));
+//        runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/initialSolutions.json", "--resultFile", "initial_pareto_front.png"));
 
         Set<Solution> solutions = emas.run();
-        solutions = lastSolutionImprovement(solutions); // improved solutions
+
+        System.out.println("Dominations: " + Agent.domCounter);
+
+        solutions = lastSolutionImprovement(solutions, 400); // improved solutions
 
         generalInfo(solutions);
         allRoutes = solutions.stream().map(s -> s.getRoutePoints().toString()).toList();
@@ -62,9 +65,10 @@ public class Main {
                 "--routes", "src/main/resources/visualisation-solutions/resulting-solutions.txt"
         );
         saveToJson(solutions, "results/resultSolutions.json");
+        saveToJson(solutions, String.format("results/experiments/emas%d.json", SimulationData.getInstance().experimentNumber));
         runPythonScript("scripts/plot_routes.py", arguments);
         runPythonScript("scripts/plot_average_values.py", List.of("--resultFile", "average_function_values.png"));
-        runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/resultSolutions.json", "--resultFile", "pareto_front.png"));
+        runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/resultSolutions.json", "--resultFile", "pareto_front.png", "--compare"));
     }
 
     public static void runPythonScript(String scriptPath, @Nullable List<String> args) {

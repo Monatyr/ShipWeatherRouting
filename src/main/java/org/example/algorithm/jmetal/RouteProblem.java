@@ -21,6 +21,14 @@ public class RouteProblem implements Problem<RouteSolution> {
             "src/main/resources/initial-routes/rhumb_line_route.txt"
     };
     private Set<Solution> initialSolutions = new HashSet<>();
+    private int populationSize;
+    private int createdSolutions = 0;
+    public long startTime;
+    public long initPopulationEndTime;
+
+    public RouteProblem(int populationSize) {
+        this.populationSize = populationSize;
+    }
 
     // Getters
     @Override
@@ -73,24 +81,31 @@ public class RouteProblem implements Problem<RouteSolution> {
 
     @Override
     public RouteSolution createSolution() {
-        double[] factors = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
-        List<RoutePoint> route;
-        if (creatorIndex >= factors.length) {
-            route = EMASSolutionGenerator.getRouteFromFile(routeFiles[creatorIndex % 2]);
-        } else {
-            route =  EMASSolutionGenerator.flattenRoute(this.gcr, factors[creatorIndex]);
+        if (createdSolutions == 0) {
+            startTime = System.nanoTime();
         }
         Solution solution = null;
+        double[] factors = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
+        List<RoutePoint> route;
         while (solution == null) {
+            if (creatorIndex >= factors.length) {
+                route = EMASSolutionGenerator.getRouteFromFile(routeFiles[creatorIndex % 2]);
+            } else {
+                route = EMASSolutionGenerator.flattenRoute(this.gcr, factors[creatorIndex]);
+            }
             double routeTargetSpeed = random.nextDouble(simulationData.minSpeed, simulationData.maxSpeed);
             solution = Algorithm.generateInitialSolution(route, routeTargetSpeed);
             creatorIndex++;
             creatorIndex = creatorIndex % (factors.length + 2);
-            if (solution == null) {
-                System.out.println("DANGEROUS");
-            }
+        }
+        createdSolutions++;
+        if (createdSolutions == populationSize) {
+            initPopulationEndTime = System.nanoTime();
         }
         initialSolutions.add(solution);
+        if (initialSolutions.size() == 200) {
+            System.out.println("Created solutions: " + createdSolutions);
+        }
         return new RouteSolution(solution, 1, 3);
     }
 

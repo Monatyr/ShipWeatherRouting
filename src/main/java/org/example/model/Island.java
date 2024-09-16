@@ -2,6 +2,7 @@ package org.example.model;
 
 import org.example.algorithm.Algorithm;
 import org.example.algorithm.emas.EMAS;
+import org.example.util.SimulationData;
 
 import java.util.HashSet;
 import java.util.List;
@@ -36,11 +37,12 @@ public class Island {
 
     public void removeAgent(Set<Agent> agents) { this.agents.removeAll(agents); }
 
-    public void evaluateAgents() { // TODO: rethink if that's the way I want to compare agents (maybe not that many comparisons or comparison as a separate action)
+    public void evaluateAgents() {
         for (Agent agent: agents) {
             List<Agent> neighbours = getAgents().stream()
                     .filter(a -> !a.equals(agent))
                     .filter(a -> a.getEnergy() > 0)
+                    .filter(a -> agent.areSimilar(a, 0.8))
                     .toList();
             if (neighbours.size() == 0) {
                 return;

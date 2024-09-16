@@ -47,6 +47,6 @@ build/
 /src/main/resources/weather-*
 /src/main/resources/map-grid.txt
 /src/main/resources/visualisation-solutions
-
+src/main/resources/initial-routes/initialSolutions.json
 
 /results/*
