@@ -108,6 +108,7 @@ public class Agent {
                 .filter(p -> !p.equals(this))
                 .filter(p -> !p.madeAction)
                 .filter(p -> p.getEnergy() >= simulationData.reproductionEnergyBound)
+                .filter(p -> areSimilar(p, 0.85))
                 .collect(Collectors.toSet());
         if (availablePartners.isEmpty()) {
             return null;
@@ -138,12 +139,14 @@ public class Agent {
     public boolean compareTo(Agent other) {
         meetings++;
         other.meetings++;
-        if (!areSimilar(other, simulationData.similarityEpsilon)) {
-            return false;
-        }
+//        if (!areSimilar(other, simulationData.similarityEpsilon)) {
+//            return false;
+//        }
 
-        similarAgentsCounter++;
-        other.similarAgentsCounter++;
+        if (areSimilar(other, simulationData.similarityEpsilon)) {
+            similarAgentsCounter++;
+            other.similarAgentsCounter++;
+        }
 
         Solution otherSolution = other.getSolution();
         int dominationResult = solution.checkIfDominates(otherSolution, false);

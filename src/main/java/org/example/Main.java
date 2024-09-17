@@ -40,7 +40,7 @@ public class Main {
                 "--weatherFile", SimulationData.getInstance().weatherPath,
                 "--routes", "src/main/resources/visualisation-solutions/initial-solutions.txt"
         );
-        runPythonScript("scripts/plot_routes.py", arguments);
+//        runPythonScript("scripts/plot_routes.py", arguments);
 //        runPythonScript("scripts/plot_pareto_front.py", List.of("--routes", "results/initialSolutions.json", "--resultFile", "initial_pareto_front.png"));
 
         Set<Solution> solutions = emas.run();
